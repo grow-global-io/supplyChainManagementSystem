@@ -1,0 +1,395 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x5704c65F4931fB19598456F106Cbd55C55B8A03c",
+    "txHash": "0x591d695df7ec20e3d21a8c470f4ed14b9187a4e9d76669f50bfab41c0b908a1b"
+  },
+  "proxies": [
+    {
+      "address": "0x10c75f53ce6807D6DEd902638eA035BEC95a4c1a",
+      "txHash": "0x03abe377017cc6d4eddcda5a7103f4e16268cc305d76dabf8863f6d553ab568d",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "0d322e3c2f6eef6f0dfd88aa08e286626a94af96ec846a17e42e3c61cf21e5a3": {
+      "address": "0xCe4366bc791E0D00618DbB0C99d8e4B994821e62",
+      "txHash": "0xae8db25d87e66afc710e089b88191c0766cac46edcc54d2a46fa6edb4192030b",
+      "layout": {
+        "solcVersion": "0.8.7",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "uid",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_uint256",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:14"
+          },
+          {
+            "label": "sku",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_uint256",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:15"
+          },
+          {
+            "label": "products",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_uint256,t_struct(Product)1415_storage)",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:18"
+          },
+          {
+            "label": "productHistory",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_uint256,t_struct(ProductHistory)1420_storage)",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:19"
+          },
+          {
+            "label": "roles",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_address,t_struct(Roles)1429_storage)",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:20"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Product)1415_storage)dyn_storage": {
+            "label": "struct Structure.Product[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_enum(State)1353": {
+            "label": "enum Structure.State",
+            "members": [
+              "Manufactured",
+              "PurchasedByThirdParty",
+              "ShippedByManufacturer",
+              "ReceivedByThirdParty",
+              "PurchasedByCustomer",
+              "ShippedByThirdParty",
+              "ReceivedByDeliveryHub",
+              "ShippedByDeliveryHub",
+              "ReceivedByCustomer"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_struct(Roles)1429_storage)": {
+            "label": "mapping(address => struct Structure.Roles)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Product)1415_storage)": {
+            "label": "mapping(uint256 => struct Structure.Product)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(ProductHistory)1420_storage)": {
+            "label": "mapping(uint256 => struct Structure.ProductHistory)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(DeliveryHubDetails)1389_storage": {
+            "label": "struct Structure.DeliveryHubDetails",
+            "members": [
+              {
+                "label": "deliveryHub",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "deliveryHubLongitude",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "deliveryHubLatitude",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_struct(ManufactureDetails)1366_storage": {
+            "label": "struct Structure.ManufactureDetails",
+            "members": [
+              {
+                "label": "manufacturer",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "manufacturerName",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "manufacturerDetails",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "manufacturerLongitude",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "manufacturerLatitude",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "manufacturedDate",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(Product)1415_storage": {
+            "label": "struct Structure.Product",
+            "members": [
+              {
+                "label": "uid",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "sku",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "productState",
+                "type": "t_enum(State)1353",
+                "offset": 20,
+                "slot": "2"
+              },
+              {
+                "label": "manufacturer",
+                "type": "t_struct(ManufactureDetails)1366_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "thirdparty",
+                "type": "t_struct(ThirdPartyDetails)1382_storage",
+                "offset": 0,
+                "slot": "9"
+              },
+              {
+                "label": "productdet",
+                "type": "t_struct(ProductDetails)1375_storage",
+                "offset": 0,
+                "slot": "12"
+              },
+              {
+                "label": "deliveryhub",
+                "type": "t_struct(DeliveryHubDetails)1389_storage",
+                "offset": 0,
+                "slot": "16"
+              },
+              {
+                "label": "customer",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "19"
+              },
+              {
+                "label": "transaction",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "20"
+              }
+            ],
+            "numberOfBytes": "672"
+          },
+          "t_struct(ProductDetails)1375_storage": {
+            "label": "struct Structure.ProductDetails",
+            "members": [
+              {
+                "label": "productName",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "productCode",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "productPrice",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "productCategory",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_struct(ProductHistory)1420_storage": {
+            "label": "struct Structure.ProductHistory",
+            "members": [
+              {
+                "label": "history",
+                "type": "t_array(t_struct(Product)1415_storage)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(Roles)1429_storage": {
+            "label": "struct Structure.Roles",
+            "members": [
+              {
+                "label": "Manufacturer",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "ThirdParty",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "DeliveryHub",
+                "type": "t_bool",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "Customer",
+                "type": "t_bool",
+                "offset": 3,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(ThirdPartyDetails)1382_storage": {
+            "label": "struct Structure.ThirdPartyDetails",
+            "members": [
+              {
+                "label": "thirdParty",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "thirdPartyLongitude",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "thirdPartyLatitude",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    }
+  }
+}
