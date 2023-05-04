@@ -87,8 +87,8 @@ export default function PersistentDrawerLeft({ pageTitle,navItems, children }) {
   const [open, setOpen] = React.useState(true);
 
   useEffect(()=>{
-    console.log("addess",address)
-    console.log("chain",chain.id)
+    console.log("Your connected wallet",address)
+    console.log("Your connected blockchain ID",chain.id)
   },[])
 
   const handleDrawerOpen = () => {
