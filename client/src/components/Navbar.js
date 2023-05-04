@@ -86,6 +86,11 @@ export default function PersistentDrawerLeft({ pageTitle,navItems, children }) {
   const { chain, chains } = useNetwork()
   const [open, setOpen] = React.useState(true);
 
+  useEffect(()=>{
+    console.log("addess",address)
+    console.log("chain",chain.id)
+  },[])
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
