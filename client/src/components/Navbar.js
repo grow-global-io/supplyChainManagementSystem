@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -15,6 +15,8 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { Link } from "react-router-dom";
 import GitHubIcon from "@material-ui/icons/GitHub";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount, useNetwork } from 'wagmi';
 
 const drawerWidth = 240;
 
@@ -80,6 +82,8 @@ const useStyles = makeStyles((theme) => ({
 export default function PersistentDrawerLeft({ pageTitle,navItems, children }) {
   const classes = useStyles();
   const theme = useTheme();
+  const { address } = useAccount()
+  const { chain, chains } = useNetwork()
   const [open, setOpen] = React.useState(true);
 
   const handleDrawerOpen = () => {
@@ -120,6 +124,7 @@ export default function PersistentDrawerLeft({ pageTitle,navItems, children }) {
               style={{ height: "45px", width: "auto" }}
             />
             &nbsp;SupplyChain-Dapp
+            <ConnectButton showBalance={false} chainStatus="icon" />
           </Typography>
         </Toolbar>
       </AppBar>
