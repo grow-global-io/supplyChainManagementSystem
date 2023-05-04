@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.21 <0.9.0;
+pragma solidity ^0.8.7;
 
 import "./Structure.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
-contract SupplyChain {
+contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
     event ManufacturerAdded(address indexed _account);
 
     //product code
@@ -11,10 +15,17 @@ contract SupplyChain {
     uint256 sku;
 
     address owner;
-
     mapping(uint256 => Structure.Product) products;
     mapping(uint256 => Structure.ProductHistory) productHistory;
     mapping(address => Structure.Roles) roles;
+
+
+    function initialize() public initializer {
+        __Ownable_init();
+        owner = msg.sender;
+        sku = 1;
+        uid = 1;
+    }
 
     function hasManufacturerRole(address _account) public view returns (bool) {
         require(_account != address(0));
@@ -64,11 +75,6 @@ contract SupplyChain {
         roles[_account].Customer = true;
     }
 
-    constructor() public payable {
-        owner = msg.sender;
-        sku = 1;
-        uid = 1;
-    }
 
     event Manufactured(uint256 uid);
     event PurchasedByThirdParty(uint256 uid);

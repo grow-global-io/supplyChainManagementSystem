@@ -1,0 +1,2441 @@
+{
+  "version": "3.4",
+  "log": [
+    {
+      "contracts/Migrations.sol:Migrations": {
+        "src": "contracts/Migrations.sol:4",
+        "version": {
+          "withMetadata": "2f9abd8b269271d0ef45b4eced3d32763b5ccf3ee0b59c70f560ede0661377a4",
+          "withoutMetadata": "5c5f17f2d196df43d20114bcf4c8732530fb01a184fcaa4d75118168ceb9486a",
+          "linkedWithoutMetadata": "5c5f17f2d196df43d20114bcf4c8732530fb01a184fcaa4d75118168ceb9486a"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "()",
+          "setCompleted(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Migrations",
+            "src": "contracts/Migrations.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Migrations",
+              "src": "contracts/Migrations.sol:5"
+            },
+            {
+              "label": "last_completed_migration",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_uint256",
+              "contract": "Migrations",
+              "src": "contracts/Migrations.sol:6"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/Structure.sol:Structure": {
+        "src": "contracts/Structure.sol:4",
+        "version": {
+          "withMetadata": "4abd562d0e48aea4db9892d56b8e18304839986ee0f0f718a91538f41ea98955",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/SupplyChain.sol:SupplyChain": {
+        "src": "contracts/SupplyChain.sol:6",
+        "version": {
+          "withMetadata": "55facfc20b85ecc64973c9f16c57287ad70a72a58bd2024558748164489828f6",
+          "withoutMetadata": "b8dc0a4a6447758c8cf3ad58bd35b344ac8f7ed577493f383e790eb69a79c41c",
+          "linkedWithoutMetadata": "b8dc0a4a6447758c8cf3ad58bd35b344ac8f7ed577493f383e790eb69a79c41c"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/Structure.sol:Structure"
+        ],
+        "methods": [
+          "hasManufacturerRole(address)",
+          "addManufacturerRole(address)",
+          "hasThirdPartyRole(address)",
+          "addThirdPartyRole(address)",
+          "hasDeliveryHubRole(address)",
+          "addDeliveryHubRole(address)",
+          "hasCustomerRole(address)",
+          "addCustomerRole(address)",
+          "()",
+          "manufactureProduct(string,string,string,string,string,uint256,uint256,string)",
+          "purchaseByThirdParty(uint256)",
+          "shipToThirdParty(uint256)",
+          "receiveByThirdParty(uint256,string,string)",
+          "purchaseByCustomer(uint256)",
+          "shipByThirdParty(uint256)",
+          "receiveByDeliveryHub(uint256,string,string)",
+          "shipByDeliveryHub(uint256)",
+          "receiveByCustomer(uint256)",
+          "fetchProductPart1(uint256,string,uint256)",
+          "fetchProductPart2(uint256,string,uint256)",
+          "fetchProductPart3(uint256,string,uint256)",
+          "fetchProductCount()",
+          "fetchProductHistoryLength(uint256)",
+          "fetchProductState(uint256)",
+          "setTransactionHashOnManufacture(string)",
+          "setTransactionHash(uint256,string)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:66"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "uid",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_uint256",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:10"
+            },
+            {
+              "label": "sku",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_uint256",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:11"
+            },
+            {
+              "label": "owner",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_address",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:13"
+            },
+            {
+              "label": "products",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_mapping(t_uint256,t_struct(Product)110_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:14"
+            },
+            {
+              "label": "productHistory",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_uint256,t_struct(ProductHistory)115_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:15"
+            },
+            {
+              "label": "roles",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_address,t_struct(Roles)124_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:16"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_array(t_struct(Product)110_storage)dyn_storage": {
+              "label": "struct Structure.Product[]",
+              "numberOfBytes": "32"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_enum(State)48": {
+              "label": "enum Structure.State",
+              "members": [
+                "Manufactured",
+                "PurchasedByThirdParty",
+                "ShippedByManufacturer",
+                "ReceivedByThirdParty",
+                "PurchasedByCustomer",
+                "ShippedByThirdParty",
+                "ReceivedByDeliveryHub",
+                "ShippedByDeliveryHub",
+                "ReceivedByCustomer"
+              ],
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_struct(Roles)124_storage)": {
+              "label": "mapping(address => struct Structure.Roles)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_uint256,t_struct(Product)110_storage)": {
+              "label": "mapping(uint256 => struct Structure.Product)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_uint256,t_struct(ProductHistory)115_storage)": {
+              "label": "mapping(uint256 => struct Structure.ProductHistory)",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(DeliveryHubDetails)84_storage": {
+              "label": "struct Structure.DeliveryHubDetails",
+              "members": [
+                {
+                  "label": "deliveryHub",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "deliveryHubLongitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "deliveryHubLatitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "2"
+                }
+              ],
+              "numberOfBytes": "96"
+            },
+            "t_struct(ManufactureDetails)61_storage": {
+              "label": "struct Structure.ManufactureDetails",
+              "members": [
+                {
+                  "label": "manufacturer",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "manufacturerName",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "manufacturerDetails",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "manufacturerLongitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "manufacturerLatitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "4"
+                },
+                {
+                  "label": "manufacturedDate",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "5"
+                }
+              ],
+              "numberOfBytes": "192"
+            },
+            "t_struct(Product)110_storage": {
+              "label": "struct Structure.Product",
+              "members": [
+                {
+                  "label": "uid",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "sku",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "productState",
+                  "type": "t_enum(State)48",
+                  "offset": 20,
+                  "slot": "2"
+                },
+                {
+                  "label": "manufacturer",
+                  "type": "t_struct(ManufactureDetails)61_storage",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "thirdparty",
+                  "type": "t_struct(ThirdPartyDetails)77_storage",
+                  "offset": 0,
+                  "slot": "9"
+                },
+                {
+                  "label": "productdet",
+                  "type": "t_struct(ProductDetails)70_storage",
+                  "offset": 0,
+                  "slot": "12"
+                },
+                {
+                  "label": "deliveryhub",
+                  "type": "t_struct(DeliveryHubDetails)84_storage",
+                  "offset": 0,
+                  "slot": "16"
+                },
+                {
+                  "label": "customer",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "19"
+                },
+                {
+                  "label": "transaction",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "20"
+                }
+              ],
+              "numberOfBytes": "672"
+            },
+            "t_struct(ProductDetails)70_storage": {
+              "label": "struct Structure.ProductDetails",
+              "members": [
+                {
+                  "label": "productName",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "productCode",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "productPrice",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "productCategory",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_struct(ProductHistory)115_storage": {
+              "label": "struct Structure.ProductHistory",
+              "members": [
+                {
+                  "label": "history",
+                  "type": "t_array(t_struct(Product)110_storage)dyn_storage",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_struct(Roles)124_storage": {
+              "label": "struct Structure.Roles",
+              "members": [
+                {
+                  "label": "Manufacturer",
+                  "type": "t_bool",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "ThirdParty",
+                  "type": "t_bool",
+                  "offset": 1,
+                  "slot": "0"
+                },
+                {
+                  "label": "DeliveryHub",
+                  "type": "t_bool",
+                  "offset": 2,
+                  "slot": "0"
+                },
+                {
+                  "label": "Customer",
+                  "type": "t_bool",
+                  "offset": 3,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_struct(ThirdPartyDetails)77_storage": {
+              "label": "struct Structure.ThirdPartyDetails",
+              "members": [
+                {
+                  "label": "thirdParty",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "thirdPartyLongitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "thirdPartyLatitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "2"
+                }
+              ],
+              "numberOfBytes": "96"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Customer.sol:Customer": {
+        "src": "contracts/rolesUtils[deprecated]/Customer.sol:6",
+        "version": {
+          "withMetadata": "a771519def6515f0c74c253cf44689b14ed1bd37a89a824e3a510db063ba8540",
+          "withoutMetadata": "4d36536d4ba1c1605b25883f0497935f1a31e93791a855c4e24514a9f5ed4f34",
+          "linkedWithoutMetadata": "4d36536d4ba1c1605b25883f0497935f1a31e93791a855c4e24514a9f5ed4f34"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isCustomer(address)",
+          "addCustomer(address)",
+          "removeCustomer()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Customer",
+            "src": "contracts/rolesUtils[deprecated]/Customer.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "customersList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "Customer",
+              "src": "contracts/rolesUtils[deprecated]/Customer.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/DeliveryHub.sol:DeliveryHub": {
+        "src": "contracts/rolesUtils[deprecated]/DeliveryHub.sol:6",
+        "version": {
+          "withMetadata": "22ae3ca42327ea81772480277a415d89e5ca209f892a19768b9e5c5914a8b103",
+          "withoutMetadata": "2698a4280d1c35c4e434c7d821693d913dcc0caa284379d73933f0763389ae62",
+          "linkedWithoutMetadata": "2698a4280d1c35c4e434c7d821693d913dcc0caa284379d73933f0763389ae62"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isDeliveryHub(address)",
+          "addDeliveryHub(address)",
+          "removeDeliveryHub()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeliveryHub",
+            "src": "contracts/rolesUtils[deprecated]/DeliveryHub.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "deliveryHubsList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "DeliveryHub",
+              "src": "contracts/rolesUtils[deprecated]/DeliveryHub.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Manufacturer.sol:Manufacturer": {
+        "src": "contracts/rolesUtils[deprecated]/Manufacturer.sol:6",
+        "version": {
+          "withMetadata": "17362a90c34e73c2eaff3591ff72c962e7093f650276782f5790bbb09f691e4c",
+          "withoutMetadata": "5a8baf49fdcc397502145b8f26a3eb3aa329f3871b17c839d8112066800ed4fb",
+          "linkedWithoutMetadata": "5a8baf49fdcc397502145b8f26a3eb3aa329f3871b17c839d8112066800ed4fb"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isManufacturer(address)",
+          "addManufacturer(address)",
+          "removeManufacturer()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Manufacturer",
+            "src": "contracts/rolesUtils[deprecated]/Manufacturer.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "manufacturersList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "Manufacturer",
+              "src": "contracts/rolesUtils[deprecated]/Manufacturer.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Roles.sol:Roles": {
+        "src": "contracts/rolesUtils[deprecated]/Roles.sol:8",
+        "version": {
+          "withMetadata": "38b7751482d8b455ba36f6e108e1e5c15faa8c7adf1d3e8d56f63852bef0f9a3",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/SortationHub.sol:SortationHub": {
+        "src": "contracts/rolesUtils[deprecated]/SortationHub.sol:6",
+        "version": {
+          "withMetadata": "efe459291d1d9914ee58ba4b502491ac1fef2e47f16bdc5f68dead7388e1b432",
+          "withoutMetadata": "de405c26f6ead5d2174b286c0324c3efefe4e4dafe29c076caf8484ed0f8ee55",
+          "linkedWithoutMetadata": "de405c26f6ead5d2174b286c0324c3efefe4e4dafe29c076caf8484ed0f8ee55"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isSortationHub(address)",
+          "addSortationHub(address)",
+          "removeSortationHub()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "SortationHub",
+            "src": "contracts/rolesUtils[deprecated]/SortationHub.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "sortationHubsList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "SortationHub",
+              "src": "contracts/rolesUtils[deprecated]/SortationHub.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Thirdparty.sol:Thirdparty": {
+        "src": "contracts/rolesUtils[deprecated]/Thirdparty.sol:6",
+        "version": {
+          "withMetadata": "6c5aaad77c816b38d914dbed3b2fcec5864ae94757f65f0a320b90a1ebc4a307",
+          "withoutMetadata": "86eeb64f8933837ef911902031c819c577bd7db78d67247d0503b8a13529e883",
+          "linkedWithoutMetadata": "86eeb64f8933837ef911902031c819c577bd7db78d67247d0503b8a13529e883"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isThirdparty(address)",
+          "addThirdparty(address)",
+          "removeThirdparty()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Thirdparty",
+            "src": "contracts/rolesUtils[deprecated]/Thirdparty.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "thirdpartysList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "Thirdparty",
+              "src": "contracts/rolesUtils[deprecated]/Thirdparty.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      }
+    },
+    {
+      "contracts/Migrations.sol:Migrations": {
+        "src": "contracts/Migrations.sol:4",
+        "version": {
+          "withMetadata": "2f9abd8b269271d0ef45b4eced3d32763b5ccf3ee0b59c70f560ede0661377a4",
+          "withoutMetadata": "5c5f17f2d196df43d20114bcf4c8732530fb01a184fcaa4d75118168ceb9486a",
+          "linkedWithoutMetadata": "5c5f17f2d196df43d20114bcf4c8732530fb01a184fcaa4d75118168ceb9486a"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "()",
+          "setCompleted(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Migrations",
+            "src": "contracts/Migrations.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Migrations",
+              "src": "contracts/Migrations.sol:5"
+            },
+            {
+              "label": "last_completed_migration",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_uint256",
+              "contract": "Migrations",
+              "src": "contracts/Migrations.sol:6"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/Structure.sol:Structure": {
+        "src": "contracts/Structure.sol:4",
+        "version": {
+          "withMetadata": "4abd562d0e48aea4db9892d56b8e18304839986ee0f0f718a91538f41ea98955",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/SupplyChain.sol:SupplyChain": {
+        "src": "contracts/SupplyChain.sol:6",
+        "version": {
+          "withMetadata": "55facfc20b85ecc64973c9f16c57287ad70a72a58bd2024558748164489828f6",
+          "withoutMetadata": "b8dc0a4a6447758c8cf3ad58bd35b344ac8f7ed577493f383e790eb69a79c41c",
+          "linkedWithoutMetadata": "b8dc0a4a6447758c8cf3ad58bd35b344ac8f7ed577493f383e790eb69a79c41c"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/Structure.sol:Structure"
+        ],
+        "methods": [
+          "hasManufacturerRole(address)",
+          "addManufacturerRole(address)",
+          "hasThirdPartyRole(address)",
+          "addThirdPartyRole(address)",
+          "hasDeliveryHubRole(address)",
+          "addDeliveryHubRole(address)",
+          "hasCustomerRole(address)",
+          "addCustomerRole(address)",
+          "()",
+          "manufactureProduct(string,string,string,string,string,uint256,uint256,string)",
+          "purchaseByThirdParty(uint256)",
+          "shipToThirdParty(uint256)",
+          "receiveByThirdParty(uint256,string,string)",
+          "purchaseByCustomer(uint256)",
+          "shipByThirdParty(uint256)",
+          "receiveByDeliveryHub(uint256,string,string)",
+          "shipByDeliveryHub(uint256)",
+          "receiveByCustomer(uint256)",
+          "fetchProductPart1(uint256,string,uint256)",
+          "fetchProductPart2(uint256,string,uint256)",
+          "fetchProductPart3(uint256,string,uint256)",
+          "fetchProductCount()",
+          "fetchProductHistoryLength(uint256)",
+          "fetchProductState(uint256)",
+          "setTransactionHashOnManufacture(string)",
+          "setTransactionHash(uint256,string)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:66"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "uid",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_uint256",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:10"
+            },
+            {
+              "label": "sku",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_uint256",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:11"
+            },
+            {
+              "label": "owner",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_address",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:13"
+            },
+            {
+              "label": "products",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_mapping(t_uint256,t_struct(Product)110_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:14"
+            },
+            {
+              "label": "productHistory",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_uint256,t_struct(ProductHistory)115_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:15"
+            },
+            {
+              "label": "roles",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_address,t_struct(Roles)124_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:16"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_array(t_struct(Product)110_storage)dyn_storage": {
+              "label": "struct Structure.Product[]",
+              "numberOfBytes": "32"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_enum(State)48": {
+              "label": "enum Structure.State",
+              "members": [
+                "Manufactured",
+                "PurchasedByThirdParty",
+                "ShippedByManufacturer",
+                "ReceivedByThirdParty",
+                "PurchasedByCustomer",
+                "ShippedByThirdParty",
+                "ReceivedByDeliveryHub",
+                "ShippedByDeliveryHub",
+                "ReceivedByCustomer"
+              ],
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_struct(Roles)124_storage)": {
+              "label": "mapping(address => struct Structure.Roles)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_uint256,t_struct(Product)110_storage)": {
+              "label": "mapping(uint256 => struct Structure.Product)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_uint256,t_struct(ProductHistory)115_storage)": {
+              "label": "mapping(uint256 => struct Structure.ProductHistory)",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(DeliveryHubDetails)84_storage": {
+              "label": "struct Structure.DeliveryHubDetails",
+              "members": [
+                {
+                  "label": "deliveryHub",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "deliveryHubLongitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "deliveryHubLatitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "2"
+                }
+              ],
+              "numberOfBytes": "96"
+            },
+            "t_struct(ManufactureDetails)61_storage": {
+              "label": "struct Structure.ManufactureDetails",
+              "members": [
+                {
+                  "label": "manufacturer",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "manufacturerName",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "manufacturerDetails",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "manufacturerLongitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "manufacturerLatitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "4"
+                },
+                {
+                  "label": "manufacturedDate",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "5"
+                }
+              ],
+              "numberOfBytes": "192"
+            },
+            "t_struct(Product)110_storage": {
+              "label": "struct Structure.Product",
+              "members": [
+                {
+                  "label": "uid",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "sku",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "productState",
+                  "type": "t_enum(State)48",
+                  "offset": 20,
+                  "slot": "2"
+                },
+                {
+                  "label": "manufacturer",
+                  "type": "t_struct(ManufactureDetails)61_storage",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "thirdparty",
+                  "type": "t_struct(ThirdPartyDetails)77_storage",
+                  "offset": 0,
+                  "slot": "9"
+                },
+                {
+                  "label": "productdet",
+                  "type": "t_struct(ProductDetails)70_storage",
+                  "offset": 0,
+                  "slot": "12"
+                },
+                {
+                  "label": "deliveryhub",
+                  "type": "t_struct(DeliveryHubDetails)84_storage",
+                  "offset": 0,
+                  "slot": "16"
+                },
+                {
+                  "label": "customer",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "19"
+                },
+                {
+                  "label": "transaction",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "20"
+                }
+              ],
+              "numberOfBytes": "672"
+            },
+            "t_struct(ProductDetails)70_storage": {
+              "label": "struct Structure.ProductDetails",
+              "members": [
+                {
+                  "label": "productName",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "productCode",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "productPrice",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "productCategory",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_struct(ProductHistory)115_storage": {
+              "label": "struct Structure.ProductHistory",
+              "members": [
+                {
+                  "label": "history",
+                  "type": "t_array(t_struct(Product)110_storage)dyn_storage",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_struct(Roles)124_storage": {
+              "label": "struct Structure.Roles",
+              "members": [
+                {
+                  "label": "Manufacturer",
+                  "type": "t_bool",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "ThirdParty",
+                  "type": "t_bool",
+                  "offset": 1,
+                  "slot": "0"
+                },
+                {
+                  "label": "DeliveryHub",
+                  "type": "t_bool",
+                  "offset": 2,
+                  "slot": "0"
+                },
+                {
+                  "label": "Customer",
+                  "type": "t_bool",
+                  "offset": 3,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_struct(ThirdPartyDetails)77_storage": {
+              "label": "struct Structure.ThirdPartyDetails",
+              "members": [
+                {
+                  "label": "thirdParty",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "thirdPartyLongitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "thirdPartyLatitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "2"
+                }
+              ],
+              "numberOfBytes": "96"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Customer.sol:Customer": {
+        "src": "contracts/rolesUtils[deprecated]/Customer.sol:6",
+        "version": {
+          "withMetadata": "a771519def6515f0c74c253cf44689b14ed1bd37a89a824e3a510db063ba8540",
+          "withoutMetadata": "4d36536d4ba1c1605b25883f0497935f1a31e93791a855c4e24514a9f5ed4f34",
+          "linkedWithoutMetadata": "4d36536d4ba1c1605b25883f0497935f1a31e93791a855c4e24514a9f5ed4f34"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isCustomer(address)",
+          "addCustomer(address)",
+          "removeCustomer()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Customer",
+            "src": "contracts/rolesUtils[deprecated]/Customer.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "customersList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "Customer",
+              "src": "contracts/rolesUtils[deprecated]/Customer.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/DeliveryHub.sol:DeliveryHub": {
+        "src": "contracts/rolesUtils[deprecated]/DeliveryHub.sol:6",
+        "version": {
+          "withMetadata": "22ae3ca42327ea81772480277a415d89e5ca209f892a19768b9e5c5914a8b103",
+          "withoutMetadata": "2698a4280d1c35c4e434c7d821693d913dcc0caa284379d73933f0763389ae62",
+          "linkedWithoutMetadata": "2698a4280d1c35c4e434c7d821693d913dcc0caa284379d73933f0763389ae62"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isDeliveryHub(address)",
+          "addDeliveryHub(address)",
+          "removeDeliveryHub()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeliveryHub",
+            "src": "contracts/rolesUtils[deprecated]/DeliveryHub.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "deliveryHubsList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "DeliveryHub",
+              "src": "contracts/rolesUtils[deprecated]/DeliveryHub.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Manufacturer.sol:Manufacturer": {
+        "src": "contracts/rolesUtils[deprecated]/Manufacturer.sol:6",
+        "version": {
+          "withMetadata": "17362a90c34e73c2eaff3591ff72c962e7093f650276782f5790bbb09f691e4c",
+          "withoutMetadata": "5a8baf49fdcc397502145b8f26a3eb3aa329f3871b17c839d8112066800ed4fb",
+          "linkedWithoutMetadata": "5a8baf49fdcc397502145b8f26a3eb3aa329f3871b17c839d8112066800ed4fb"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isManufacturer(address)",
+          "addManufacturer(address)",
+          "removeManufacturer()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Manufacturer",
+            "src": "contracts/rolesUtils[deprecated]/Manufacturer.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "manufacturersList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "Manufacturer",
+              "src": "contracts/rolesUtils[deprecated]/Manufacturer.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Roles.sol:Roles": {
+        "src": "contracts/rolesUtils[deprecated]/Roles.sol:8",
+        "version": {
+          "withMetadata": "38b7751482d8b455ba36f6e108e1e5c15faa8c7adf1d3e8d56f63852bef0f9a3",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/SortationHub.sol:SortationHub": {
+        "src": "contracts/rolesUtils[deprecated]/SortationHub.sol:6",
+        "version": {
+          "withMetadata": "efe459291d1d9914ee58ba4b502491ac1fef2e47f16bdc5f68dead7388e1b432",
+          "withoutMetadata": "de405c26f6ead5d2174b286c0324c3efefe4e4dafe29c076caf8484ed0f8ee55",
+          "linkedWithoutMetadata": "de405c26f6ead5d2174b286c0324c3efefe4e4dafe29c076caf8484ed0f8ee55"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isSortationHub(address)",
+          "addSortationHub(address)",
+          "removeSortationHub()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "SortationHub",
+            "src": "contracts/rolesUtils[deprecated]/SortationHub.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "sortationHubsList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "SortationHub",
+              "src": "contracts/rolesUtils[deprecated]/SortationHub.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Thirdparty.sol:Thirdparty": {
+        "src": "contracts/rolesUtils[deprecated]/Thirdparty.sol:6",
+        "version": {
+          "withMetadata": "6c5aaad77c816b38d914dbed3b2fcec5864ae94757f65f0a320b90a1ebc4a307",
+          "withoutMetadata": "86eeb64f8933837ef911902031c819c577bd7db78d67247d0503b8a13529e883",
+          "linkedWithoutMetadata": "86eeb64f8933837ef911902031c819c577bd7db78d67247d0503b8a13529e883"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isThirdparty(address)",
+          "addThirdparty(address)",
+          "removeThirdparty()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Thirdparty",
+            "src": "contracts/rolesUtils[deprecated]/Thirdparty.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "thirdpartysList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "Thirdparty",
+              "src": "contracts/rolesUtils[deprecated]/Thirdparty.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      }
+    },
+    {
+      "contracts/Migrations.sol:Migrations": {
+        "src": "contracts/Migrations.sol:4",
+        "version": {
+          "withMetadata": "2f9abd8b269271d0ef45b4eced3d32763b5ccf3ee0b59c70f560ede0661377a4",
+          "withoutMetadata": "5c5f17f2d196df43d20114bcf4c8732530fb01a184fcaa4d75118168ceb9486a",
+          "linkedWithoutMetadata": "5c5f17f2d196df43d20114bcf4c8732530fb01a184fcaa4d75118168ceb9486a"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "()",
+          "setCompleted(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Migrations",
+            "src": "contracts/Migrations.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Migrations",
+              "src": "contracts/Migrations.sol:5"
+            },
+            {
+              "label": "last_completed_migration",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_uint256",
+              "contract": "Migrations",
+              "src": "contracts/Migrations.sol:6"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/Structure.sol:Structure": {
+        "src": "contracts/Structure.sol:4",
+        "version": {
+          "withMetadata": "4abd562d0e48aea4db9892d56b8e18304839986ee0f0f718a91538f41ea98955",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/SupplyChain.sol:SupplyChain": {
+        "src": "contracts/SupplyChain.sol:6",
+        "version": {
+          "withMetadata": "55facfc20b85ecc64973c9f16c57287ad70a72a58bd2024558748164489828f6",
+          "withoutMetadata": "b8dc0a4a6447758c8cf3ad58bd35b344ac8f7ed577493f383e790eb69a79c41c",
+          "linkedWithoutMetadata": "b8dc0a4a6447758c8cf3ad58bd35b344ac8f7ed577493f383e790eb69a79c41c"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/Structure.sol:Structure"
+        ],
+        "methods": [
+          "hasManufacturerRole(address)",
+          "addManufacturerRole(address)",
+          "hasThirdPartyRole(address)",
+          "addThirdPartyRole(address)",
+          "hasDeliveryHubRole(address)",
+          "addDeliveryHubRole(address)",
+          "hasCustomerRole(address)",
+          "addCustomerRole(address)",
+          "()",
+          "manufactureProduct(string,string,string,string,string,uint256,uint256,string)",
+          "purchaseByThirdParty(uint256)",
+          "shipToThirdParty(uint256)",
+          "receiveByThirdParty(uint256,string,string)",
+          "purchaseByCustomer(uint256)",
+          "shipByThirdParty(uint256)",
+          "receiveByDeliveryHub(uint256,string,string)",
+          "shipByDeliveryHub(uint256)",
+          "receiveByCustomer(uint256)",
+          "fetchProductPart1(uint256,string,uint256)",
+          "fetchProductPart2(uint256,string,uint256)",
+          "fetchProductPart3(uint256,string,uint256)",
+          "fetchProductCount()",
+          "fetchProductHistoryLength(uint256)",
+          "fetchProductState(uint256)",
+          "setTransactionHashOnManufacture(string)",
+          "setTransactionHash(uint256,string)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:66"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "uid",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_uint256",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:10"
+            },
+            {
+              "label": "sku",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_uint256",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:11"
+            },
+            {
+              "label": "owner",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_address",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:13"
+            },
+            {
+              "label": "products",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_mapping(t_uint256,t_struct(Product)110_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:14"
+            },
+            {
+              "label": "productHistory",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_uint256,t_struct(ProductHistory)115_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:15"
+            },
+            {
+              "label": "roles",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_address,t_struct(Roles)124_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:16"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_array(t_struct(Product)110_storage)dyn_storage": {
+              "label": "struct Structure.Product[]",
+              "numberOfBytes": "32"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_enum(State)48": {
+              "label": "enum Structure.State",
+              "members": [
+                "Manufactured",
+                "PurchasedByThirdParty",
+                "ShippedByManufacturer",
+                "ReceivedByThirdParty",
+                "PurchasedByCustomer",
+                "ShippedByThirdParty",
+                "ReceivedByDeliveryHub",
+                "ShippedByDeliveryHub",
+                "ReceivedByCustomer"
+              ],
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_struct(Roles)124_storage)": {
+              "label": "mapping(address => struct Structure.Roles)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_uint256,t_struct(Product)110_storage)": {
+              "label": "mapping(uint256 => struct Structure.Product)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_uint256,t_struct(ProductHistory)115_storage)": {
+              "label": "mapping(uint256 => struct Structure.ProductHistory)",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(DeliveryHubDetails)84_storage": {
+              "label": "struct Structure.DeliveryHubDetails",
+              "members": [
+                {
+                  "label": "deliveryHub",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "deliveryHubLongitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "deliveryHubLatitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "2"
+                }
+              ],
+              "numberOfBytes": "96"
+            },
+            "t_struct(ManufactureDetails)61_storage": {
+              "label": "struct Structure.ManufactureDetails",
+              "members": [
+                {
+                  "label": "manufacturer",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "manufacturerName",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "manufacturerDetails",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "manufacturerLongitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "manufacturerLatitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "4"
+                },
+                {
+                  "label": "manufacturedDate",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "5"
+                }
+              ],
+              "numberOfBytes": "192"
+            },
+            "t_struct(Product)110_storage": {
+              "label": "struct Structure.Product",
+              "members": [
+                {
+                  "label": "uid",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "sku",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "productState",
+                  "type": "t_enum(State)48",
+                  "offset": 20,
+                  "slot": "2"
+                },
+                {
+                  "label": "manufacturer",
+                  "type": "t_struct(ManufactureDetails)61_storage",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "thirdparty",
+                  "type": "t_struct(ThirdPartyDetails)77_storage",
+                  "offset": 0,
+                  "slot": "9"
+                },
+                {
+                  "label": "productdet",
+                  "type": "t_struct(ProductDetails)70_storage",
+                  "offset": 0,
+                  "slot": "12"
+                },
+                {
+                  "label": "deliveryhub",
+                  "type": "t_struct(DeliveryHubDetails)84_storage",
+                  "offset": 0,
+                  "slot": "16"
+                },
+                {
+                  "label": "customer",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "19"
+                },
+                {
+                  "label": "transaction",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "20"
+                }
+              ],
+              "numberOfBytes": "672"
+            },
+            "t_struct(ProductDetails)70_storage": {
+              "label": "struct Structure.ProductDetails",
+              "members": [
+                {
+                  "label": "productName",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "productCode",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "productPrice",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "productCategory",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_struct(ProductHistory)115_storage": {
+              "label": "struct Structure.ProductHistory",
+              "members": [
+                {
+                  "label": "history",
+                  "type": "t_array(t_struct(Product)110_storage)dyn_storage",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_struct(Roles)124_storage": {
+              "label": "struct Structure.Roles",
+              "members": [
+                {
+                  "label": "Manufacturer",
+                  "type": "t_bool",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "ThirdParty",
+                  "type": "t_bool",
+                  "offset": 1,
+                  "slot": "0"
+                },
+                {
+                  "label": "DeliveryHub",
+                  "type": "t_bool",
+                  "offset": 2,
+                  "slot": "0"
+                },
+                {
+                  "label": "Customer",
+                  "type": "t_bool",
+                  "offset": 3,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_struct(ThirdPartyDetails)77_storage": {
+              "label": "struct Structure.ThirdPartyDetails",
+              "members": [
+                {
+                  "label": "thirdParty",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "thirdPartyLongitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "thirdPartyLatitude",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "2"
+                }
+              ],
+              "numberOfBytes": "96"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Customer.sol:Customer": {
+        "src": "contracts/rolesUtils[deprecated]/Customer.sol:6",
+        "version": {
+          "withMetadata": "a771519def6515f0c74c253cf44689b14ed1bd37a89a824e3a510db063ba8540",
+          "withoutMetadata": "4d36536d4ba1c1605b25883f0497935f1a31e93791a855c4e24514a9f5ed4f34",
+          "linkedWithoutMetadata": "4d36536d4ba1c1605b25883f0497935f1a31e93791a855c4e24514a9f5ed4f34"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isCustomer(address)",
+          "addCustomer(address)",
+          "removeCustomer()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Customer",
+            "src": "contracts/rolesUtils[deprecated]/Customer.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "customersList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "Customer",
+              "src": "contracts/rolesUtils[deprecated]/Customer.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/DeliveryHub.sol:DeliveryHub": {
+        "src": "contracts/rolesUtils[deprecated]/DeliveryHub.sol:6",
+        "version": {
+          "withMetadata": "22ae3ca42327ea81772480277a415d89e5ca209f892a19768b9e5c5914a8b103",
+          "withoutMetadata": "2698a4280d1c35c4e434c7d821693d913dcc0caa284379d73933f0763389ae62",
+          "linkedWithoutMetadata": "2698a4280d1c35c4e434c7d821693d913dcc0caa284379d73933f0763389ae62"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isDeliveryHub(address)",
+          "addDeliveryHub(address)",
+          "removeDeliveryHub()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeliveryHub",
+            "src": "contracts/rolesUtils[deprecated]/DeliveryHub.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "deliveryHubsList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "DeliveryHub",
+              "src": "contracts/rolesUtils[deprecated]/DeliveryHub.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Manufacturer.sol:Manufacturer": {
+        "src": "contracts/rolesUtils[deprecated]/Manufacturer.sol:6",
+        "version": {
+          "withMetadata": "17362a90c34e73c2eaff3591ff72c962e7093f650276782f5790bbb09f691e4c",
+          "withoutMetadata": "5a8baf49fdcc397502145b8f26a3eb3aa329f3871b17c839d8112066800ed4fb",
+          "linkedWithoutMetadata": "5a8baf49fdcc397502145b8f26a3eb3aa329f3871b17c839d8112066800ed4fb"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isManufacturer(address)",
+          "addManufacturer(address)",
+          "removeManufacturer()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Manufacturer",
+            "src": "contracts/rolesUtils[deprecated]/Manufacturer.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "manufacturersList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "Manufacturer",
+              "src": "contracts/rolesUtils[deprecated]/Manufacturer.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Roles.sol:Roles": {
+        "src": "contracts/rolesUtils[deprecated]/Roles.sol:8",
+        "version": {
+          "withMetadata": "38b7751482d8b455ba36f6e108e1e5c15faa8c7adf1d3e8d56f63852bef0f9a3",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/SortationHub.sol:SortationHub": {
+        "src": "contracts/rolesUtils[deprecated]/SortationHub.sol:6",
+        "version": {
+          "withMetadata": "efe459291d1d9914ee58ba4b502491ac1fef2e47f16bdc5f68dead7388e1b432",
+          "withoutMetadata": "de405c26f6ead5d2174b286c0324c3efefe4e4dafe29c076caf8484ed0f8ee55",
+          "linkedWithoutMetadata": "de405c26f6ead5d2174b286c0324c3efefe4e4dafe29c076caf8484ed0f8ee55"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isSortationHub(address)",
+          "addSortationHub(address)",
+          "removeSortationHub()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "SortationHub",
+            "src": "contracts/rolesUtils[deprecated]/SortationHub.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "sortationHubsList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "SortationHub",
+              "src": "contracts/rolesUtils[deprecated]/SortationHub.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      },
+      "contracts/rolesUtils[deprecated]/Thirdparty.sol:Thirdparty": {
+        "src": "contracts/rolesUtils[deprecated]/Thirdparty.sol:6",
+        "version": {
+          "withMetadata": "6c5aaad77c816b38d914dbed3b2fcec5864ae94757f65f0a320b90a1ebc4a307",
+          "withoutMetadata": "86eeb64f8933837ef911902031c819c577bd7db78d67247d0503b8a13529e883",
+          "linkedWithoutMetadata": "86eeb64f8933837ef911902031c819c577bd7db78d67247d0503b8a13529e883"
+        },
+        "inherit": [],
+        "libraries": [
+          "contracts/rolesUtils[deprecated]/Roles.sol:Roles"
+        ],
+        "methods": [
+          "()",
+          "isThirdparty(address)",
+          "addThirdparty(address)",
+          "removeThirdparty()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Thirdparty",
+            "src": "contracts/rolesUtils[deprecated]/Thirdparty.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "thirdpartysList",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_struct(Role)2019_storage",
+              "contract": "Thirdparty",
+              "src": "contracts/rolesUtils[deprecated]/Thirdparty.sol:12"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Role)2019_storage": {
+              "label": "struct Roles.Role",
+              "members": [
+                {
+                  "label": "list",
+                  "type": "t_mapping(t_address,t_bool)",
+                  "offset": 0,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.7"
+      }
+    }
+  ]
+}
