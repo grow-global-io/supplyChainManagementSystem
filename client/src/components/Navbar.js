@@ -201,7 +201,7 @@ export default function PersistentDrawerLeft({ pageTitle,navItems, children }) {
               borderTop: "1px solid #44a",
             }}
           >
-            By Team Akatsuki &nbsp;&nbsp;
+            By Team GrowGlobal &nbsp;&nbsp;
             <a
               style={{ textDecoration: "none" }}
               href="https://github.com/rishav4101/eth-supplychain-dapp"
