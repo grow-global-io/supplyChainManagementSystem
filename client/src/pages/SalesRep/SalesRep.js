@@ -14,8 +14,6 @@ import {
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
 const navItem = [
-  ["Receive Product", "/DeliveryHub/receive"],
-  ["Ship Product", "/DeliveryHub/ship"],
 ];
 export const SalesRep = () => {
   const [show, setShow] = useState(false);

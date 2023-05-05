@@ -83,6 +83,19 @@ export default function Home() {
                     SalesRep
                   </Button>
                 </Link>
+                <Link
+                  to="/productionManager"
+                  style={{ textDecoration: "none", color: "#fff" }}
+                >
+                  <Button
+                    className={classes.HomeBtn}
+                    size="large"
+                    variant="outlined"
+                    color="primary"
+                  >
+                    Production Manager
+                  </Button>
+                </Link>
                 
               </div>
             </Grid>
