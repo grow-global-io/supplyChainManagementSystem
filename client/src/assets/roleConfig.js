@@ -1,13 +1,45 @@
 const roleConfig = {
 
-    salesRep: "Sales Representative",
-    poAgent: "Purchase Order Agent",
-    trdVendor: "Third Party Vendor",
-    whMan: "Ware House Manager",
-    finance: "Finance",
-    prodMan: "Production manager",
-    batchMan: "Batch Manager",
-    logMan: "Logistic Manager",
+    "1": [
+        {
+            name: "Sales Representative",
+        }
+    ],
+    "2": [
+        {
+            name: "Purchase Order Agent",
+        }
+    ],
+    "3": [
+        {
+            name: "Third Party Vendor",
+        }
+    ],
+    "4": [
+        {
+            name: "Ware House Manager",
+        }
+    ],
+    "5": [
+        {
+            name: "Finance",
+        }
+    ],
+    "6": [
+        {
+            name: "Production manager",
+        }
+    ],
+    "7": [
+        {
+            name: "Batch Manager",
+        }
+    ],
+    "8": [
+        {
+            name: "Logistic Manager",
+        }
+    ]
 }
 
-export const getRole = () => roleConfig;
+export const getRole = (roleId) => roleConfig[roleId];

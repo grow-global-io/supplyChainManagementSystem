@@ -1,13 +1,18 @@
-import React from "react";
+import React,{useEffect} from "react";
 import Navbar from "../components/Navbar";
 import Button from "@material-ui/core/Button";
 import { useStyles } from "../components/Styles";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
+import {getRole} from '../assets/roleConfig'
 
 export default function Home() {
   const classes = useStyles();
   const navItem = [];
+useEffect(()=>{
+  console.log("role2",getRole(1)[0].name)
+},[])
+  
 
   return (
     <>
@@ -71,7 +76,7 @@ export default function Home() {
 
                 <h1 className={classes.pageHeading}>Visit As</h1>
                 <Link
-                  to="/salesRep"
+                  to="/SalesRep"
                   style={{ textDecoration: "none", color: "#fff" }}
                 >
                   <Button
@@ -80,11 +85,11 @@ export default function Home() {
                     variant="outlined"
                     color="primary"
                   >
-                    SalesRep
+                    {getRole(1)[0].name}
                   </Button>
                 </Link>
                 <Link
-                  to="/productionManager"
+                  to="/ProductionManager"
                   style={{ textDecoration: "none", color: "#fff" }}
                 >
                   <Button
@@ -93,10 +98,35 @@ export default function Home() {
                     variant="outlined"
                     color="primary"
                   >
-                    Production Manager
+                    {getRole(2)[0].name}
                   </Button>
                 </Link>
-                
+                <Link
+                  to="/DeliveryHub/receive"
+                  style={{ textDecoration: "none", color: "#fff" }}
+                >
+                  <Button
+                    className={classes.HomeBtn}
+                    size="large"
+                    variant="outlined"
+                    color="primary"
+                  >
+                    {getRole(3)[0].name}
+                  </Button>
+                </Link>
+                <Link
+                  to="/Customer/buy"
+                  style={{ textDecoration: "none", color: "#fff" }}
+                >
+                  <Button
+                    className={classes.HomeBtn}
+                    size="large"
+                    variant="outlined"
+                    color="primary"
+                  >
+                    {getRole(4)[0].name}
+                  </Button>
+                </Link>
               </div>
             </Grid>
           </Grid>

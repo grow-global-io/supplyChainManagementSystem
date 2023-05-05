@@ -6,11 +6,22 @@ import { useRole } from "../context/RoleDataContext";
 import { useStyles } from "../components/Styles";
 import { ethers } from 'ethers';
 import { getConfigByChain } from '../assets/config'
-import { getRole } from '../assets/roleConfig'
+import {getRole}  from '../assets/roleConfig'
 import BigNumber from 'bignumber.js'
 import toast, { Toaster } from 'react-hot-toast'
 import SuppChain from '../artifacts/contracts/SupplyChain.sol/SupplyChain.json'
 import RingLoader from "react-spinners/RingLoader";
+import * as walkingMan from "../assets/walkingMan.json";
+import Lottie from "react-lottie";
+
+const walkingManLoader = {
+  loop: true,
+  autoplay: true,
+  animationData: walkingMan,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
 
 function RoleAdmin(props) {
   const accounts = props.accounts;
@@ -18,6 +29,7 @@ function RoleAdmin(props) {
   const classes = useStyles();
   const navItem = [];
   const [loading, setLoading] = useState(false)
+  const [loaderSize, setLoaderSize] = useState(320);
   const [formInput, updateFormInput] = useState({
     salesRep: '',
     poAgent: "",
@@ -38,6 +50,7 @@ function RoleAdmin(props) {
         SuppChain.abi,
         signer
       )
+      
       const tx = await suppContract.addRole(myAddress, role)
       
       toast('Role Assignment in progress !!', { icon: '👏' })
@@ -59,7 +72,14 @@ function RoleAdmin(props) {
       <Toaster position='top-center' reverseOrder='false' />
       <ResponsiveDrawer navItems={navItem}>
         {loading === true ? (
-          <RingLoader color='#000000' loading={loading} size={50} />
+          <>
+          <Lottie
+            options={walkingManLoader}
+            height={loaderSize}
+            width={loaderSize}
+          />
+          I am carrying your data to store it. Please Wait !!
+          </>
         ) : (
           <div className={classes.FormWrap}>
             <h1 className={classes.pageHeading}>Add Roles</h1>
@@ -82,10 +102,10 @@ function RoleAdmin(props) {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleAddRole(formInput.salesRep, getRole().salesRep)}
+                    onClick={() => handleAddRole(formInput.salesRep, getRole(1)[0].name)}
                   style={{ width: "30%", marginLeft: "10px" }}
                 >
-                  Add Sales Representative
+                    Add {getRole(1)[0].name}
                 </Button>
               </div>
             </form>
@@ -108,10 +128,10 @@ function RoleAdmin(props) {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleAddRole(formInput.poAgent, getRole().poAgent)}
+                    onClick={() => handleAddRole(formInput.poAgent, getRole(2)[0].name)}
                   style={{ width: "30%", marginLeft: "10px" }}
                 >
-                  Add PO Agent
+                    Add {getRole(2)[0].name}
                 </Button>
               </div>
             </form>
@@ -134,10 +154,10 @@ function RoleAdmin(props) {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleAddRole(formInput.trdPartyVendor, getRole().trdVendor)}
+                    onClick={() => handleAddRole(formInput.trdPartyVendor, getRole(3)[0].name)}
                   style={{ width: "30%", marginLeft: "10px" }}
                 >
-                  Add Vendor
+                    Add {getRole(3)[0].name}
                 </Button>
               </div>
             </form>
@@ -160,10 +180,10 @@ function RoleAdmin(props) {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleAddRole(formInput.wareHouseManager, getRole().whMan)}
+                    onClick={() => handleAddRole(formInput.wareHouseManager, getRole(4)[0].name)}
                   style={{ width: "30%", marginLeft: "10px" }}
                 >
-                  Add WareHouse Manager
+                    Add {getRole(4)[0].name}
                 </Button>
               </div>
             </form>
