@@ -71,7 +71,7 @@ export default function Home() {
 
                 <h1 className={classes.pageHeading}>Visit As</h1>
                 <Link
-                  to="/manufacturer/manufacture"
+                  to="/salesRep"
                   style={{ textDecoration: "none", color: "#fff" }}
                 >
                   <Button
@@ -80,46 +80,7 @@ export default function Home() {
                     variant="outlined"
                     color="primary"
                   >
-                    Manufacturer
-                  </Button>
-                </Link>
-                <Link
-                  to="/ThirdParty/allProducts"
-                  style={{ textDecoration: "none", color: "#fff" }}
-                >
-                  <Button
-                    className={classes.HomeBtn}
-                    size="large"
-                    variant="outlined"
-                    color="primary"
-                  >
-                    Third party
-                  </Button>
-                </Link>
-                <Link
-                  to="/DeliveryHub/receive"
-                  style={{ textDecoration: "none", color: "#fff" }}
-                >
-                  <Button
-                    className={classes.HomeBtn}
-                    size="large"
-                    variant="outlined"
-                    color="primary"
-                  >
-                    delivery hub
-                  </Button>
-                </Link>
-                <Link
-                  to="/Customer/buy"
-                  style={{ textDecoration: "none", color: "#fff" }}
-                >
-                  <Button
-                    className={classes.HomeBtn}
-                    size="large"
-                    variant="outlined"
-                    color="primary"
-                  >
-                    customer
+                    SalesRep
                   </Button>
                 </Link>
               </div>

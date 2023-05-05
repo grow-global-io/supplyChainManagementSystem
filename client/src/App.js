@@ -27,7 +27,7 @@ import theme from "./components/Theme";
 
 import Explorer from './pages/Explorer';
 import Home from "./pages/Home";
-
+import { SalesRep } from "./pages/SalesRep/SalesRep";
 
 class App extends Component {
   state = { web3: null, accounts: null, contract: null, mRole: null, tpRole: null, dhRole: null, cRole: null };
@@ -80,6 +80,9 @@ class App extends Component {
                 } />
                 <Route exact path="/explorer" element={
                   <Explorer accounts={this.state.accounts} supplyChainContract={this.state.contract} web3={this.state.web3} />
+                } />
+                <Route exact path="/salesRep" element={
+                  <SalesRep/>
                 } />
                 <Route exact path="/" element={
                   <Home accounts={this.state.accounts} supplyChainContract={this.state.contract} />
