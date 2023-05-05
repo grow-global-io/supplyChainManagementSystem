@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState, useEffect } from "react";
 import SupplyChainContract from "./contracts/SupplyChain.json";
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { RoleDataContextProvider } from "./context/RoleDataContext";
@@ -29,134 +29,97 @@ import Explorer from './pages/Explorer';
 import Home from "./pages/Home";
 import { SalesRep } from "./pages/SalesRep/SalesRep";
 import ProductionManager from "./pages/ProductionManager/ProductionManager";
+import Lottie from "react-lottie";
+import * as globeLoaderData from "./assets/globe.json";
+import * as successLoaderData from "./assets/success.json";
 
-class App extends Component {
-  state = { web3: null, accounts: null, contract: null, mRole: null, tpRole: null, dhRole: null, cRole: null };
+const globeLoader = {
+  loop: true,
+  autoplay: true,
+  animationData: globeLoaderData,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
 
-  componentDidMount = async () => {
-    try {
-      const web3 = await getWeb3();
-      const accounts = await web3.eth.getAccounts();
+const successLoader = {
+  loop: true,
+  autoplay: true,
+  animationData: successLoaderData,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
 
-      const networkId = await web3.eth.net.getId();
-      console.log("netwk", networkId)
-      //const deployedNetwork = SupplyChainContract.networks[networkId];
-      // const instance = new web3.eth.Contract(
-      //   SupplyChainContract.abi,
-      //   deployedNetwork && deployedNetwork.address,
-      // );
+function App() {
 
-      const mRole = localStorage.getItem("mRole");
-      const tpRole = localStorage.getItem("tpRole");
-      const dhRole = localStorage.getItem("dhRole");
-      const cRole = localStorage.getItem("cRole");
+  const [loading, setLoading] = useState(false);
+  const [completed, setCompleted] = useState(false);
 
-      this.setState({ web3, accounts, contract: '', mRole: mRole, tpRole: tpRole, dhRole: dhRole, cRole: cRole }, this.runExample);
-    } catch (error) {
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`,
-      );
-      console.log("errorris:", error);
-    }
-  };
+  const [loaderSize, setLoaderSize] = useState(320);
 
-  runExample = async () => {
-    const { contract } = this.state;
-    console.log(contract);
-  };
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(true);
+      setTimeout(() => {
+        setCompleted(true);
+      }, 1000);
+    }, 4000);
+  }, []);
 
-  render() {
-    if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
-    }
-    return (
-      <div className="App">
-        <ThemeProvider theme={theme}>
-          <RoleDataContextProvider mRole={this.state.mRole} tpRole={this.state.tpRole} dhRole={this.state.dhRole} cRole={this.state.cRole}>
+
+
+  return (
+    <>
+      {!completed ? (
+        <div className="loading-container container">
+          {!loading ? (
+            <Lottie
+              options={globeLoader}
+              height={loaderSize}
+              width={loaderSize}
+            />
+          ) : (
+            <Lottie
+              options={successLoader}
+              height={loaderSize}
+              width={loaderSize}
+            />
+          )}
+        </div>
+      ) : (
+        <div className="App">
+          <ThemeProvider theme={theme}>
             <BrowserRouter>
               <Routes>
 
                 <Route exact path="/roleAdmin" element={
-                  <RoleAdmin accounts={this.state.accounts} supplyChainContract={this.state.contract} />
+                  <RoleAdmin />
                 } />
                 <Route exact path="/explorer" element={
-                  <Explorer accounts={this.state.accounts} supplyChainContract={this.state.contract} web3={this.state.web3} />
+                  <Explorer />
                 } />
                 <Route exact path="/salesRep" element={
-                  <SalesRep/>
+                  <SalesRep />
                 } />
                 <Route exact path="/productionManager" element={
-                  <ProductionManager/>
+                  <ProductionManager />
                 } />
                 <Route exact path="/" element={
-                  <Home accounts={this.state.accounts} supplyChainContract={this.state.contract} />
+                  <Home />
                 } />
-
-
-                <Route exact path="/manufacturer/manufacture" element={
-                  this.state.mRole !== "" ?
-                    <Manufacture accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                    : <h1>Assign Manufacturer Role at /RoleAdmin</h1>
-                } />
-                <Route exact path="/manufacturer/allManufacture" element={
-                  this.state.mRole !== "" ?
-                    <AllManufacture accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                    : <h1>Assign Manufacturer Role at /RoleAdmin</h1>
-                }/>
-                  <Route exact path="/manufacturer/ship" element={
-                    this.state.mRole !== "" ?
-                      <ShipManufacture accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                      : <h1>Assign Manufacturer Role at /RoleAdmin</h1>}
-                  />
-                  <Route exact path="/ThirdParty/allProducts" element={
-                    this.state.tpRole !== "" ?
-                      <PurchaseThirdParty accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                      : <h1>Assign Third Party Role at /RoleAdmin</h1>}
-                  />
-                  <Route exact path="/ThirdParty/receive" element={
-                    this.state.tpRole !== "" ?
-                      <ReceiveThirdParty accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                      : <h1>Assign Third Party Role at /RoleAdmin</h1>}
-                  />
-                  <Route exact path="/Customer/buy" element={
-                    this.state.cRole !== "" ?
-                      <PurchaseCustomer accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                      : <h1>Assign Customer Role at /RoleAdmin</h1>}
-                  />
-                  <Route exact path="/ThirdParty/ship" element={
-                    this.state.tpRole !== "" ?
-                      <ShipThirdParty accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                      : <h1>Assign Third Party Role at /RoleAdmin</h1>}
-                  />
-                <Route exact path="/DeliveryHub/receive" element={
-                    this.state.dhRole !== "" ?
-                      <ReceiveDeliveryHub accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                      : <h1>Assign Delivery Hub Role at /RoleAdmin</h1>}
-                  />
-                <Route exact path="/DeliveryHub/ship" element={
-                    this.state.dhRole !== "" ?
-                      <ShipDeliveryHub accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                      : <h1>Assign Delivery Hub Role at /RoleAdmin</h1>}
-                  />
-                <Route exact path="/Customer/receive" element={
-                    this.state.cRole !== "" ?
-                      <ReceiveCustomer accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                      : <h1>Assign Customer Role at /RoleAdmin</h1>}
-                  />
-                <Route exact path="/Customer/allReceived" element={
-                    this.state.cRole !== "" ?
-                      <ReceivedByCustomer accounts={this.state.accounts} supplyChainContract={this.state.contract} />
-                      : <h1>Assign Customer Role at /RoleAdmin</h1>}
-                  />
-
               </Routes>
             </BrowserRouter>
-          </RoleDataContextProvider>
 
-        </ThemeProvider>
-      </div>
-    );
-  }
+
+          </ThemeProvider>
+        </div>
+
+      )}
+
+    </>
+  );
+
 }
 
 export default App;
