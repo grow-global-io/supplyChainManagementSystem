@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
@@ -13,6 +13,7 @@ import {
 } from '@rainbow-me/rainbowkit'
 import '@rainbow-me/rainbowkit/styles.css'
 import * as serviceWorker from './serviceWorker';
+
 
 const { chains, provider } = configureChains(
     [chain.polygonMumbai, chain.polygon],

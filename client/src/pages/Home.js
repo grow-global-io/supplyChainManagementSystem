@@ -1,17 +1,26 @@
-import React,{useEffect} from "react";
+import React,{useEffect,useState} from "react";
 import Navbar from "../components/Navbar";
 import Button from "@material-ui/core/Button";
 import { useStyles } from "../components/Styles";
 import Grid from "@material-ui/core/Grid";
 import { Link } from "react-router-dom";
 import {getRole} from '../assets/roleConfig'
+import * as supplyChain from "../assets/supply-chain-and-shipping.json";
+import Lottie from "react-lottie";
+
+const suppChainLoader = {
+  loop: true,
+  autoplay: true,
+  animationData: supplyChain,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
 
 export default function Home() {
   const classes = useStyles();
+  const [loaderSize, setLoaderSize] = useState(520);
   const navItem = [];
-useEffect(()=>{
-  console.log("role2",getRole(1)[0].name)
-},[])
   
 
   return (
@@ -36,10 +45,15 @@ useEffect(()=>{
                 flexWrap: "wrap",
               }}
             >
-              <img
+              {/* <img
                 alt="."
                 src="/homeArt.png"
                 style={{ width: "90%", height: "auto" }}
+              /> */}
+              <Lottie
+                options={suppChainLoader}
+                height="auto"
+                width="90%"
               />
             </Grid>
 
