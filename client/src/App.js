@@ -1,30 +1,9 @@
-import React, { Component, useState, useEffect } from "react";
-import SupplyChainContract from "./contracts/SupplyChain.json";
+import React, {useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
-import { RoleDataContextProvider } from "./context/RoleDataContext";
-// import history from "./history";
-import { createBrowserHistory } from 'history';
-import getWeb3 from "./getWeb3";
-import { ethers } from "ethers";
-
-import Manufacture from "./pages/Manufacturer/Manufacture";
-import AllManufacture from "./pages/Manufacturer/AllManufacture";
-import ShipManufacture from "./pages/Manufacturer/ShipManufacture";
-
 import "./App.css";
-import ReceiveThirdParty from "./pages/ThirdParty/ReceiveThirdParty";
-import PurchaseCustomer from "./pages/Customer/PurchaseCustomer";
-import ShipThirdParty from "./pages/ThirdParty/ShipThirdParty";
-import ReceiveDeliveryHub from "./pages/DeliveryHub/ReceiveDeliveryHub";
-import ShipDeliveryHub from "./pages/DeliveryHub/ShipDeliveryHub";
-import ReceiveCustomer from "./pages/Customer/ReceiveCustomer";
-import ReceivedByCustomer from "./pages/Customer/ReceivedByCustomer";
-import PurchaseThirdParty from "./pages/ThirdParty/PurshaseThirdParty";
 import RoleAdmin from "./pages/RoleAdmin";
-
 import { ThemeProvider } from "@material-ui/core/styles";
 import theme from "./components/Theme";
-
 import Explorer from './pages/Explorer';
 import Home from "./pages/Home";
 import { SalesRep } from "./pages/SalesRep/SalesRep";
@@ -66,8 +45,6 @@ function App() {
       }, 1000);
     }, 4000);
   }, []);
-
-
 
   return (
     <>
