@@ -17,7 +17,7 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
     //address owner;
     mapping(uint256 => Structure.Product) products;
     mapping(uint256 => Structure.ProductHistory) productHistory;
-    mapping(address => Structure.Roles) roles;
+    mapping(address => string) roles;
 
 
     function initialize() public initializer {
@@ -27,53 +27,51 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
         uid = 1;
     }
 
-    function hasManufacturerRole(address _account) public view returns (bool) {
-        require(_account != address(0));
-        return roles[_account].Manufacturer;
+    function getRole() public view returns (string memory) {
+        //require(roles[msg.sender] != '','No role assigned yet');
+        return roles[msg.sender];
     }
 
-    function addManufacturerRole(address _account) public {
+    function addRole(address _account, string memory role) external onlyOwner {
         require(_account != address(0));
-        require(!hasManufacturerRole(_account));
-
-        roles[_account].Manufacturer = true;
+        roles[_account] = role;
     }
 
-    function hasThirdPartyRole(address _account) public view returns (bool) {
-        require(_account != address(0));
-        return roles[_account].ThirdParty;
-    }
+    // function hasThirdPartyRole(address _account) public view returns (bool) {
+    //     require(_account != address(0));
+    //     return roles[_account].ThirdParty;
+    // }
 
-    function addThirdPartyRole(address _account) public {
-        require(_account != address(0));
-        require(!hasThirdPartyRole(_account));
+    // function addThirdPartyRole(address _account) public {
+    //     require(_account != address(0));
+    //     require(!hasThirdPartyRole(_account));
 
-        roles[_account].ThirdParty = true;
-    }
+    //     roles[_account].ThirdParty = true;
+    // }
 
-    function hasDeliveryHubRole(address _account) public view returns (bool) {
-        require(_account != address(0));
-        return roles[_account].DeliveryHub;
-    }
+    // function hasDeliveryHubRole(address _account) public view returns (bool) {
+    //     require(_account != address(0));
+    //     return roles[_account].DeliveryHub;
+    // }
 
-    function addDeliveryHubRole(address _account) public {
-        require(_account != address(0));
-        require(!hasDeliveryHubRole(_account));
+    // function addDeliveryHubRole(address _account) public {
+    //     require(_account != address(0));
+    //     require(!hasDeliveryHubRole(_account));
 
-        roles[_account].DeliveryHub = true;
-    }
+    //     roles[_account].DeliveryHub = true;
+    // }
 
-    function hasCustomerRole(address _account) public view returns (bool) {
-        require(_account != address(0));
-        return roles[_account].Customer;
-    }
+    // function hasCustomerRole(address _account) public view returns (bool) {
+    //     require(_account != address(0));
+    //     return roles[_account].Customer;
+    // }
 
-    function addCustomerRole(address _account) public {
-        require(_account != address(0));
-        require(!hasDeliveryHubRole(_account));
+    // function addCustomerRole(address _account) public {
+    //     require(_account != address(0));
+    //     require(!hasDeliveryHubRole(_account));
 
-        roles[_account].Customer = true;
-    }
+    //     roles[_account].Customer = true;
+    // }
 
 
     event Manufactured(uint256 uid);
