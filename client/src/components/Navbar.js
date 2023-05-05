@@ -121,14 +121,17 @@ export default function PersistentDrawerLeft({ pageTitle,navItems, children }) {
           <Typography
             variant="h6"
             noWrap
-            style={{ display: "flex", alignItems: "center" }}
+            style={{ display: "flex", alignItems: "center",width:"100%",justifyContent:"space-between" }}
           >
-            <img
-              alt="."
-              src="/logo.png"
-              style={{ height: "45px", width: "auto" }}
-            />
+            
+            <div style={{display:"flex",alignItems:"center"}}><img
+            alt="."
+            src="/logo.png"
+            style={{ height: "45px", width: "auto" }}
+          />
             &nbsp;SupplyChain-Dapp
+          </div>
+            
             <ConnectButton showBalance={false} chainStatus="icon" />
           </Typography>
         </Toolbar>
