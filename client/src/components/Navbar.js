@@ -88,7 +88,7 @@ export default function PersistentDrawerLeft({ pageTitle,navItems, children }) {
 
   useEffect(()=>{
     console.log("Your connected wallet",address)
-    console.log("Your connected blockchain ID",chain.id)
+    console.log("Your connected blockchain ID", chain ? chain.id:'')
   },[address,chain])
 
   const handleDrawerOpen = () => {
