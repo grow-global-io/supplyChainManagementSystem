@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import {
   Container,
@@ -22,6 +22,11 @@ export const SalesRep = () => {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
+
+  useEffect(()=>{
+    verifyRole()
+  },[])
+
   const verifyRole = async () => {
     console.log("verifyRole");
     await (window).ethereum.request({ method: "eth_requestAccounts", });
