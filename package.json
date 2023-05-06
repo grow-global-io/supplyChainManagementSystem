@@ -10,6 +10,7 @@
         "@openzeppelin/hardhat-upgrades": "^1.24.0",
         "ethereum-waffle": "^4.0.10",
         "hardhat": "^2.14.0",
+        "react-lottie": "^1.2.3",
         "solc": "^0.8.4",
         "truffle": "^5.3.7"
     }

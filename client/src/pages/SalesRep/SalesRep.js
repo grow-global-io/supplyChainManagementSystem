@@ -12,18 +12,38 @@ import {
   Card,
 } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
+import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.json";
 import { useState } from "react";
+import { ethers } from "ethers";
+import { getConfigByChain } from "../../assets/config";
 const navItem = [
 ];
 export const SalesRep = () => {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
+  const verifyRole = async () => {
+    console.log("verifyRole");
+    await (window).ethereum.request({ method: "eth_requestAccounts", });
+      const provider = new ethers.providers.Web3Provider(window.ethereum) //create provider
+      const network = await provider.getNetwork()
+      const signer = provider.getSigner()
+      
+      const suppContract = new ethers.Contract(
+        getConfigByChain(network.chainId)[0].suppChainAddress,
+        SuppChain.abi,
+        signer
+      )
+      console.log("suppContract", suppContract);
+      const tx = await suppContract.getRole();
+      console.log("tx", tx);
+  }
   const handleShow = () => setShow(true);
   return (
     <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
       <div>
         <Container>
+        <Button onClick={verifyRole} variant="primary">verifyRole</Button>{" "}
           <Row>
             <Card>
               <Card.Body>
