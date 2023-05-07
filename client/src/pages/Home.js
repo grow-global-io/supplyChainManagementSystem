@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import {getRole} from '../assets/roleConfig'
 import * as supplyChain from "../assets/supply-chain-and-shipping.json";
 import Lottie from "react-lottie";
+import { getData } from "../utils/fbutils";
 
 const suppChainLoader = {
   loop: true,
@@ -17,7 +18,13 @@ const suppChainLoader = {
   },
 };
 
+
+
 export default function Home() {
+  useEffect(()=>{
+    const data = getData();
+    console.log(data);
+  },[])
   const classes = useStyles();
   const [loaderSize, setLoaderSize] = useState(520);
   const navItem = [];
