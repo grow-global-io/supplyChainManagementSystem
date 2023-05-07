@@ -103,7 +103,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link
-                  to="/ProductionManager"
+                  to="/PurchaseOrderAgent"
                   style={{ textDecoration: "none", color: "#fff" }}
                 >
                   <Button
@@ -116,7 +116,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link
-                  to="/DeliveryHub/receive"
+                  to="/ThirdPartyVendor"
                   style={{ textDecoration: "none", color: "#fff" }}
                 >
                   <Button
@@ -129,7 +129,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link
-                  to="/Customer/buy"
+                  to="/WarehouseManager"
                   style={{ textDecoration: "none", color: "#fff" }}
                 >
                   <Button
@@ -141,6 +141,59 @@ export default function Home() {
                     {getRole(4)[0].name}
                   </Button>
                 </Link>
+                <Link
+                  to="/FinanceManager"
+                  style={{ textDecoration: "none", color: "#fff" }}
+                >
+                  <Button
+                    className={classes.HomeBtn}
+                    size="large"
+                    variant="outlined"
+                    color="primary"
+                  >
+                    {getRole(5)[0].name}
+                  </Button>
+                </Link>
+                <Link
+                  to="/ProductionManager"
+                  style={{ textDecoration: "none", color: "#fff" }}
+                >
+                  <Button
+                    className={classes.HomeBtn}
+                    size="large"
+                    variant="outlined"
+                    color="primary"
+                  >
+                    {getRole(6)[0].name}
+                  </Button>
+                </Link>
+                <Link
+                  to="/BatchManager"
+                  style={{ textDecoration: "none", color: "#fff" }}
+                >
+                  <Button
+                    className={classes.HomeBtn}
+                    size="large"
+                    variant="outlined"
+                    color="primary"
+                  >
+                    {getRole(7)[0].name}
+                  </Button>
+                </Link>
+                <Link
+                  to="/LogisticsManager"
+                  style={{ textDecoration: "none", color: "#fff" }}
+                >
+                  <Button
+                    className={classes.HomeBtn}
+                    size="large"
+                    variant="outlined"
+                    color="primary"
+                  >
+                    {getRole(8)[0].name}
+                  </Button>
+                </Link>
+
               </div>
             </Grid>
           </Grid>

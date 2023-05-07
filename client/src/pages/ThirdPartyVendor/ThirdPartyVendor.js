@@ -18,7 +18,7 @@ import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
 const navItem = [
 ];
-export const SalesRep = () => {
+export const ThirdPartyVendor = () => {
   const [show, setShow] = useState(false);
   const [role, setRole] = useState("");
   const handleClose = () => setShow(false);
@@ -224,4 +224,4 @@ export const SalesRep = () => {
       </Navbar>
     )
   }
-};
+}

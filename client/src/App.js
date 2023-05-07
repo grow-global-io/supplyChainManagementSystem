@@ -7,11 +7,17 @@ import theme from "./components/Theme";
 import Explorer from './pages/Explorer';
 import Home from "./pages/Home";
 import { SalesRep } from "./pages/SalesRep/SalesRep";
-import ProductionManager from "./pages/ProductionManager/ProductionManager";
+import PurchaseOrderAgent from "./pages/PurchaseOrderAgent/PurchaseOrderAgent";
+
 import Lottie from "react-lottie";
 import * as globeLoaderData from "./assets/globe.json";
 import * as successLoaderData from "./assets/success.json";
-
+import { ProductionManager } from "./pages/ProductionManager/ProductionManager";
+import { ThirdPartyVendor } from "./pages/ThirdPartyVendor/ThirdPartyVendor";
+import { WarehouseManager } from "./pages/WarehouseManager/WarehouseManager";
+import { FinanceManager } from "./pages/FinanceManager/FinanceManager";
+import { BatchManager } from "./pages/BatchManager/BatchManager";
+import { LogisticsManager } from "./pages/LogisticsManager/LogisticsManager";
 const globeLoader = {
   loop: true,
   autoplay: true,
@@ -79,8 +85,29 @@ function App() {
                 <Route exact path="/salesRep" element={
                   <SalesRep />
                 } />
-                <Route exact path="/productionManager" element={
+                <Route exact path="/PurchaseOrderAgent" element={
+                  <PurchaseOrderAgent />
+                } />
+                <Route exact path="/ProductionManager" element={
                   <ProductionManager />
+                } />
+                
+                <Route exact path="/ThirdPartyVendor" element={
+                  <ThirdPartyVendor />
+                } />
+                <Route exact path="/WarehouseManager" element={
+                  <WarehouseManager />
+                } />
+                <Route exact path="/FinanceManager" element={
+                  <FinanceManager />
+                } />
+                
+                <Route exact path="/BatchManager" element={
+                  <BatchManager />
+                } />
+                
+                <Route exact path="/LogisticsManager" element={
+                  <LogisticsManager />
                 } />
                 <Route exact path="/" element={
                   <Home />
