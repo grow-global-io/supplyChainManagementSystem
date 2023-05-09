@@ -16,9 +16,13 @@ import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.jso
 import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
+import { getCollectionData, saveData } from "../../utils/fbutils";
 const navItem = [];
 export const ProductionManager = () => {
   const [show, setShow] = useState(false);
+  const [vendorProductDataArray, setVendorProductDataArray] = useState([]);
+  const [materialDataArray, setMaterialDataArray] = useState([]);
+  const [vendorDataArray, setVendorDataArray] = useState([]);
   const [role, setRole] = useState("");
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -34,8 +38,25 @@ export const ProductionManager = () => {
   const [vendorModal, setVendorModal] = useState(false);
   const handleVendorModalClose = () => setVendorModal(false);
   const handleVendorModalShow = () => setVendorModal(true);
+
+  
+  const fetchCollectionData = async () => {
+    const data1 = await getCollectionData("VendorProductData");
+    setVendorProductDataArray(data1);
+    const data2 = await getCollectionData("MaterialData");
+    setMaterialDataArray(data2);
+    const data3 = await getCollectionData("Vendor");
+    setVendorDataArray(data3);
+    console.log('data1',data1);
+    console.log('data2',data2);
+    console.log('data3',data3);
+    console.log("vendorProductDataArray", vendorProductDataArray);
+    console.log("materialDataArray", materialDataArray);
+    console.log("vendorDataArray", vendorDataArray);
+  }
   useEffect(() => {
     verifyRole();
+    fetchCollectionData();
   }, []);
 
   const verifyRole = async () => {
@@ -62,8 +83,8 @@ export const ProductionManager = () => {
     {
       productName: "",
       productCode: "",
-      productSKUBatchNumber: "",
-      productUnitPrice: "",
+      productSKUBatchNumber: 0,
+      productUnitPrice: 0,
       productMaterialLinkage: "",
     }
   );
@@ -75,15 +96,17 @@ export const ProductionManager = () => {
   }
   const vendorProductSubmit = async (e) => {
     e.preventDefault();
-    handleVendorModalClose();
+    handleVendorProductModalClose();
     console.log("vendorDataSubmit");
-    console.log("vendorData", vendorProductData);
+    console.log("vendorProductData", vendorProductData);
+    // save vendorProduct  data to firestore
+    await saveData(vendorProductData,"VendorProductData");
     setVendorData(
       {
         productName: "",
         productCode: "",
-        productSKUBatchNumber: "",
-        productUnitPrice: "",
+        productSKUBatchNumber: 0,
+        productUnitPrice: 0,
         productMaterialLinkage: "",
       }
     );
@@ -111,6 +134,7 @@ export const ProductionManager = () => {
     handleMaterialModalClose();
     console.log("MaterialDataSubmit");
     console.log("materialData", materialData);
+    await saveData(materialData,"MaterialData");
     setMaterialData(
       {
         materialName: "",
@@ -143,6 +167,7 @@ export const ProductionManager = () => {
     handleVendorModalClose();
     console.log("VendorDataSubmit");
     console.log("vendorData", vendorData);
+    await saveData(vendorData,"Vendor");
     setVendorData(
       {
         vendorName:"",
@@ -163,6 +188,7 @@ export const ProductionManager = () => {
             <Row>
               <Card>
                 <Card.Body>
+                <Button onClick={fetchCollectionData} variant="primary">getCollectionData</Button>{" "}
                   <Col>
                     <Tabs
                       defaultActiveKey="createOrder"
@@ -208,7 +234,7 @@ export const ProductionManager = () => {
                                 (e) => {
                                   handleVendorProductChange(e.target.name, e.target.value)
                                 }
-                              } type="text" placeholder="" />
+                              } type="number" placeholder="" />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="productUnitPrice">
                               <Form.Label>Unit Price</Form.Label>
@@ -218,7 +244,7 @@ export const ProductionManager = () => {
                                 (e) => {
                                   handleVendorProductChange(e.target.name, e.target.value)
                                 }
-                              } type="text" placeholder="" />
+                              } type="number" placeholder="" />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="productMaterialLinkage">
                               <Form.Label>Material Linkage</Form.Label>
@@ -389,7 +415,96 @@ export const ProductionManager = () => {
                         </Modal>
                       </Tab>
                       <Tab eventKey="productList" title="View List">
-                        View Order
+                        <h1>Vendor Product Data</h1>
+                        <Table striped bordered hover>
+                        <thead>
+                          <tr>
+                            <th>Sr No.</th>
+                            <th>Product Name</th>
+                            <th>product Code</th>
+                            <th>product SKU/Batch Number</th>
+                            <th>product Unit Price</th>
+                            <th>product Material Linkage</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            vendorProductDataArray.map((item, index) => {
+                              return (
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  <td>{item.productName}</td>
+                                  <td>{item.productCode}</td>
+                                  <td>{item.productSKUBatchNumber}</td>
+                                  <td>{item.productUnitPrice}</td>
+                                  <td>{item.productMaterialLinkage}</td>
+                                </tr>
+                              )
+                            })
+                          } 
+                        </tbody>
+                      </Table>
+                      <h1>Material Data</h1>
+                        <Table striped bordered hover>
+                        <thead>
+                          <tr>
+                            <th>Sr No.</th>
+                            <th>Material Name</th>
+                            <th>Material Code</th>
+                            <th>Material SKU/Batch Number</th>
+                            <th>Material Unit Price</th>
+                            <th>Material Vendor Responsible</th>
+                            <th>Material Shelf Life</th>
+                            <th>Material Bar Code</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            materialDataArray.map((item, index) => {
+                              return (
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  <td>{item.materialName}</td>
+                                  <td>{item.materialCode}</td>
+                                  <td>{item.materialSKUBatchNumber}</td>
+                                  <td>{item.materialUnitPrice}</td>
+                                  <td>{item.materialVendorResponsible}</td>
+                                  <td>{item.materialShelfLife}</td>
+                                  <td>{item.materialBarCode}</td>
+                                </tr>
+                              )
+                            })
+                          } 
+                        </tbody>
+                      </Table>
+                      <h1>Vendor Data</h1>
+                        <Table striped bordered hover>
+                        <thead>
+                          <tr>
+                            <th>Sr No.</th>
+                            <th>Vendor Name</th>
+                            <th>Vendor Email</th>
+                            <th>Vendor Phone</th>
+                            <th>Vendor Address</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            vendorDataArray.map((item, index) => {
+                              return (
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  <td>{item.vendorName}</td>
+                                  <td>{item.vendorEmail}</td>
+                                  <td>{item.vendorPhone}</td>
+                                  <td>{item.vendorAddress}</td>
+                                </tr>
+                              )
+                            })
+                          } 
+                        </tbody>
+                      </Table>
                       </Tab>
                     </Tabs>
                   </Col>
