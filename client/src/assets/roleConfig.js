@@ -12,7 +12,7 @@ const roleConfig = {
     ],
     "3": [
         {
-            name: "Third Party Vendor",
+            name: "Product Manager",
         }
     ],
     "4": [

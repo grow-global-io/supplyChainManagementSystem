@@ -10,6 +10,7 @@ import {
   Table,
   Modal,
   Card,
+  Dropdown
 } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.json";
@@ -26,6 +27,15 @@ export const ProductionManager = () => {
   const [role, setRole] = useState("");
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [save,setSave]=useState(false);
+  
+  const [selectedOption, setSelectedOption] = useState('');
+
+  const handleChangeDropDown = (event) => {
+    console.log("event.target.value", event.target.value);
+    setSelectedOption(event.target.value);
+    console.log("selectedOption", selectedOption);
+  };
 
   const [vendorProductModal, setVendorProductModal] = useState(false);
   const handleVendorProductModalClose = () => setVendorProductModal(false);
@@ -57,8 +67,7 @@ export const ProductionManager = () => {
   useEffect(() => {
     verifyRole();
     fetchCollectionData();
-  }, []);
-
+  }, [save]);
   const verifyRole = async () => {
     console.log("verifyRole");
     await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -86,6 +95,7 @@ export const ProductionManager = () => {
       productSKUBatchNumber: 0,
       productUnitPrice: 0,
       productMaterialLinkage: "",
+      status:""
     }
   );
   const handleVendorProductChange = (name, value) => {
@@ -98,9 +108,11 @@ export const ProductionManager = () => {
     e.preventDefault();
     handleVendorProductModalClose();
     console.log("vendorDataSubmit");
+    vendorProductData.status = selectedOption;
     console.log("vendorProductData", vendorProductData);
     // save vendorProduct  data to firestore
     await saveData(vendorProductData,"VendorProductData");
+    setSave(!save);
     setVendorData(
       {
         productName: "",
@@ -108,6 +120,7 @@ export const ProductionManager = () => {
         productSKUBatchNumber: 0,
         productUnitPrice: 0,
         productMaterialLinkage: "",
+        status:""
       }
     );
   }
@@ -256,6 +269,12 @@ export const ProductionManager = () => {
                                 }
                               } type="text" placeholder="" />
                             </Form.Group>
+                            <Form.Select value={selectedOption} onChange={handleChangeDropDown} aria-label="Default select example">
+                              <option value="">Status</option>
+                              <option value="pending">pending</option>
+                              <option value="accepted">accepted</option>
+                              <option value="option3">option3</option>
+                            </Form.Select>
                           </Form>
                           </Modal.Body>
                           <Modal.Footer>

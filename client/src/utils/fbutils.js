@@ -26,3 +26,21 @@ export const getCollectionData = async (collectionName) => {
   });
   return data;
 };
+// get collection Data along with id
+export const getCollectionDataWithId = async (collectionName) => {
+  console.log("here", collectionName);
+  const querySnapshot = await getDocs(collection(db, collectionName));
+  let data = [];
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    data.push({ ...doc.data(), id: doc.id });
+    console.log(doc.id, " => ", doc.data());
+  });
+  return data;
+}
+// update collection data
+export const updateCollectionData = async (collectionName, id, data) => {
+  const docRef = doc(db, collectionName, id);
+  await setDoc(docRef, data);
+  console.log("Document written with ID: ", docRef.id);
+}
