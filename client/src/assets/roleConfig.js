@@ -12,7 +12,7 @@ const roleConfig = {
     ],
     "3": [
         {
-            name: "Product Manager",
+            name: "Production Manager",
         }
     ],
     "4": [
@@ -27,7 +27,7 @@ const roleConfig = {
     ],
     "6": [
         {
-            name: "Production manager",
+            name: "Product manager",
         }
     ],
     "7": [

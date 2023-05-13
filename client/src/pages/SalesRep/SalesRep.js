@@ -108,6 +108,7 @@ export const SalesRep = () => {
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <div>
           <Container>
+          <h1>Welcome Sales Representative</h1>
             <Row>
               <Card>
                 <Card.Body>

@@ -12,12 +12,13 @@ import PurchaseOrderAgent from "./pages/PurchaseOrderAgent/PurchaseOrderAgent";
 import Lottie from "react-lottie";
 import * as globeLoaderData from "./assets/globe.json";
 import * as successLoaderData from "./assets/success.json";
-import { ProductionManager } from "./pages/ProductionManager/ProductionManager";
-import { ThirdPartyVendor } from "./pages/ThirdPartyVendor/ThirdPartyVendor";
+// import { ProductionManager } from "./pages/ProductionManager/ProductionManager";
+import { ProductionManager} from "./pages/ProductionManager/ProductionManager";
 import { WarehouseManager } from "./pages/WarehouseManager/WarehouseManager";
 import { FinanceManager } from "./pages/FinanceManager/FinanceManager";
 import { BatchManager } from "./pages/BatchManager/BatchManager";
 import { LogisticsManager } from "./pages/LogisticsManager/LogisticsManager";
+import { ProductManager } from "./pages/productManager/productManager";
 const globeLoader = {
   loop: true,
   autoplay: true,
@@ -88,12 +89,12 @@ function App() {
                 <Route exact path="/PurchaseOrderAgent" element={
                   <PurchaseOrderAgent />
                 } />
-                <Route exact path="/ProductionManager" element={
-                  <ProductionManager />
+                <Route exact path="/ProductManager" element={
+                  <ProductManager />
                 } />
                 
-                <Route exact path="/ThirdPartyVendor" element={
-                  <ThirdPartyVendor />
+                <Route exact path="/ProductionManager" element={
+                  <ProductionManager />
                 } />
                 <Route exact path="/WarehouseManager" element={
                   <WarehouseManager />

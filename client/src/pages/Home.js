@@ -123,7 +123,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link
-                  to="/ThirdPartyVendor"
+                  to="/ProductionManager"
                   style={{ textDecoration: "none", color: "#fff" }}
                 >
                   <Button
@@ -162,7 +162,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link
-                  to="/ProductionManager"
+                  to="/ProductManager"
                   style={{ textDecoration: "none", color: "#fff" }}
                 >
                   <Button

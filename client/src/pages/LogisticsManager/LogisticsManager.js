@@ -130,6 +130,7 @@ export const LogisticsManager = () => {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <div>
+        <h1>Welcome Logistics Manager</h1>
           <Container>
             <Row>
               <Card>

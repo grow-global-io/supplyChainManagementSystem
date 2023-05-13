@@ -116,6 +116,7 @@ export default function PurchaseOrderAgent() {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <div>
+        <h1>Welcome purchase Order Agent</h1>
           <Container>
             <Row>
               <Card>
