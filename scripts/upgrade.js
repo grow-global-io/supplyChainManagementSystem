@@ -2,7 +2,7 @@ const { ethers, upgrades } = require("hardhat")
 
 async function main() {
     const supp = await ethers.getContractFactory("SupplyChain");
-    let proxy = await upgrades.upgradeProxy("0x73b586295c2b754043a701F4c31d72bA7e8fB6AB", supp); //mumbai
+    let proxy = await upgrades.upgradeProxy("0xd561813541dDd402cfA6de6E0D68c1b735fF9f3d", supp); //mumbai
     console.log("Supply Chain Contract has been successfully upgraded...")
 }
 

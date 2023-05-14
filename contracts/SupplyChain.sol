@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.12;
 
-import "./Structure.sol";
+
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
     event ManufacturerAdded(address indexed _account);
@@ -13,479 +14,152 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
     //product code
     uint256 public uid;
     uint256 sku;
+    uint256 private so_ID;
+    uint256 private start_so_ID;
 
-    //address owner;
-    mapping(uint256 => Structure.Product) products;
-    mapping(uint256 => Structure.ProductHistory) productHistory;
-    mapping(address => string) roles;
+    struct Order {
+        string SoID;
+        string PoID;
+        string prodName;
+        uint256 qty;
+        uint256 orderValue;
+        uint256 customerFinalDeliveryDate;
+        string status;
+        string barCode;
+        string batchNo;
+        string masterLabel;
+        string invoicePath;
+        string trackingNo;
+    }
+
+    mapping(string => Order) public orderData;
+    Order[] public orders;
+    mapping(address => string) public roles;
 
 
     function initialize() public initializer {
         __Ownable_init();
         //owner = msg.sender;
-        sku = 1;
+        so_ID = 16532;
+        start_so_ID = 16532;
         uid = 1;
     }
 
+    function getFirstChar(string memory _originString) internal pure returns (string memory){
+        bytes memory firstCharByte = new bytes(1);
+        firstCharByte[0] = bytes(_originString)[0];
+        return string(firstCharByte);
+    }
+
+    function replacePoWithSo(string memory _string) internal pure returns (string memory) {
+        bytes memory _stringBytes = bytes(_string);
+        bytes memory result = new bytes(_stringBytes.length);
+
+        for(uint i = 0; i < _stringBytes.length; i++) {
+                result[i] = _stringBytes[i];
+                if(i== 0)
+                result[i]=bytes("S")[0];
+            }
+            return  string(result);
+        } 
+
+
     function getRole() public view returns (string memory) {
-        //require(roles[msg.sender] != '','No role assigned yet');
         return roles[msg.sender];
     }
 
-    function addRole(address _account, string memory role) external onlyOwner {
-        require(_account != address(0));
+    function addRole(address _account, string memory role) external onlyOwner notNullAddress(_account) {
         roles[_account] = role;
     }
 
-    // function hasThirdPartyRole(address _account) public view returns (bool) {
-    //     require(_account != address(0));
-    //     return roles[_account].ThirdParty;
-    // }
-
-    // function addThirdPartyRole(address _account) public {
-    //     require(_account != address(0));
-    //     require(!hasThirdPartyRole(_account));
-
-    //     roles[_account].ThirdParty = true;
-    // }
-
-    // function hasDeliveryHubRole(address _account) public view returns (bool) {
-    //     require(_account != address(0));
-    //     return roles[_account].DeliveryHub;
-    // }
-
-    // function addDeliveryHubRole(address _account) public {
-    //     require(_account != address(0));
-    //     require(!hasDeliveryHubRole(_account));
-
-    //     roles[_account].DeliveryHub = true;
-    // }
-
-    // function hasCustomerRole(address _account) public view returns (bool) {
-    //     require(_account != address(0));
-    //     return roles[_account].Customer;
-    // }
-
-    // function addCustomerRole(address _account) public {
-    //     require(_account != address(0));
-    //     require(!hasDeliveryHubRole(_account));
-
-    //     roles[_account].Customer = true;
-    // }
-
-
-    event Manufactured(uint256 uid);
-    event PurchasedByThirdParty(uint256 uid);
-    event ShippedByManufacturer(uint256 uid);
-    event ReceivedByThirdParty(uint256 uid);
-    event PurchasedByCustomer(uint256 uid);
-    event ShippedByThirdParty(uint256 uid);
-    event ReceivedByDeliveryHub(uint256 uid);
-    event ShippedByDeliveryHub(uint256 uid);
-    event ReceivedByCustomer(uint256 uid);
-
-    modifier verifyAddress(address add) {
-        require(msg.sender == add);
-        _;
+    function createOrder (string memory _prodName, uint256 _qty, uint256 _ordrVal, string memory _status) external onlySO{
+        string memory _soId = string.concat("SO",Strings.toString(so_ID));
+        Order memory order = Order({
+            SoID: _soId,
+            PoID: string.concat("PO",Strings.toString(so_ID)),
+            prodName: _prodName,
+            qty: _qty,
+            orderValue: _ordrVal,
+            customerFinalDeliveryDate: 0,
+            status: _status,
+            barCode:"",
+            batchNo:"",
+            masterLabel:"",
+            invoicePath:"",
+            trackingNo:""
+        });
+        orders.push(order);
+        orderData[_soId] = order;
+        so_ID+=1;
     }
 
-    modifier manufactured(uint256 _uid) {
-        require(products[_uid].productState == Structure.State.Manufactured);
-        _;
+    
+    //Able to return order details by taking both SO or PO 
+    function getOrderDetails(string memory _soOrPo) external view returns (Order memory) {
+        if(keccak256(abi.encodePacked(getFirstChar(_soOrPo))) == keccak256(abi.encodePacked("S"))){
+            return orderData[_soOrPo];
+        }else{
+            return orderData[replacePoWithSo(_soOrPo)];
+        }
+    }
+    function getTest() public view returns(uint256){
+        return so_ID-start_so_ID;
     }
 
-    modifier shippedByManufacturer(uint256 _uid) {
-        require(
-            products[_uid].productState == Structure.State.ShippedByManufacturer
-        );
-        _;
+    function getAllOrderDetails() external view onlySO returns (Order[] memory)  {
+        
+        uint256 totalOrderCount = so_ID; //16533
+        uint256 currentIndex = 0; //0
+
+        Order[] memory items = new Order[](so_ID-start_so_ID);
+        
+        for (uint256 i = start_so_ID; i < totalOrderCount; i++) { //16522 16533
+            Order storage currentItem = orderData[string.concat("SO",Strings.toString(i))];
+            items[currentIndex] = currentItem;
+            currentIndex += 1;
+            
+        }
+        return items;
+    }
+    
+    function updateStatus(string memory _so, string memory _status) external onlyInsider {
+        orderData[_so].status = _status;
     }
 
-    modifier receivedByThirdParty(uint256 _uid) {
-        require(
-            products[_uid].productState == Structure.State.ReceivedByThirdParty
-        );
+    modifier onlySO(){
+        require(keccak256(abi.encodePacked(roles[msg.sender])) == keccak256(abi.encodePacked("Sales Representative")),"You are not a Sales Rep !!");
         _;
     }
-
-    modifier purchasedByCustomer(uint256 _uid) {
-        require(
-            products[_uid].productState == Structure.State.PurchasedByCustomer
-        );
+    modifier onlyPO(){
+        require(keccak256(abi.encodePacked(roles[msg.sender])) == keccak256(abi.encodePacked("Purchase Order Agent")),"You are not a PO Agent !!");
         _;
     }
-
-    modifier shippedByThirdParty(uint256 _uid) {
-        require(
-            products[_uid].productState == Structure.State.ShippedByThirdParty
-        );
+    modifier onlyWHM(){
+        require(keccak256(abi.encodePacked(roles[msg.sender])) == keccak256(abi.encodePacked("Ware House Manager")),"You are not a Ware House Manager !!");
         _;
     }
-
-    modifier receivedByDeliveryHub(uint256 _uid) {
-        require(
-            products[_uid].productState == Structure.State.ReceivedByDeliveryHub
-        );
+    modifier onlyFin(){
+        require(keccak256(abi.encodePacked(roles[msg.sender])) == keccak256(abi.encodePacked("Finance")),"You are not a Finance !!");
         _;
     }
-
-    modifier shippedByDeliveryHub(uint256 _uid) {
-        require(
-            products[_uid].productState == Structure.State.ShippedByDeliveryHub
-        );
+    modifier onlyProduction(){
+        require(keccak256(abi.encodePacked(roles[msg.sender])) == keccak256(abi.encodePacked("Production manager")),"You are not a Production manager !!");
         _;
     }
-
-    modifier receivedByCustomer(uint256 _uid) {
-        require(
-            products[_uid].productState == Structure.State.ReceivedByCustomer
-        );
+    modifier onlyBM(){
+        require(keccak256(abi.encodePacked(roles[msg.sender])) == keccak256(abi.encodePacked("Batch Manager")),"You are not a Batch Manager !!");
         _;
     }
-
-    // function manufactureEmptyInitialize(Structure.Product memory product)
-    //     internal
-    //     pure
-    // {
-    //     address thirdParty;
-    //     string memory transaction;
-    //     string memory thirdPartyLongitude;
-    //     string memory thirdPartyLatitude;
-
-    //     address deliveryHub;
-    //     string memory deliveryHubLongitude;
-    //     string memory deliveryHubLatitude;
-    //     address customer;
-
-    //     product.thirdparty.thirdParty = thirdParty;
-    //     product.thirdparty.thirdPartyLongitude = thirdPartyLongitude;
-    //     product.thirdparty.thirdPartyLatitude = thirdPartyLatitude;
-
-    //     product.deliveryhub.deliveryHub = deliveryHub;
-    //     product.deliveryhub.deliveryHubLongitude = deliveryHubLongitude;
-    //     product.deliveryhub.deliveryHubLatitude = deliveryHubLatitude;
-
-    //     product.customer = customer;
-    //     product.transaction = transaction;
-    // }
-
-    // function manufactureProductInitialize(
-    //     Structure.Product memory product,
-    //     string memory productName,
-    //     uint256 productCode,
-    //     uint256 productPrice,
-    //     string memory productCategory
-    // ) internal pure {
-    //     product.productdet.productName = productName;
-    //     product.productdet.productCode = productCode;
-    //     product.productdet.productPrice = productPrice;
-    //     product.productdet.productCategory = productCategory;
-    // }
-
-    // ///@dev STEP 1 : Manufactured a product.
-    // function manufactureProduct(
-    //     string memory manufacturerName,
-    //     string memory manufacturerDetails,
-    //     string memory manufacturerLongitude,
-    //     string memory manufacturerLatitude,
-    //     string memory productName,
-    //     uint256 productCode,
-    //     uint256 productPrice,
-    //     string memory productCategory
-    // ) public {
-    //     require(hasManufacturerRole(msg.sender));
-    //     uint256 _uid = uid;
-    //     Structure.Product memory product;
-    //     product.sku = sku;
-    //     product.uid = _uid;
-    //     product.manufacturer.manufacturerName = manufacturerName;
-    //     product.manufacturer.manufacturerDetails = manufacturerDetails;
-    //     product.manufacturer.manufacturerLongitude = manufacturerLongitude;
-    //     product.manufacturer.manufacturerLatitude = manufacturerLatitude;
-    //     product.manufacturer.manufacturedDate = block.timestamp;
-
-    //     product.owner = msg.sender;
-    //     product.manufacturer.manufacturer = msg.sender;
-
-    //     manufactureEmptyInitialize(product);
-
-    //     product.productState = Structure.State.Manufactured;
-
-    //     manufactureProductInitialize(
-    //         product,
-    //         productName,
-    //         productCode,
-    //         productPrice,
-    //         productCategory
-    //     );
-
-    //     products[_uid] = product;
-
-    //     productHistory[_uid].history.push(product);
-
-    //     sku++;
-    //     uid = uid + 1;
-
-    //     emit Manufactured(_uid);
-    // }
-
-    // ///@dev STEP 2 : Purchase of manufactured product by Third Party.
-    // function purchaseByThirdParty(uint256 _uid) public manufactured(_uid) {
-    //     require(hasThirdPartyRole(msg.sender));
-    //     products[_uid].thirdparty.thirdParty = msg.sender;
-    //     products[_uid].productState = Structure.State.PurchasedByThirdParty;
-    //     productHistory[_uid].history.push(products[_uid]);
-
-    //     emit PurchasedByThirdParty(_uid);
-    // }
-
-    // ///@dev STEP 3 : Shipping of purchased product to Third Party.
-    // function shipToThirdParty(uint256 _uid)
-    //     public
-    //     verifyAddress(products[_uid].manufacturer.manufacturer)
-    // {
-    //     require(hasManufacturerRole(msg.sender));
-    //     products[_uid].productState = Structure.State.ShippedByManufacturer;
-    //     productHistory[_uid].history.push(products[_uid]);
-
-    //     emit ShippedByManufacturer(_uid);
-    // }
-
-    // ///@dev STEP 4 : Received the purchased product shipped by Manufacturer.
-    // function receiveByThirdParty(
-    //     uint256 _uid,
-    //     string memory thirdPartyLongitude,
-    //     string memory thirdPartyLatitude
-    // )
-    //     public
-    //     shippedByManufacturer(_uid)
-    //     verifyAddress(products[_uid].thirdparty.thirdParty)
-    // {
-    //     require(hasThirdPartyRole(msg.sender));
-    //     products[_uid].owner = msg.sender;
-    //     products[_uid].thirdparty.thirdPartyLongitude = thirdPartyLongitude;
-    //     products[_uid].thirdparty.thirdPartyLatitude = thirdPartyLatitude;
-    //     products[_uid].productState = Structure.State.ReceivedByThirdParty;
-    //     productHistory[_uid].history.push(products[_uid]);
-
-    //     emit ReceivedByThirdParty(_uid);
-    // }
-
-    // ///@dev STEP 5 : Purchase of a product at third party by Customer.
-    // function purchaseByCustomer(uint256 _uid)
-    //     public
-    //     receivedByThirdParty(_uid)
-    // {
-    //     require(hasCustomerRole(msg.sender));
-    //     products[_uid].customer = msg.sender;
-    //     products[_uid].productState = Structure.State.PurchasedByCustomer;
-    //     productHistory[_uid].history.push(products[_uid]);
-
-    //     emit PurchasedByCustomer(_uid);
-    // }
-
-    // ///@dev STEP 7 : Shipping of product by third party purchased by customer.
-    // function shipByThirdParty(uint256 _uid)
-    //     public
-    //     verifyAddress(products[_uid].owner)
-    //     verifyAddress(products[_uid].thirdparty.thirdParty)
-    // {
-    //     require(hasThirdPartyRole(msg.sender));
-    //     products[_uid].productState = Structure.State.ShippedByThirdParty;
-    //     productHistory[_uid].history.push(products[_uid]);
-
-    //     emit ShippedByThirdParty(_uid);
-    // }
-
-    // ///@dev STEP 8 : Receiveing of product by delivery hub purchased by customer.
-    // function receiveByDeliveryHub(
-    //     uint256 _uid,
-    //     string memory deliveryHubLongitude,
-    //     string memory deliveryHubLatitude
-    // ) public shippedByThirdParty(_uid) {
-    //     require(hasDeliveryHubRole(msg.sender));
-    //     products[_uid].owner = msg.sender;
-    //     products[_uid].deliveryhub.deliveryHub = msg.sender;
-    //     products[_uid].deliveryhub.deliveryHubLongitude = deliveryHubLongitude;
-    //     products[_uid].deliveryhub.deliveryHubLatitude = deliveryHubLatitude;
-    //     products[_uid].productState = Structure.State.ReceivedByDeliveryHub;
-    //     productHistory[_uid].history.push(products[_uid]);
-
-    //     emit ReceivedByDeliveryHub(_uid);
-    // }
-
-    // ///@dev STEP 9 : Shipping of product by delivery hub purchased by customer.
-    // function shipByDeliveryHub(uint256 _uid)
-    //     public
-    //     receivedByDeliveryHub(_uid)
-    //     verifyAddress(products[_uid].owner)
-    //     verifyAddress(products[_uid].deliveryhub.deliveryHub)
-    // {
-    //     require(hasDeliveryHubRole(msg.sender));
-    //     products[_uid].productState = Structure.State.ShippedByDeliveryHub;
-    //     productHistory[_uid].history.push(products[_uid]);
-
-    //     emit ShippedByDeliveryHub(_uid);
-    // }
-
-    // ///@dev STEP 10 : Shipping of product by delivery hub purchased by customer.
-    // function receiveByCustomer(uint256 _uid)
-    //     public
-    //     shippedByDeliveryHub(_uid)
-    //     verifyAddress(products[_uid].customer)
-    // {
-    //     require(hasCustomerRole(msg.sender));
-    //     products[_uid].owner = msg.sender;
-    //     products[_uid].productState = Structure.State.ReceivedByCustomer;
-    //     productHistory[_uid].history.push(products[_uid]);
-
-    //     emit ReceivedByCustomer(_uid);
-    // }
-
-    // ///@dev Fetch product
-    // function fetchProductPart1(
-    //     uint256 _uid,
-    //     string memory _type,
-    //     uint256 i
-    // )
-    //     public
-    //     view
-    //     returns (
-    //         uint256,
-    //         uint256,
-    //         address,
-    //         address,
-    //         string memory,
-    //         string memory,
-    //         string memory,
-    //         string memory
-    //     )
-    // {
-    //     require(products[_uid].uid != 0);
-    //     Structure.Product storage product = products[_uid];
-    //     if (keccak256(bytes(_type)) == keccak256(bytes("product"))) {
-    //         product = products[_uid];
-    //     }
-    //     if (keccak256(bytes(_type)) == keccak256(bytes("history"))) {
-    //         product = productHistory[_uid].history[i];
-    //     }
-    //     return (
-    //         product.uid,
-    //         product.sku,
-    //         product.owner,
-    //         product.manufacturer.manufacturer,
-    //         product.manufacturer.manufacturerName,
-    //         product.manufacturer.manufacturerDetails,
-    //         product.manufacturer.manufacturerLongitude,
-    //         product.manufacturer.manufacturerLatitude
-    //     );
-    // }
-
-    // ///@dev Fetch product
-    // function fetchProductPart2(
-    //     uint256 _uid,
-    //     string memory _type,
-    //     uint256 i
-    // )
-    //     public
-    //     view
-    //     returns (
-    //         uint256,
-    //         string memory,
-    //         uint256,
-    //         uint256,
-    //         string memory,
-    //         Structure.State,
-    //         address,
-    //         string memory
-    //     )
-    // {
-    //     require(products[_uid].uid != 0);
-    //     Structure.Product storage product = products[_uid];
-    //     if (keccak256(bytes(_type)) == keccak256(bytes("product"))) {
-    //         product = products[_uid];
-    //     }
-    //     if (keccak256(bytes(_type)) == keccak256(bytes("history"))) {
-    //         product = productHistory[_uid].history[i];
-    //     }
-    //     return (
-    //         product.manufacturer.manufacturedDate,
-    //         product.productdet.productName,
-    //         product.productdet.productCode,
-    //         product.productdet.productPrice,
-    //         product.productdet.productCategory,
-    //         product.productState,
-    //         product.thirdparty.thirdParty,
-    //         product.thirdparty.thirdPartyLongitude
-    //     );
-    // }
-
-    // function fetchProductPart3(
-    //     uint256 _uid,
-    //     string memory _type,
-    //     uint256 i
-    // )
-    //     public
-    //     view
-    //     returns (
-    //         string memory,
-    //         address,
-    //         string memory,
-    //         string memory,
-    //         address,
-    //         string memory
-    //     )
-    // {
-    //     require(products[_uid].uid != 0);
-    //     Structure.Product storage product = products[_uid];
-    //     if (keccak256(bytes(_type)) == keccak256(bytes("product"))) {
-    //         product = products[_uid];
-    //     }
-    //     if (keccak256(bytes(_type)) == keccak256(bytes("history"))) {
-    //         product = productHistory[_uid].history[i];
-    //     }
-    //     return (
-    //         product.thirdparty.thirdPartyLatitude,
-    //         product.deliveryhub.deliveryHub,
-    //         product.deliveryhub.deliveryHubLongitude,
-    //         product.deliveryhub.deliveryHubLatitude,
-    //         product.customer,
-    //         product.transaction
-    //     );
-    // }
-
-    // function fetchProductCount() public view returns (uint256) {
-    //     return uid;
-    // }
-
-    // function fetchProductHistoryLength(uint256 _uid)
-    //     public
-    //     view
-    //     returns (uint256)
-    // {
-    //     return productHistory[_uid].history.length;
-    // }
-
-    // function fetchProductState(uint256 _uid)
-    //     public
-    //     view
-    //     returns (Structure.State)
-    // {
-    //     return products[_uid].productState;
-    // }
-
-    // function setTransactionHashOnManufacture(string memory tran) public {
-    //     productHistory[uid - 1].history[
-    //         productHistory[uid - 1].history.length - 1
-    //     ]
-    //         .transaction = tran;
-    // }
-
-    // function setTransactionHash(uint256 _uid, string memory tran) public {
-    //     Structure.Product storage p =
-    //         productHistory[_uid].history[
-    //             productHistory[_uid].history.length - 1
-    //         ];
-    //     p.transaction = tran;
-    // }
+    modifier onlyLM(){
+        require(keccak256(abi.encodePacked(roles[msg.sender])) == keccak256(abi.encodePacked("Logistic Manager")),"You are not a Logistic Manager !!");
+        _;
+    }
+    modifier onlyInsider(){
+        require(keccak256(abi.encodePacked(roles[msg.sender])) != keccak256(abi.encodePacked("")),"You are not part of team yet !!");
+        _;
+    }
+    modifier notNullAddress(address _account){
+        require(_account != address(0),"Null account is coming from front-end !!");
+        _;
+    }
 }
