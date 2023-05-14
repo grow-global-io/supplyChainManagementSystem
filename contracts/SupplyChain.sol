@@ -72,7 +72,7 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
         roles[_account] = role;
     }
 
-    function createOrder (string memory _prodName, uint256 _qty, uint256 _ordrVal, string memory _status) external onlySO{
+    function createOrder (string memory _prodName, uint256 _qty, uint256 _ordrVal, string memory _status) external onlySO returns(string memory){
         string memory _soId = string.concat("SO",Strings.toString(so_ID));
         Order memory order = Order({
             SoID: _soId,
@@ -91,6 +91,7 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
         orders.push(order);
         orderData[_soId] = order;
         so_ID+=1;
+        return _soId;
     }
 
     
@@ -101,9 +102,6 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
         }else{
             return orderData[replacePoWithSo(_soOrPo)];
         }
-    }
-    function getTest() public view returns(uint256){
-        return so_ID-start_so_ID;
     }
 
     function getAllOrderDetails() external view onlySO returns (Order[] memory)  {
