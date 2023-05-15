@@ -19,6 +19,10 @@ import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
 import { getCollectionData, saveData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
+import {formatBigNumber} from "../../utils/fbutils"
+import toast, { Toaster } from 'react-hot-toast'
+
+
 const navItem = [];
 export const SalesRep = () => {
   const [masterProductDataArray, setmasterProductDataArray] = useState([]);
@@ -83,7 +87,12 @@ export const SalesRep = () => {
     );
     console.log("suppContract", suppContract);
     const tx = await suppContract.getRole();
-    setMasterTableData(await suppContract.getAllOrderDetails());
+    const mTableData = await suppContract.getAllOrderDetails()
+    setMasterTableData(mTableData);
+
+    const b = mTableData[0][3]
+    console.log("test", (Number(b) / Math.pow(10, 18))*10 ** 18)
+    
     setRole(tx);
   };
   const [masterProductData, setmasterProductData] = useState({
@@ -189,9 +198,9 @@ export const SalesRep = () => {
     console.log("updateTotalPrice");
     setTotalPrice(
       orderData.orderProductQuantity *
-        masterProductDataArray.find(
-          (product) => product.productName === orderData.orderProductName
-        )?.productUnitPrice
+      masterProductDataArray.find(
+        (product) => product.productName === orderData.orderProductName
+      )?.productUnitPrice
     );
   };
   const handleChange = (e) => {
@@ -228,6 +237,11 @@ export const SalesRep = () => {
         orderPrice,
         orderData.orderProductStatus
       );
+      const counter = await tx.wait();
+      const currentSoID = counter.events[0].data;
+      debugger
+      console.log("So_ID: ", parseInt(Number(currentSoID)));
+      toast.success(`So ID: ${parseInt(Number(currentSoID))}`)
     } catch (e) {
       console.log(e);
     }
@@ -239,6 +253,7 @@ export const SalesRep = () => {
     console.log("orderData", orderData);
     handleOrderDataBlockChainSubmit(orderData);
   };
+
   useEffect(() => {
     if (masterProductDataArray) {
       const filteredArray = masterProductDataArray.filter((each) => {
@@ -264,6 +279,7 @@ export const SalesRep = () => {
   if (true) {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
+        <Toaster position='top-center' reverseOrder='false' />
         <div>
           <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
             Welcome Sales Representative
@@ -404,6 +420,9 @@ export const SalesRep = () => {
                             <td>{order[0]}</td>
                             <td>{order[1]}</td>
                             <td>{order[2]}</td>
+                            <td>{formatBigNumber(order[3])}</td>
+                            <td>{formatBigNumber(order[4])}</td>
+                            <td>{(order[6])}</td>
                           </tr>
                         ))}
                       </tbody>

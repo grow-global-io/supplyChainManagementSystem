@@ -44,3 +44,7 @@ export const updateCollectionData = async (collectionName, id, data) => {
   await setDoc(docRef, data);
   // console.log("Document written with ID: ", docRef.id);
 }
+
+export const formatBigNumber = (bigNumber) => {
+  return (Number(bigNumber) / Math.pow(10, 18)) * 10 ** 18
+}
