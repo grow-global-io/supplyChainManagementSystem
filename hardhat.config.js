@@ -49,6 +49,6 @@ module.exports = {
   },
   solidity: '0.8.12',
   paths: {
-    artifacts: './client/src/artifacts',
+    artifacts: './FrontEnd/src/artifacts',
   },
 }
