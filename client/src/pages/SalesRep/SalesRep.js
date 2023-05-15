@@ -24,9 +24,11 @@ export const SalesRep = () => {
   const [masterProductDataArray, setmasterProductDataArray] = useState([]);
   const [masterMaterialDataArray, setmasterMaterialDataArray] = useState([]);
   const [vendorDataArray, setVendorDataArray] = useState([]);
+  // blockChainMasterData start
+  const [masterTableData, setMasterTableData] = useState([]);
+  //  blockChainMasterData end
   const [role, setRole] = useState("");
   const [save, setSave] = useState(false);
-
   const [masterProductModal, setmasterProductModal] = useState(false);
   const handlemasterProductModalClose = () => setmasterProductModal(false);
   const handlemasterProductModalShow = () => setmasterProductModal(true);
@@ -64,6 +66,9 @@ export const SalesRep = () => {
     verifyRole();
     fetchCollectionData();
   }, [save]);
+  useEffect(() => {
+    console.log("masterTableData", masterTableData);
+  }, [masterTableData]);
   const verifyRole = async () => {
     console.log("verifyRole");
     await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -78,9 +83,8 @@ export const SalesRep = () => {
     );
     console.log("suppContract", suppContract);
     const tx = await suppContract.getRole();
-    console.log("tx", tx);
+    setMasterTableData(await suppContract.getAllOrderDetails());
     setRole(tx);
-    console.log("role", role);
   };
   const [masterProductData, setmasterProductData] = useState({
     productName: "",
@@ -177,19 +181,26 @@ export const SalesRep = () => {
   const [orderData, setOrderData] = useState({
     orderProductName: "",
     orderProductQuantity: 0,
-    orderProductTotalPrice: 0,
+    orderProductTotalPrice: 100,
     orderProductStatus: "",
   });
   const [totalPrice, setTotalPrice] = useState(0);
   const updateTotalPrice = () => {
     console.log("updateTotalPrice");
-    setTotalPrice(orderData.orderProductQuantity * masterProductDataArray.find(
-      (product) =>
-        product.productName ===
-        orderData.orderProductName
-    )?.productUnitPrice
-    )
-  }
+    setTotalPrice(
+      orderData.orderProductQuantity *
+        masterProductDataArray.find(
+          (product) => product.productName === orderData.orderProductName
+        )?.productUnitPrice
+    );
+  };
+  const handleChange = (e) => {
+    setOrderData({
+      ...orderData,
+      [e.target.name]: e.target.value,
+    });
+    console.log(orderData);
+  };
   const handleOrderDataChange = (name, value) => {
     setOrderData({
       ...orderData,
@@ -197,27 +208,60 @@ export const SalesRep = () => {
     });
     console.log("orderData", orderData);
   };
-  const handleOrderQuantityChange = (e) => {
-    setOrderData({
-      ...orderData,
-      orderProductQuantity: e.target.value,
-    });
-    updateTotalPrice();
-  }
+  const handleOrderDataBlockChainSubmit = async (orderData) => {
+    try {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+      const network = await provider.getNetwork();
+      const signer = provider.getSigner();
+
+      const suppContract = new ethers.Contract(
+        getConfigByChain(network.chainId)[0].suppChainAddress,
+        SuppChain.abi,
+        signer
+      );
+      const orderQty = parseInt(orderData.orderProductQuantity);
+      const orderPrice = parseInt(orderData.orderProductTotalPrice);
+      const tx = await suppContract.createOrder(
+        orderData.orderProductName,
+        orderQty,
+        orderPrice,
+        orderData.orderProductStatus
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const orderDataSubmit = async (e) => {
     e.preventDefault();
     handleCreateOrderModalClose();
     console.log(totalPrice);
     console.log("orderData", orderData);
-    // await saveData(orderData, "orderData");
-    // fetchCollectionData();
-    setOrderData({
-      orderProductName: "",
-      orderProductQuantity: 0,
-      orderProductTotalPrice: 0,
-      orderProductStatus: "",
-    });
-  }
+    handleOrderDataBlockChainSubmit(orderData);
+  };
+  useEffect(() => {
+    if (masterProductDataArray) {
+      const filteredArray = masterProductDataArray.filter((each) => {
+        return each.productName === orderData.orderProductName;
+      });
+      const value = filteredArray[0]?.productUnitPrice;
+      const multiple =
+        parseInt(orderData.orderProductQuantity) * parseInt(value);
+      console.log(multiple);
+      if (multiple)
+        setOrderData({
+          ...orderData,
+          orderProductTotalPrice: multiple,
+        });
+      else {
+        setOrderData({
+          ...orderData,
+          orderProductTotalPrice: 0,
+        });
+      }
+    }
+  }, [orderData.orderProductQuantity]);
   if (true) {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
@@ -248,13 +292,10 @@ export const SalesRep = () => {
                         >
                           <Form.Label>Product Name</Form.Label>
                           <Form.Select
-                            onChange={(e) => {
-                              handleOrderDataChange(
-                                "orderProductName",
-                                e.target.value
-                              );
-                            }}
+                            value={orderData.orderProductName}
+                            onChange={handleChange}
                             aria-label="Default select example"
+                            name="orderProductName"
                           >
                             <option>Select Product</option>
                             {masterProductDataArray.map((product) => {
@@ -273,14 +314,12 @@ export const SalesRep = () => {
                         >
                           <Form.Label>Quantity</Form.Label>
                           <Form.Control
-                            onChange={(e) => {
-                              handleOrderQuantityChange(
-                                "orderProductQuantity",
-                                e.target.value
-                              );
-                            }}
+                            onChange={handleChange}
+                            value={orderData.orderProductQuantity}
                             type="number"
                             placeholder=""
+                            name="orderProductQuantity"
+                            disabled={orderData.orderProductName === ""}
                           />
                         </Form.Group>
                         <Form.Group
@@ -292,14 +331,8 @@ export const SalesRep = () => {
                             type="number"
                             disabled
                             placeholder=""
-                            value={
-                              orderData.orderProductQuantity *
-                              masterProductDataArray.find(
-                                (product) =>
-                                  product.productName ===
-                                  orderData.orderProductName
-                              )?.productUnitPrice
-                            }
+                            name="orderProductTotalPrice"
+                            value={orderData.orderProductTotalPrice}
                           />
                         </Form.Group>
                         <Form.Group
@@ -307,23 +340,36 @@ export const SalesRep = () => {
                           controlId="orderProductStatus"
                         >
                           <Form.Label>Status</Form.Label>
-                          <Form.Select onChange={
-                            (e) => {
-                              handleOrderDataChange(
-                                "orderProductStatus",
-                                e.target.value
-                              );
-                            }
-                          } aria-label="Default select example">
+                          <Form.Select
+                            onChange={handleChange}
+                            name="orderProductStatus"
+                            value={orderData.orderProductStatus}
+                          >
                             <option>Select order status</option>
-                            <option value={getStatus(1)[0].name}>{getStatus(1)[0].name}</option>
-                            <option value={getStatus(2)[0].name}>{getStatus(2)[0].name}</option>
-                            <option value={getStatus(3)[0].name}>{getStatus(3)[0].name}</option>
-                            <option value={getStatus(4)[0].name}>{getStatus(4)[0].name}</option>
-                            <option value={getStatus(5)[0].name}>{getStatus(5)[0].name}</option>
-                            <option value={getStatus(6)[0].name}>{getStatus(6)[0].name}</option>
-                            <option value={getStatus(7)[0].name}>{getStatus(7)[0].name}</option>
-                            <option value={getStatus(8)[0].name}>{getStatus(8)[0].name}</option>
+                            <option value={getStatus(1)[0].name}>
+                              {getStatus(1)[0].name}
+                            </option>
+                            <option value={getStatus(2)[0].name}>
+                              {getStatus(2)[0].name}
+                            </option>
+                            <option value={getStatus(3)[0].name}>
+                              {getStatus(3)[0].name}
+                            </option>
+                            <option value={getStatus(4)[0].name}>
+                              {getStatus(4)[0].name}
+                            </option>
+                            <option value={getStatus(5)[0].name}>
+                              {getStatus(5)[0].name}
+                            </option>
+                            <option value={getStatus(6)[0].name}>
+                              {getStatus(6)[0].name}
+                            </option>
+                            <option value={getStatus(7)[0].name}>
+                              {getStatus(7)[0].name}
+                            </option>
+                            <option value={getStatus(8)[0].name}>
+                              {getStatus(8)[0].name}
+                            </option>
                           </Form.Select>
                         </Form.Group>
                       </Modal.Body>
@@ -334,14 +380,35 @@ export const SalesRep = () => {
                         >
                           Close
                         </Button>
-                        <Button
-                          variant="primary"
-                          onClick={orderDataSubmit}
-                        >
+                        <Button variant="primary" onClick={orderDataSubmit}>
                           Save Changes
                         </Button>
                       </Modal.Footer>
                     </Modal>
+                    {
+                      // display master product data
+                    }
+                    <Table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th>SoID</th>
+                          <th>PoID</th>
+                          <th>prodName</th>
+                          <th>qty</th>
+                          <th>orderValue</th>
+                          <th>status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {masterTableData.map((order) => (
+                          <tr>
+                            <td>{order[0]}</td>
+                            <td>{order[1]}</td>
+                            <td>{order[2]}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
                   </Col>
                 </Card.Body>
               </Card>
