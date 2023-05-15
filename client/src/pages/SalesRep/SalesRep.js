@@ -180,34 +180,40 @@ export const SalesRep = () => {
     orderProductTotalPrice: 0,
     orderProductStatus: "",
   });
-  const [totalPrice, setTotalPrice] = useState(0);
-  const updateTotalPrice = () => {
-    console.log("updateTotalPrice");
-    setTotalPrice(orderData.orderProductQuantity * masterProductDataArray.find(
-      (product) =>
-        product.productName ===
-        orderData.orderProductName
-    )?.productUnitPrice
-    )
-  }
-  const handleOrderDataChange = (name, value) => {
+
+  const handleChange = (e)=>{
     setOrderData({
-      ...orderData,
-      [name]: value,
-    });
-    console.log("orderData", orderData);
-  };
-  const handleOrderQuantityChange = (e) => {
-    setOrderData({
-      ...orderData,
-      orderProductQuantity: e.target.value,
-    });
-    updateTotalPrice();
+        ...orderData,
+        [e.target.name]:e.target.value});
+        console.log(orderData);
+        
   }
+  
+  useEffect(()=>{
+    if(masterProductDataArray){
+      const filteredArray = masterProductDataArray.filter((each)=>{
+        return each.productName === orderData.orderProductName;
+      })
+      const value = filteredArray[0]?.productUnitPrice;
+      const multiple = parseInt(orderData.orderProductQuantity) * parseInt(value);
+      console.log(multiple)
+      if(multiple )
+      setOrderData({
+        ...orderData,
+        "orderProductTotalPrice": multiple
+      })
+      else{
+        setOrderData({
+        ...orderData,
+          "orderProductTotalPrice": 0
+        })
+      }
+    }
+  },[orderData.orderProductQuantity])
+
   const orderDataSubmit = async (e) => {
     e.preventDefault();
     handleCreateOrderModalClose();
-    console.log(totalPrice);
     console.log("orderData", orderData);
     // await saveData(orderData, "orderData");
     // fetchCollectionData();
@@ -248,15 +254,12 @@ export const SalesRep = () => {
                         >
                           <Form.Label>Product Name</Form.Label>
                           <Form.Select
-                            onChange={(e) => {
-                              handleOrderDataChange(
-                                "orderProductName",
-                                e.target.value
-                              );
-                            }}
+                            value={orderData.orderProductName}
+                            onChange={handleChange}
                             aria-label="Default select example"
+                            name="orderProductName"
                           >
-                            <option>Select Product</option>
+                            <option >Select Product</option>
                             {masterProductDataArray.map((product) => {
                               return (
                                 <option value={product.productName}>
@@ -273,14 +276,12 @@ export const SalesRep = () => {
                         >
                           <Form.Label>Quantity</Form.Label>
                           <Form.Control
-                            onChange={(e) => {
-                              handleOrderQuantityChange(
-                                "orderProductQuantity",
-                                e.target.value
-                              );
-                            }}
+                            onChange={handleChange}
+                            value={orderData.orderProductQuantity}
                             type="number"
                             placeholder=""
+                            name="orderProductQuantity"
+                            disabled={orderData.orderProductName===""}
                           />
                         </Form.Group>
                         <Form.Group
@@ -292,14 +293,16 @@ export const SalesRep = () => {
                             type="number"
                             disabled
                             placeholder=""
-                            value={
-                              orderData.orderProductQuantity *
-                              masterProductDataArray.find(
-                                (product) =>
-                                  product.productName ===
-                                  orderData.orderProductName
-                              )?.productUnitPrice
-                            }
+                            name="orderProductTotalPrice"
+                            value={orderData.orderProductTotalPrice}
+                            // value={
+                              // orderData.orderProductQuantity *
+                              // masterProductDataArray.find(
+                              //   (product) =>
+                              //     product.productName ===
+                              //     orderData.orderProductName
+                              // )?.productUnitPrice
+                            // }
                           />
                         </Form.Group>
                         <Form.Group
@@ -307,14 +310,7 @@ export const SalesRep = () => {
                           controlId="orderProductStatus"
                         >
                           <Form.Label>Status</Form.Label>
-                          <Form.Select onChange={
-                            (e) => {
-                              handleOrderDataChange(
-                                "orderProductStatus",
-                                e.target.value
-                              );
-                            }
-                          } aria-label="Default select example">
+                          <Form.Select onChange={handleChange} name="orderProductStatus" value={orderData.orderProductStatus} aria-label="Default select example">
                             <option>Select order status</option>
                             <option value={getStatus(1)[0].name}>{getStatus(1)[0].name}</option>
                             <option value={getStatus(2)[0].name}>{getStatus(2)[0].name}</option>
