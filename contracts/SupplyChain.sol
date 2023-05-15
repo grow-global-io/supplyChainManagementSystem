@@ -35,7 +35,7 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
     mapping(string => Order) public orderData;
     Order[] public orders;
     mapping(address => string) public roles;
-    event GetSoID(string indexed soID);
+    event GetSoID(string _soId);
 
 
     function initialize() public initializer {

@@ -21,6 +21,17 @@ import { getCollectionData, saveData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
 import {formatBigNumber} from "../../utils/fbutils"
 import toast, { Toaster } from 'react-hot-toast'
+import * as loadingImage from "../../assets/loading.json";
+import Lottie from "react-lottie";
+
+const loadingLoader = {
+  loop: true,
+  autoplay: true,
+  animationData: loadingImage,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
 
 
 const navItem = [];
@@ -30,6 +41,8 @@ export const SalesRep = () => {
   const [vendorDataArray, setVendorDataArray] = useState([]);
   // blockChainMasterData start
   const [masterTableData, setMasterTableData] = useState([]);
+  const [loading, setLoading] = useState(false)
+  const [loaderSize, setLoaderSize] = useState(220);
   //  blockChainMasterData end
   const [role, setRole] = useState("");
   const [save, setSave] = useState(false);
@@ -67,13 +80,14 @@ export const SalesRep = () => {
     );
   }, [masterMaterialDataArray]);
   useEffect(() => {
-    verifyRole();
+    getOrderDetails();
     fetchCollectionData();
   }, [save]);
   useEffect(() => {
     console.log("masterTableData", masterTableData);
   }, [masterTableData]);
-  const verifyRole = async () => {
+
+  const getOrderDetails = async () => {
     console.log("verifyRole");
     await window.ethereum.request({ method: "eth_requestAccounts" });
     const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
@@ -219,6 +233,7 @@ export const SalesRep = () => {
   };
   const handleOrderDataBlockChainSubmit = async (orderData) => {
     try {
+      setLoading(true)
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
       const network = await provider.getNetwork();
@@ -229,6 +244,7 @@ export const SalesRep = () => {
         SuppChain.abi,
         signer
       );
+
       const orderQty = parseInt(orderData.orderProductQuantity);
       const orderPrice = parseInt(orderData.orderProductTotalPrice);
       const tx = await suppContract.createOrder(
@@ -237,11 +253,19 @@ export const SalesRep = () => {
         orderPrice,
         orderData.orderProductStatus
       );
-      const counter = await tx.wait();
-      const currentSoID = counter.events[0].data;
-      debugger
-      console.log("So_ID: ", parseInt(Number(currentSoID)));
-      toast.success(`So ID: ${parseInt(Number(currentSoID))}`)
+      var soId;
+      suppContract.on("GetSoID", (_soId) => {
+        toast.success(`So ID generated was ${JSON.stringify(_soId)}`)
+        
+      })
+      const receipt = await provider
+        .waitForTransaction(tx.hash, 1, 150000)
+        .then(() => {
+          toast.success(`Role assigned successfully !!`)
+          getOrderDetails()
+          setLoading(false)
+        })
+      
     } catch (e) {
       console.log(e);
     }
@@ -276,11 +300,19 @@ export const SalesRep = () => {
       }
     }
   }, [orderData.orderProductQuantity]);
-  if (true) {
+  
+  
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <Toaster position='top-center' reverseOrder='false' />
-        <div>
+        {loading === true ? (
+          <Lottie
+            options={loadingLoader}
+            height={loaderSize}
+            width={loaderSize}
+          />
+        ):(
+          <div>
           <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
             Welcome Sales Representative
           </h1>
@@ -432,24 +464,8 @@ export const SalesRep = () => {
               </Card>
             </Row>
           </Container>
-        </div>
+        </div >
+        )}
+        
       </Navbar>
-    );
-  } else {
-    return (
-      <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
-        <div>
-          <Container>
-            <Row>
-              <Card>
-                <Card.Body>
-                  <h1>You don't have permission</h1>
-                </Card.Body>
-              </Card>
-            </Row>
-          </Container>
-        </div>
-      </Navbar>
-    );
-  }
-};
+    )}
