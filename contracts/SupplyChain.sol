@@ -35,6 +35,7 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
     mapping(string => Order) public orderData;
     Order[] public orders;
     mapping(address => string) public roles;
+    event GetSoID(string indexed soID);
 
 
     function initialize() public initializer {
@@ -72,7 +73,7 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
         roles[_account] = role;
     }
 
-    function createOrder (string memory _prodName, uint256 _qty, uint256 _ordrVal, string memory _status) external onlySO returns(string memory){
+    function createOrder (string memory _prodName, uint256 _qty, uint256 _ordrVal, string memory _status) external onlySO {
         string memory _soId = string.concat("SO",Strings.toString(so_ID));
         Order memory order = Order({
             SoID: _soId,
@@ -91,7 +92,7 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
         orders.push(order);
         orderData[_soId] = order;
         so_ID+=1;
-        return _soId;
+        emit GetSoID (_soId);
     }
 
     
