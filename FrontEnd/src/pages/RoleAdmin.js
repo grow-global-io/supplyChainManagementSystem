@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ResponsiveDrawer from "../components/Navbar";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { useRole } from "../context/RoleDataContext";
 import { useStyles } from "../components/Styles";
 import { ethers } from 'ethers';
 import { getConfigByChain } from '../assets/config'
 import {getRole}  from '../assets/roleConfig'
-import BigNumber from 'bignumber.js'
 import toast, { Toaster } from 'react-hot-toast'
 import SuppChain from '../artifacts/contracts/SupplyChain.sol/SupplyChain.json'
-import RingLoader from "react-spinners/RingLoader";
 import * as walkingMan from "../assets/loading.json";
 import Lottie from "react-lottie";
 
@@ -24,7 +21,6 @@ const walkingManLoader = {
 };
 
 function RoleAdmin(props) {
-  const accounts = props.accounts;
 
   const classes = useStyles();
   const navItem = [];
