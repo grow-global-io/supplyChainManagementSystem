@@ -236,7 +236,6 @@ export const SalesRep = () => {
   const orderDataSubmit = async (e) => {
     e.preventDefault();
     handleCreateOrderModalClose();
-    console.log(totalPrice);
     console.log("orderData", orderData);
     handleOrderDataBlockChainSubmit(orderData);
   };
@@ -297,7 +296,7 @@ export const SalesRep = () => {
                             aria-label="Default select example"
                             name="orderProductName"
                           >
-                            <option>Select Product</option>
+                            <option >Select Product</option>
                             {masterProductDataArray.map((product) => {
                               return (
                                 <option value={product.productName}>
