@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js'
 import toast, { Toaster } from 'react-hot-toast'
 import SuppChain from '../artifacts/contracts/SupplyChain.sol/SupplyChain.json'
 import RingLoader from "react-spinners/RingLoader";
-import * as walkingMan from "../assets/walkingMan.json";
+import * as walkingMan from "../assets/loading.json";
 import Lottie from "react-lottie";
 
 const walkingManLoader = {
@@ -29,7 +29,7 @@ function RoleAdmin(props) {
   const classes = useStyles();
   const navItem = [];
   const [loading, setLoading] = useState(false)
-  const [loaderSize, setLoaderSize] = useState(320);
+  const [loaderSize, setLoaderSize] = useState(220);
   const [formInput, updateFormInput] = useState({
     salesRep: '',
     poAgent: "",
@@ -78,7 +78,6 @@ function RoleAdmin(props) {
             height={loaderSize}
             width={loaderSize}
           />
-          I am carrying your data to store it. Please Wait !!
           </>
         ) : (
           <div className={classes.FormWrap}>
