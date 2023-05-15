@@ -8,33 +8,33 @@ export const getData = async () => {
 };
 // save vendor data to firestore
 export const saveData = async (data, collectionName) => {
-  console.log(data);
+  // console.log(data);
   const docRef = doc(db, collectionName, uuidv4());
   await setDoc(docRef, data);
-  console.log("Document written with ID: ", docRef.id);
+  // console.log("Document written with ID: ", docRef.id);
 };
 
 // get collection data
 export const getCollectionData = async (collectionName) => {
-  console.log("here", collectionName);
+  // console.log("here", collectionName);
   const querySnapshot = await getDocs(collection(db, collectionName));
   let data = [];
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
     data.push(doc.data());
-    console.log(doc.id, " => ", doc.data());
+    // console.log(doc.id, " => ", doc.data());
   });
   return data;
 };
 // get collection Data along with id
 export const getCollectionDataWithId = async (collectionName) => {
-  console.log("here", collectionName);
+  // console.log("here", collectionName);
   const querySnapshot = await getDocs(collection(db, collectionName));
   let data = [];
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
     data.push({ ...doc.data(), id: doc.id });
-    console.log(doc.id, " => ", doc.data());
+    // console.log(doc.id, " => ", doc.data());
   });
   return data;
 }
@@ -42,5 +42,5 @@ export const getCollectionDataWithId = async (collectionName) => {
 export const updateCollectionData = async (collectionName, id, data) => {
   const docRef = doc(db, collectionName, id);
   await setDoc(docRef, data);
-  console.log("Document written with ID: ", docRef.id);
+  // console.log("Document written with ID: ", docRef.id);
 }
