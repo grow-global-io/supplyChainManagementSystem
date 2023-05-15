@@ -46,6 +46,7 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
         uid = 1;
     }
 
+    /*****. Create Some Helper functions Start ***********/
     function getFirstChar(string memory _originString) internal pure returns (string memory){
         bytes memory firstCharByte = new bytes(1);
         firstCharByte[0] = bytes(_originString)[0];
@@ -60,19 +61,38 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
                 result[i] = _stringBytes[i];
                 if(i== 0)
                 result[i]=bytes("S")[0];
-            }
-            return  string(result);
-        } 
+        }
+        return  string(result);
+    } 
 
-
-    function getRole() public view returns (string memory) {
-        return roles[msg.sender];
+    function st2num(string memory numString) public pure returns(uint256) {
+        uint  val=0;
+        bytes   memory stringBytes = bytes(numString);
+        for (uint  i =  0; i<stringBytes.length; i++) {
+            uint exp = stringBytes.length - i;
+            bytes1 ival = stringBytes[i];
+            uint8 uval = uint8(ival);
+           uint jval = uval - uint(0x30);
+   
+           val +=  (uint(jval) * (10**(exp-1))); 
+        }
+      return val;
     }
+    /*****. Create Some Helper functions End ***********/
 
+    
+    /********* Assignes Role *********/
     function addRole(address _account, string memory role) external onlyOwner notNullAddress(_account) {
         roles[_account] = role;
     }
 
+    /********* Get The assigned Role for you *********/
+    function getRole() public view returns (string memory) {
+        return roles[msg.sender];
+    }
+
+
+    /********* Create order done by SO only, returns the SO ID *********/
     function createOrder (string memory _prodName, uint256 _qty, uint256 _ordrVal, string memory _status) external onlySO {
         string memory _soId = string.concat("SO",Strings.toString(so_ID));
         Order memory order = Order({
@@ -96,7 +116,7 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
     }
 
     
-    //Able to return order details by taking both SO or PO 
+    /*********Able to return order details by taking both SO or PO ********/
     function getOrderDetails(string memory _soOrPo) external view returns (Order memory) {
         if(keccak256(abi.encodePacked(getFirstChar(_soOrPo))) == keccak256(abi.encodePacked("S"))){
             return orderData[_soOrPo];
@@ -105,6 +125,7 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
         }
     }
 
+    /********* select * from OrderTable *********/
     function getAllOrderDetails() external view onlySO returns (Order[] memory)  {
         
         uint256 totalOrderCount = so_ID; //16533
@@ -121,10 +142,38 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
         return items;
     }
     
-    function updateStatus(string memory _so, string memory _status) external onlyInsider {
-        orderData[_so].status = _status;
+    
+    /********* Can update multiple columns in a single go *********/
+    function update(string calldata _so, string[] calldata colName, string[] calldata _value) external onlyInsider {
+        
+        for (uint i = 0; i < colName.length; i++) {
+
+            if(keccak256(abi.encodePacked(colName[i])) == keccak256(abi.encodePacked("Status"))){
+                orderData[_so].status = _value[i];
+            }
+            else if(keccak256(abi.encodePacked(colName[i])) == keccak256(abi.encodePacked("Customer Final Delivery Date"))){
+                orderData[_so].customerFinalDeliveryDate = st2num(_value[i]);
+            }
+            else if(keccak256(abi.encodePacked(colName[i])) == keccak256(abi.encodePacked("BarCode"))){
+                orderData[_so].barCode = _value[i];
+            }
+            else if(keccak256(abi.encodePacked(colName[i])) == keccak256(abi.encodePacked("BatchNo"))){
+                orderData[_so].batchNo = _value[i];
+            }
+            else if(keccak256(abi.encodePacked(colName[i])) == keccak256(abi.encodePacked("Master Label"))){
+                orderData[_so].masterLabel = _value[i];
+            }
+            else if(keccak256(abi.encodePacked(colName[i])) == keccak256(abi.encodePacked("Invoice Path"))){
+                orderData[_so].invoicePath = _value[i];
+            }
+            else if(keccak256(abi.encodePacked(colName[i])) == keccak256(abi.encodePacked("Tracking No"))){
+                orderData[_so].trackingNo = _value[i];
+            }
+        }
+        
     }
 
+    /****************  Access Modifiers ***************** */
     modifier onlySO(){
         require(keccak256(abi.encodePacked(roles[msg.sender])) == keccak256(abi.encodePacked("Sales Representative")),"You are not a Sales Rep !!");
         _;

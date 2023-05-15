@@ -1899,6 +1899,236 @@
           }
         }
       }
+    },
+    "76bb120ee6e16b4f95120ba148f578da9e2ee6ab99552d04c72bf00ec4494099": {
+      "address": "0x3D0C1a14Ae8b4eEd5F4e43bB6ed0d7243B45f546",
+      "txHash": "0xb0d008bd5f16e6bf4e91d1a3236ef195b22a81c97ef20a522089b90104b6e9a7",
+      "layout": {
+        "solcVersion": "0.8.12",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "uid",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_uint256",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:15"
+          },
+          {
+            "label": "sku",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_uint256",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:16"
+          },
+          {
+            "label": "so_ID",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_uint256",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:17"
+          },
+          {
+            "label": "start_so_ID",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_uint256",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:18"
+          },
+          {
+            "label": "orderData",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(Order)2431_storage)",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:35"
+          },
+          {
+            "label": "orders",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_array(t_struct(Order)2431_storage)dyn_storage",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:36"
+          },
+          {
+            "label": "roles",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_mapping(t_address,t_string_storage)",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:37"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Order)2431_storage)dyn_storage": {
+            "label": "struct SupplyChain.Order[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_string_storage)": {
+            "label": "mapping(address => string)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(Order)2431_storage)": {
+            "label": "mapping(string => struct SupplyChain.Order)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Order)2431_storage": {
+            "label": "struct SupplyChain.Order",
+            "members": [
+              {
+                "label": "SoID",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "PoID",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "prodName",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "qty",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "orderValue",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "customerFinalDeliveryDate",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "status",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "barCode",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "batchNo",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "masterLabel",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "9"
+              },
+              {
+                "label": "invoicePath",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "10"
+              },
+              {
+                "label": "trackingNo",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "11"
+              }
+            ],
+            "numberOfBytes": "384"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
     }
   }
 }
