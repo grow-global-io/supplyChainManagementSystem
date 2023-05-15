@@ -74,8 +74,8 @@
       ]
     },
     "/Users/tatz/growglobal/supplychain-dapp/contracts/SupplyChain.sol": {
-      "lastModificationDate": 1684062638285,
-      "contentHash": "e8887b2a27bd573be6c45575d36f4d0b",
+      "lastModificationDate": 1684071273734,
+      "contentHash": "aa89671b523e8d8b24e76f2d09d74639",
       "sourceName": "contracts/SupplyChain.sol",
       "solcConfig": {
         "version": "0.8.12",
