@@ -11,7 +11,7 @@ export const saveData = async (data, collectionName) => {
   // console.log(data);
   const docRef = doc(db, collectionName, uuidv4());
   await setDoc(docRef, data);
-  // console.log("Document written with ID: ", docRef.id);
+  console.log("Document written with ID: ", docRef.id);
 };
 
 // get collection data
@@ -42,7 +42,7 @@ export const getCollectionDataWithId = async (collectionName) => {
 export const updateCollectionData = async (collectionName, id, data) => {
   const docRef = doc(db, collectionName, id);
   await setDoc(docRef, data);
-  // console.log("Document written with ID: ", docRef.id);
+  console.log("Document written with ID: ", docRef.id);
 }
 
 export const formatBigNumber = (bigNumber) => {
