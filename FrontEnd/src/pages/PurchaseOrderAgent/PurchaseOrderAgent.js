@@ -122,10 +122,10 @@ export default function PurchaseOrderAgent() {
     console.log("soId",POData.soId);
     await saveData(POData, "purchaseOrderLineItem");
     setSave(!save);
-    await updateBlockDataOrderStatus(POData.soId);
+    await updateBlockDataOrderStatus(POData.soId,["Status"],["Looking for Vendor Acceptance"]);
     handlePOModalClose();
   };
-  const updateBlockDataOrderStatus = async (soId) => {
+  const updateBlockDataOrderStatus = async (soId,col,val) => {
     // setLoading(true)
     try {
       await (window).ethereum.request({ method: "eth_requestAccounts", });
@@ -139,7 +139,7 @@ export default function PurchaseOrderAgent() {
         signer
       )
       console.log(soId);
-      const tx = await suppContract.update(soId,["status"],["Looking"]);
+      const tx = await suppContract.update(soId,col,val);
       console.log("tx", tx);
       // toast('Role Assignment in progress !!', { icon: '👏' })
       
@@ -195,6 +195,7 @@ export default function PurchaseOrderAgent() {
     console.log("POData", POData);
     await updateCollectionData("purchaseOrderLineItem", POData.id, POData);
     setSave(!save);
+    updateBlockDataOrderStatus(POData.soId,["Status"],["Vendor Accepted"]);
     handleUpdateReceiveDataModalClose();
   };
   // purchase order Agent specific code end
