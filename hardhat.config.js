@@ -33,12 +33,12 @@ module.exports = {
       chainId: 56,
     },
     xdc: {
-      url: `https://rpc.xinfin.network`,
+      url: `https://erpc.xinfin.network`,
       accounts: [privateKey],
       chainId: 50,
     },
     apothem: {
-      url: `https://rpc.apothem.network`,
+      url: `https://erpc.apothem.network`,
       accounts: [privateKey],
       chainId: 51,
     }
