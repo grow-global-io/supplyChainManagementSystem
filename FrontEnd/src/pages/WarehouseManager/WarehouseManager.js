@@ -13,50 +13,47 @@ import {
   Dropdown,
 } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
+import Select from "react-select";
 import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.json";
 import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
 import {
+  formatBigNumber,
   getCollectionData,
   getCollectionDataWithId,
   saveData,
-  updateCollectionData,
 } from "../../utils/fbutils";
+import { updateCollectionData } from "../../utils/fbutils";
+import { getStatus } from "../../assets/statusConfig";
 const navItem = [];
 export const WarehouseManager = () => {
-  const [role, setRole] = useState("");
-  const [shelfLife, setShelfLife] = useState(0);
-  const [barCode, setBarCode] = useState(0);
-  const [batchNumber, setBatchNumber] = useState(0);
-  const [show, setShow] = useState(false);
-  const [selectedMaterial, setSelectedMaterial] = useState("");
-  const [id, setId] = useState("");
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const [masterProductDataArray, setmasterProductDataArray] = useState([]);
+  const [masterMaterialDataArray, setmasterMaterialDataArray] = useState([]);
   const [vendorDataArray, setVendorDataArray] = useState([]);
-  const [materialDataArray, setMaterialDataArray] = useState([]);
-  const [purchaseOrderDataArray, setPurchaseOrderDataArray] = useState([]);
-  const [receiveDate, setReceiveDate] = useState("");
+  const [purchaseOrderLineItemDataArray, setPurchaseOrderLineItemDataArray] =
+    useState([]);
+  // blockChainMasterData start
+  const [masterTableData, setMasterTableData] = useState([]);
+  //  blockChainMasterData end
+  const [role, setRole] = useState("");
+  const [save, setSave] = useState(false);
+
   const fetchCollectionData = async () => {
-    const data2 = await getCollectionData("MaterialData");
-    setMaterialDataArray(data2);
-    const data1 = await getCollectionData("VendorProductData");
-    setVendorProductDataArray(data1);
-    const data3 = await getCollectionData("Vendor");
-    setVendorDataArray(data3);
-    const data4 = await getCollectionDataWithId("PurchaseOrder");
-    console.log("data4", data4);
-    setPurchaseOrderDataArray(data4);
-    // const data5 = await getCollectionDataWithId("PurchaseOrder");
-    // console.log("data5", data5);
+    setmasterProductDataArray(await getCollectionData("masterProductData"));
+    setmasterMaterialDataArray(await getCollectionData("masterMaterialData"));
+    setVendorDataArray(await getCollectionData("masterVendorData"));
+    setPurchaseOrderLineItemDataArray(
+      await getCollectionDataWithId("purchaseOrderLineItem")
+    );
   };
-  const [vendorProductDataArray, setVendorProductDataArray] = useState([]);
-  const [quantity, setQuantity] = useState(0);
   useEffect(() => {
     verifyRole();
     fetchCollectionData();
-  }, []);
+  }, [save]);
+  useEffect(() => {
+    console.log("masterTableData", masterTableData);
+  }, [masterTableData]);
 
   const verifyRole = async () => {
     console.log("verifyRole");
@@ -72,173 +69,505 @@ export const WarehouseManager = () => {
     );
     console.log("suppContract", suppContract);
     const tx = await suppContract.getRole();
-    console.log("tx", tx);
+    setMasterTableData(await suppContract.getAllOrderDetails());
     setRole(tx);
-    console.log("role", role);
   };
-  const checkout = async () => {
-    console.log("checkOut");
+  // purchase order Agent specific code start
+  const [POModalShow, setPOModalShow] = useState(false);
+  const handlePOModalClose = () => setPOModalShow(false);
+  const handlePOModalShow = () => setPOModalShow(true);
+  const [currentPO, setCurrentPO] = useState([]);
+  const [POData, setPOData] = useState({
+    poId: "",
+    soId: "",
+    materialName: "",
+    Qty: "",
+    orderValue: 0,
+    vendorName: [],
+    receiveDate: "",
+    shelfLife: "",
+    barCode: "",
+    batchNumber: "",
+  });
+  const handlePODataChange = (e) => {
+    // setPOData({ ...POData, [e.target.id]: e.target.value });
+    if (e.target.id === "Qty") {
+      const filteredArray = masterMaterialDataArray.filter((each) => {
+        return each.materialName === POData.materialName;
+      });
+      const materialPrice = parseInt(filteredArray[0].materialUnitPrice);
+      const Quantity = parseInt(e.target.value);
+      if (Quantity < 0) {
+        alert("Quantity should be greater than 0");
+        return;
+      }
+      const orderValue = materialPrice * Quantity;
+      POData.orderValue = orderValue;
+      console.log("PODataP", POData);
+    }
+    setPOData({ ...POData, [e.target.id]: e.target.value });
+    console.log("POData", POData);
   };
-  const [selectedOption, setSelectedOption] = useState("");
+  const createPOLineItem = (soId, poId) => async () => {
+    console.log("poId", poId);
+    console.log("soId", soId);
+    POData.poId = poId;
+    POData.soId = soId;
+    setCurrentPO(poId);
+    handlePOModalShow();
+  };
+  const handlePODataSubmit = async () => {
+    POData.vendorName = selectedVendors;
+    console.log("POData", POData);
+    console.log("soId", POData.soId);
+    await saveData(POData, "purchaseOrderLineItem");
+    setSave(!save);
+    await updateBlockDataOrderStatus(
+      POData.soId,
+      ["Status"],
+      ["Looking for Vendor Acceptance"]
+    );
+    handlePOModalClose();
+  };
+  const updateBlockDataOrderStatus = async (soId, col, val) => {
+    // setLoading(true)
+    try {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+      const network = await provider.getNetwork();
+      const signer = provider.getSigner();
 
-  const handleChangeDropDown = (event) => {
-    console.log("event.target.value", event.target.value);
-    setSelectedOption(event.target.value);
-    console.log("selectedOption", selectedOption);
+      const suppContract = new ethers.Contract(
+        getConfigByChain(network.chainId)[0].suppChainAddress,
+        SuppChain.abi,
+        signer
+      );
+      console.log(soId);
+      const tx = await suppContract.update(soId, col, val);
+      console.log("tx", tx);
+      // toast('Role Assignment in progress !!', { icon: '👏' })
+    } catch (e) {
+      // toast.error('An error occured. Check console !!')
+      console.log(e);
+      // setLoading(false)
+    }
   };
-  const handleShow2 = (item, id) => {
-    // setSelectedMaterial(item);
-    console.log("currentItem", item);
-    console.log("id", id);
-    // console.log("selectedMaterial", selectedMaterial);
-    return () => {
-      setId(id);
-      setSelectedMaterial(item);
-      console.log("item", selectedMaterial);
-      handleShow();
-    };
+  const [vendorList, setVendorList] = useState([]);
+  useEffect(() => {
+    setVendorList([]);
+    let tempVendorList = [];
+    masterMaterialDataArray.map((each) => {
+      if (each.materialName === POData.materialName) {
+        // console.log("each", each);
+        each.materialVendorResponsible.map((vendor) => {
+          console.log("vendor", vendor);
+          tempVendorList.push({ value: vendor, label: vendor });
+        });
+      }
+    });
+    console.log("tempVendorList", tempVendorList);
+    setVendorList(tempVendorList);
+    console.log("vendorList", vendorList);
+  }, [POData.materialName]);
+  const [selectedVendors, setSelectedVendors] = useState([]);
+  const handleMultipleVendorChange = (e) => {
+    setSelectedVendors(Array.isArray(e) ? e.map((x) => x.value) : []);
+    console.log("selectedVendors", selectedVendors);
+    // POData.vendorName = selectedVendors;
+    // console.log("POData", POData);
   };
-  const handleChange = (name, value) => {
-    console.log("name", name);
-    console.log("value", value);
-    setQuantity(value);
+  const [receiveDateUpdatePOId, setReceiveDateUpdatePOId] = useState("");
+  const [receiveDateUpdateCollectionId, setReceiveDateUpdateCollectionId] =
+    useState("");
+  const updatePOLineItemData = (item) => {
+    setPOData(item);
+    handleUpdateReceiveDataModalShow();
   };
-  const handleReceiveDateChange = (event) => {
-    console.log("event.target.value", event.target.value);
-    setReceiveDate(event.target.value);
-    console.log("receiveDate", receiveDate);
+  const [updateReceiveDataModalShow, setUpdateReceiveDataModalShow] =
+    useState(false);
+  const handleUpdateReceiveDataModalClose = () =>
+    setUpdateReceiveDataModalShow(false);
+  const handleUpdateReceiveDataModalShow = () =>
+    setUpdateReceiveDataModalShow(true);
+  const [receiveDate, setReceiveDate] = useState("");
+  const handleUpdateReceiveDataChange = (e) => {
+    // setReceiveDate(e.target.value);
+    // POData.receiveDate = e.target.value;
+    setPOData({ ...POData, [e.target.id]: e.target.value });
+    // console.log("e.target.value", e.target.value);
+    // console.log("e.target.id", e.target.id);
+    // console.log("POData", POData);
   };
-  const handleSave = async () => {
-    console.log("handleSave");
-    const data = {
-      materialName: selectedMaterial.materialName,
-      materialCode: selectedMaterial.materialCode,
-      // materialSKUBatchNumber: selectedMaterial.materialSKUBatchNumber,
-      materialSKUBatchNumber: batchNumber,
-      materialUnitPrice: selectedMaterial.materialUnitPrice,
-      materialVendorResponsible: selectedMaterial.materialVendorResponsible,
-      // materialShelfLife: selectedMaterial.materialShelfLife,
-      materialShelfLife: shelfLife,
-      // materialBarCode: selectedMaterial.materialBarCode,
-      materialBarCode: barCode,
-      quantity: selectedMaterial.quantity,
-      vendorName: selectedMaterial.vendorName,
-      receiveDate: receiveDate,
-    };
-    console.log("data", data);
-    console.log("id", id);
-    await updateCollectionData("PurchaseOrder", id, data);
-    // await saveData(data, "PurchaseOrder");
-    handleClose();
-    fetchCollectionData();
+  const handleUpdateReceiveDataSubmit = async () => {
+    console.log("POData", POData);
+    await updateCollectionData("purchaseOrderLineItem", POData.id, POData);
+    setSave(!save);
+    // updateBlockDataOrderStatus(POData.soId, ["Status"], ["Vendor Accepted"]);
+    handleUpdateReceiveDataModalClose();
   };
-  if (role === "Sales Representative") {
+  // show particular PO details
+  const [showPODetails, setShowPODetails] = useState(true);
+  const [selectedPO, setSelectedPO] = useState("");
+  const [selectedSO, setSelectedSO] = useState("");
+  const [
+    filteredpurchaseOrderLineItemDataArray,
+    setFilteredpurchaseOrderLineItemDataArray,
+  ] = useState([]);
+  const handleShowPODetails = (soId, poId) => {
+    setShowPODetails(false);
+    setSelectedPO(poId);
+    setSelectedSO(soId);
+    console.log("poId", poId);
+    console.log("soId", soId);
+    // open View purchase order Line items tab
+    const tab = document.getElementById(
+      "uncontrolled-tab-example-tab-ViewPurchaseOrderLineItems"
+    );
+    console.log("tab", tab);
+    // wait for 1 sec
+    setTimeout(() => {
+      tab.click();
+    }, 1000);
+
+    // filter purchase order line item data array
+    console.log(
+      "purchaseOrderLineItemDataArray",
+      purchaseOrderLineItemDataArray
+    );
+    let tempFilteredpurchaseOrderLineItemDataArray = [];
+    purchaseOrderLineItemDataArray.map((each) => {
+      if (each.poId === poId) {
+        tempFilteredpurchaseOrderLineItemDataArray.push(each);
+      }
+    });
+    console.log(
+      "tempFilteredpurchaseOrderLineItemDataArray",
+      tempFilteredpurchaseOrderLineItemDataArray
+    );
+    setFilteredpurchaseOrderLineItemDataArray(
+      tempFilteredpurchaseOrderLineItemDataArray
+    );
+  };
+  // purchase order Agent specific code end
+  if (true) {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <div>
-        <h1>Welcome Warehouse Manager</h1>
+          <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
+            Welcome Warehouse Manager
+          </h1>
           <Container>
             <Row>
               <Card>
                 <Card.Body>
                   <Col>
-                    <Modal className="mt-5" show={show} onHide={handleClose}>
-                      <Modal.Header closeButton>
-                        <Modal.Title>Edit Receive Date</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Form>
-                          <Form.Group className="mb-3" controlId="shelfLife">
-                            <Form.Label>shelf life</Form.Label>
-                            <Form.Control
-                              type="text"
-                              value={shelfLife}
-                              onChange={(e) => {
-                                setShelfLife(e.target.value);
-                                console.log("shelfLife", shelfLife);
-                              }}
-                              name="shelfLife"
-                              placeholder=""
-                            />
-                            <Form.Label>bar code</Form.Label>
-                            <Form.Control
-                              type="text"
-                              value={barCode}
-                              onChange={(e) => {
-                                setBarCode(e.target.value);
-                                console.log("barCode", barCode);
-                              }}
-                              name="barCode"
-                              placeholder=""
-                            />
-                            <Form.Label>batch number</Form.Label>
-                            <Form.Control
-                              type="text"
-                              value={batchNumber}
-                              onChange={(e) => {
-                                setBatchNumber(e.target.value);
-                                console.log("batchNumber", batchNumber);
-                              }}
-                              name="batchNumber"
-                              placeholder=""
-                            />
-                          </Form.Group>
-                        </Form>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                          Close
-                        </Button>
-                        <Button variant="primary" onClick={handleSave}>
-                          Save Changes
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Table striped bordered hover>
-                      <thead>
-                        <tr>
-                          <th>Sr No.</th>
-                          <th>material Name</th>
-                          <th>material Code</th>
-                          <th>materialSKUBatchNumber</th>
-                          <th>bar code</th>
-                          <th>shelf life</th>
-                          <th>material Unit Price</th>
-                          <th>materialVendorResponsible</th>
-                          <th>vendor</th>
-                          <th>quantity</th>
-                          <th>receive Date</th>
-                          <th>Edit</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {purchaseOrderDataArray.map((item, index) => {
-                          {
-                            console.log("item", item);
-                          }
-                          return (
+                    <Tabs
+                      defaultActiveKey="viewOrder"
+                      id="uncontrolled-tab-example"
+                      className="mb-3"
+                    >
+                      <Tab eventKey="viewOrder" title="View Accepted Order">
+                        <Table striped bordered hover>
+                          <thead>
                             <tr>
-                              <td>{index + 1}</td>
-                              <td>{item.materialName}</td>
-                              <td>{item.materialCode}</td>
-                              <td>{item.materialSKUBatchNumber}</td>
-                              <td>{item.materialBarCode}</td>
-                              <td>{item.materialShelfLife}</td>
-                              <td>{item.materialUnitPrice}</td>
-                              <td>{item.materialVendorResponsible}</td>
-                              <td>{item.vendorName}</td>
-                              <td>{item.quantity}</td>
-                              <td>{item.receiveDate}</td>
-                              <td>
-                                <button onClick={handleShow2(item, item.id)}>
-                                  click
-                                </button>
-                              </td>
+                              <th>Sr. No.</th>
+                              <th>PoID</th>
+                              <th>prodName</th>
+                              <th>qty</th>
+                              <th>orderValue</th>
+                              <th>status</th>
+                              {
+                                // <th>Create PO Line Item</th>
+                              }
                             </tr>
-                          );
-                        })}
-                      </tbody>
-                    </Table>
+                          </thead>
+                          <tbody>
+                            {masterTableData.map((order, index) => (
+                              <tr>
+                                <td>{index + 1}</td>
+                                {
+                                  // <td>{order[1]}</td>
+                                }
+                                <td>
+                                  <Button
+                                    onClick={() =>
+                                      handleShowPODetails(order[0], order[1])
+                                    }
+                                    variant="primary"
+                                  >
+                                    {order[1]}
+                                  </Button>{" "}
+                                </td>
+                                <td>{order[2]}</td>
+                                <td>{formatBigNumber(order[3])}</td>
+                                <td>{formatBigNumber(order[4])}</td>
+                                <td>{order[6]}</td>
+                                {
+                                  //   <td>
+                                  //   <Button
+                                  //     onClick={createPOLineItem(order[0],order[1])}
+                                  //     variant="primary"
+                                  //   >
+                                  //     Click
+                                  //   </Button>{" "}
+                                  // </td>
+                                }
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                        <Modal
+                          className="mt-5"
+                          show={POModalShow}
+                          onHide={handlePOModalClose}
+                        >
+                          <Modal.Header closeButton>
+                            <Modal.Title>Modal heading</Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body>
+                            <Form>
+                              <Form.Group
+                                className="mb-3"
+                                controlId="materialName"
+                              >
+                                <Form.Label>PO ID</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  disabled
+                                  placeholder={currentPO}
+                                />
+                              </Form.Group>
+                              <Form.Group
+                                className="mb-3"
+                                controlId="materialName"
+                              >
+                                <Form.Label>Material Name</Form.Label>
+                                <Form.Control
+                                  as="select"
+                                  onChange={handlePODataChange}
+                                >
+                                  <option value="">Select Material</option>
+                                  {masterMaterialDataArray.map((material) => (
+                                    <option value={material.materialName}>
+                                      {material.materialName}
+                                    </option>
+                                  ))}
+                                </Form.Control>
+                              </Form.Group>
+                              <Form.Group className="mb-3" controlId="Qty">
+                                <Form.Label>Quantity</Form.Label>
+                                <Form.Control
+                                  type="number"
+                                  placeholder="Enter Quantity"
+                                  value={POData.Qty}
+                                  onChange={handlePODataChange}
+                                />
+                              </Form.Group>
+                              <Form.Group
+                                className="mb-3"
+                                controlId="orderValue"
+                              >
+                                <Form.Label>Order Value</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder="Enter Order Value"
+                                  value={POData.orderValue}
+                                  disabled
+                                />
+                              </Form.Group>
+                              <Form.Group
+                                className="mb-3"
+                                controlId="materialVendorResponsible"
+                              >
+                                <Form.Label>Vendors Responsible</Form.Label>
+                                <Select
+                                  onChange={(e) => {
+                                    handleMultipleVendorChange(e);
+                                  }}
+                                  isMulti
+                                  options={vendorList}
+                                />
+                              </Form.Group>
+                              {
+                                //   <Form.Group
+                                //   className="mb-3"
+                                //   controlId="receiveDate"
+                                // >
+                                //   <Form.Label>Receive Data</Form.Label>
+                                //   <Form.Control
+                                //     type="date"
+                                //     placeholder="Enter Receive Date"
+                                //     value={POData.receiveDate}
+                                //     onChange={handlePODataChange}
+                                //   />
+                                // </Form.Group>
+                              }
+                            </Form>
+                          </Modal.Body>
+                          <Modal.Footer>
+                            <Button
+                              variant="secondary"
+                              onClick={handlePOModalClose}
+                            >
+                              Close
+                            </Button>
+                            <Button
+                              variant="primary"
+                              onClick={handlePODataSubmit}
+                            >
+                              Save Changes
+                            </Button>
+                          </Modal.Footer>
+                        </Modal>
+                      </Tab>
+                      <Tab
+                        disabled={showPODetails}
+                        id="viewOrder-tab"
+                        eventKey="ViewPurchaseOrderLineItems"
+                        title="POLineItem"
+                      >
+                        <Table striped bordered hover>
+                          <thead>
+                            <tr>
+                              <th>Sr. No.</th>
+                              {
+                                // <th>SoID</th>
+                              }
+                              <th>PoID</th>
+                              <th>Material Name</th>
+                              <th>qty</th>
+                              <th>orderValue</th>
+                              <th>Vendor</th>
+
+                              <th>Receive Date</th>
+                              <th>shelf Life</th>
+                              <th>bar code</th>
+                              <th>batch number</th>
+                              <th>update Data</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredpurchaseOrderLineItemDataArray.map(
+                              (item, index) => (
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  {
+                                    // <td>{item.soId}</td>
+                                  }
+                                  <td>{item.poId}</td>
+                                  <td>{item.materialName}</td>
+                                  <td>{item.Qty}</td>
+                                  <td>{item.orderValue}</td>
+                                  <td>
+                                    {item.vendorName.map((vendor) => (
+                                      <div>{vendor}</div>
+                                    ))}
+                                  </td>
+                                  <td>{item.receiveDate}</td>
+                                  <td>{item.shelfLife}</td>
+                                  <td>{item.barCode}</td>
+                                  <td>{item.batchNumber}</td>
+                                  <td>
+                                    <Button
+                                      onClick={() => {
+                                        updatePOLineItemData(item);
+                                      }}
+                                    >
+                                      Click
+                                    </Button>
+                                  </td>
+                                </tr>
+                              )
+                            )}
+                          </tbody>
+                        </Table>
+                        {
+                          //   <Button
+                          //   onClick={createPOLineItem(
+                          //     selectedSO,
+                          //     selectedPO
+                          //   )}
+                          //   variant="primary"
+                          // >
+                          //   Create PO Line Item
+                          // </Button>{" "}
+                        }
+                        <Button
+                          onClick={() =>
+                            updateBlockDataOrderStatus(
+                              selectedSO,
+                              ["Status"],
+                              ["Ready for Production"]
+                            )
+                          }
+                          variant="primary"
+                        >
+                          Update Status
+                        </Button>{" "}
+                        <Modal
+                          className="mt-5"
+                          show={updateReceiveDataModalShow}
+                          onHide={handleUpdateReceiveDataModalClose}
+                        >
+                          <Modal.Header closeButton>
+                            <Modal.Title>Update PO Line Item</Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body>
+                            <Form>
+                              <Form.Group
+                                className="mb-3"
+                                controlId="shelfLife"
+                              >
+                                <Form.Label>Shelf Life</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder="Enter Shelf Life"
+                                  onChange={handleUpdateReceiveDataChange}
+                                />
+                              </Form.Group>
+                              <Form.Group
+                                className="mb-3"
+                                controlId="barCode"
+                              >
+                                <Form.Label>Bar Code</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder="Enter Bar Code"
+                                  onChange={handleUpdateReceiveDataChange}
+                                />
+                              </Form.Group>
+                              <Form.Group
+                                className="mb-3"
+                                controlId="batchNumber"
+                              >
+                                <Form.Label>Batch Number</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder="Enter Batch Number"
+                                  onChange={handleUpdateReceiveDataChange}
+                                />
+                              </Form.Group>
+                            </Form>
+                          </Modal.Body>
+                          <Modal.Footer>
+                            <Button
+                              variant="secondary"
+                              onClick={handleUpdateReceiveDataModalClose}
+                            >
+                              Close
+                            </Button>
+                            <Button
+                              variant="primary"
+                              onClick={() => {
+                                handleUpdateReceiveDataSubmit();
+                              }}
+                            >
+                              Save Changes
+                            </Button>
+                          </Modal.Footer>
+                        </Modal>
+                      </Tab>
+                    </Tabs>
                   </Col>
                 </Card.Body>
               </Card>
@@ -264,4 +593,4 @@ export const WarehouseManager = () => {
       </Navbar>
     );
   }
-}
+};

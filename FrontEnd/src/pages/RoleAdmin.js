@@ -29,8 +29,12 @@ function RoleAdmin(props) {
   const [formInput, updateFormInput] = useState({
     salesRep: '',
     poAgent: "",
-    trdPartyVendor: "",
-    wareHouseManager: ""
+    productionManager: "",
+    wareHouseManager: "",
+    finaceManager: "",
+    productManager: "",
+    batchManager: "",
+    logisticManager: "",
   });
 
   const handleAddRole = async (myAddress, role) => {
@@ -135,13 +139,13 @@ function RoleAdmin(props) {
               <div className={classes.RoleForm} >
                 <TextField
                   id="trdPartyRole"
-                  label="Enter Third Party Vendor Address"
+                  label="Enter Production Manager Address"
                   variant="outlined"
-                  value={formInput.trdPartyVendor}
+                  value={formInput.productionManager}
                   onChange={(e) =>
                     updateFormInput((formInput) => ({
                       ...formInput,
-                      trdPartyVendor: e.target.value,
+                      productionManager: e.target.value,
                     }))
                   }
                   style={{ width: "70%" }}
@@ -149,7 +153,7 @@ function RoleAdmin(props) {
                 <Button
                   variant="contained"
                   color="primary"
-                    onClick={() => handleAddRole(formInput.trdPartyVendor, getRole(3)[0].name)}
+                    onClick={() => handleAddRole(formInput.productionManager, getRole(3)[0].name)}
                   style={{ width: "30%", marginLeft: "10px" }}
                 >
                     Add {getRole(3)[0].name}
@@ -179,6 +183,106 @@ function RoleAdmin(props) {
                   style={{ width: "30%", marginLeft: "10px" }}
                 >
                     Add {getRole(4)[0].name}
+                </Button>
+              </div>
+            </form>
+            <form className={classes.root} noValidate autoComplete="off">
+              <div className={classes.RoleForm} >
+                <TextField
+                  id="whManRole"
+                  label=" Enter Finance Manager Address"
+                  variant="outlined"
+                  value={formInput.finaceManager}
+                  onChange={(e) =>
+                    updateFormInput((formInput) => ({
+                      ...formInput,
+                      finaceManager: e.target.value,
+                    }))
+                  }
+                  style={{ width: "70%" }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                    onClick={() => handleAddRole(formInput.finaceManager, getRole(5)[0].name)}
+                  style={{ width: "30%", marginLeft: "10px" }}
+                >
+                    Add {getRole(5)[0].name}
+                </Button>
+              </div>
+            </form>
+            <form className={classes.root} noValidate autoComplete="off">
+              <div className={classes.RoleForm} >
+                <TextField
+                  id="whManRole"
+                  label=" Enter Product Manager Address"
+                  variant="outlined"
+                  value={formInput.productManager}
+                  onChange={(e) =>
+                    updateFormInput((formInput) => ({
+                      ...formInput,
+                      productManager: e.target.value,
+                    }))
+                  }
+                  style={{ width: "70%" }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                    onClick={() => handleAddRole(formInput.productManager, getRole(6)[0].name)}
+                  style={{ width: "30%", marginLeft: "10px" }}
+                >
+                    Add {getRole(6)[0].name}
+                </Button>
+              </div>
+            </form>
+            <form className={classes.root} noValidate autoComplete="off">
+              <div className={classes.RoleForm} >
+                <TextField
+                  id="whManRole"
+                  label=" Enter Batch Manager Address"
+                  variant="outlined"
+                  value={formInput.batchManager}
+                  onChange={(e) =>
+                    updateFormInput((formInput) => ({
+                      ...formInput,
+                      batchManager: e.target.value,
+                    }))
+                  }
+                  style={{ width: "70%" }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                    onClick={() => handleAddRole(formInput.batchManager, getRole(7)[0].name)}
+                  style={{ width: "30%", marginLeft: "10px" }}
+                >
+                    Add {getRole(7)[0].name}
+                </Button>
+              </div>
+            </form>
+            <form className={classes.root} noValidate autoComplete="off">
+              <div className={classes.RoleForm} >
+                <TextField
+                  id="whManRole"
+                  label=" Enter Logistic Manager Address"
+                  variant="outlined"
+                  value={formInput.logisticManager}
+                  onChange={(e) =>
+                    updateFormInput((formInput) => ({
+                      ...formInput,
+                      logisticManager: e.target.value,
+                    }))
+                  }
+                  style={{ width: "70%" }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                    onClick={() => handleAddRole(formInput.logisticManager, getRole(8)[0].name)}
+                  style={{ width: "30%", marginLeft: "10px" }}
+                >
+                    Add {getRole(8)[0].name}
                 </Button>
               </div>
             </form>

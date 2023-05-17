@@ -108,7 +108,7 @@ export default function PurchaseOrderAgent() {
     setPOData({ ...POData, [e.target.id]: e.target.value });
     console.log("POData", POData);
   };
-  const createPOLineItem = (soId,poId) => async () => {
+  const createPOLineItem = (soId, poId) => async () => {
     console.log("poId", poId);
     console.log("soId", soId);
     POData.poId = poId;
@@ -119,36 +119,39 @@ export default function PurchaseOrderAgent() {
   const handlePODataSubmit = async () => {
     POData.vendorName = selectedVendors;
     console.log("POData", POData);
-    console.log("soId",POData.soId);
+    console.log("soId", POData.soId);
     await saveData(POData, "purchaseOrderLineItem");
     setSave(!save);
-    await updateBlockDataOrderStatus(POData.soId,["Status"],["Looking for Vendor Acceptance"]);
+    await updateBlockDataOrderStatus(
+      POData.soId,
+      ["Status"],
+      ["Looking for Vendor Acceptance"]
+    );
     handlePOModalClose();
   };
-  const updateBlockDataOrderStatus = async (soId,col,val) => {
+  const updateBlockDataOrderStatus = async (soId, col, val) => {
     // setLoading(true)
     try {
-      await (window).ethereum.request({ method: "eth_requestAccounts", });
-      const provider = new ethers.providers.Web3Provider(window.ethereum) //create provider
-      const network = await provider.getNetwork()
-      const signer = provider.getSigner()
-      
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+      const network = await provider.getNetwork();
+      const signer = provider.getSigner();
+
       const suppContract = new ethers.Contract(
         getConfigByChain(network.chainId)[0].suppChainAddress,
         SuppChain.abi,
         signer
-      )
+      );
       console.log(soId);
-      const tx = await suppContract.update(soId,col,val);
+      const tx = await suppContract.update(soId, col, val);
       console.log("tx", tx);
       // toast('Role Assignment in progress !!', { icon: '👏' })
-      
     } catch (e) {
       // toast.error('An error occured. Check console !!')
-      console.log(e)
+      console.log(e);
       // setLoading(false)
     }
-  }
+  };
   const [vendorList, setVendorList] = useState([]);
   useEffect(() => {
     setVendorList([]);
@@ -195,8 +198,52 @@ export default function PurchaseOrderAgent() {
     console.log("POData", POData);
     await updateCollectionData("purchaseOrderLineItem", POData.id, POData);
     setSave(!save);
-    updateBlockDataOrderStatus(POData.soId,["Status"],["Vendor Accepted"]);
+    // updateBlockDataOrderStatus(POData.soId, ["Status"], ["Vendor Accepted"]);
     handleUpdateReceiveDataModalClose();
+  };
+  // show particular PO details
+  const [showPODetails, setShowPODetails] = useState(true);
+  const [selectedPO, setSelectedPO] = useState("");
+  const [selectedSO, setSelectedSO] = useState("");
+  const [
+    filteredpurchaseOrderLineItemDataArray,
+    setFilteredpurchaseOrderLineItemDataArray,
+  ] = useState([]);
+  const handleShowPODetails = (soId, poId) => {
+    setShowPODetails(false);
+    setSelectedPO(poId);
+    setSelectedSO(soId);
+    console.log("poId", poId);
+    console.log("soId", soId);
+    // open View purchase order Line items tab
+    const tab = document.getElementById(
+      "uncontrolled-tab-example-tab-ViewPurchaseOrderLineItems"
+    );
+    console.log("tab", tab);
+    // wait for 1 sec
+    setTimeout(() => {
+      tab.click();
+    }
+    , 1000);
+
+    // filter purchase order line item data array
+    console.log(
+      "purchaseOrderLineItemDataArray",
+      purchaseOrderLineItemDataArray
+    );
+    let tempFilteredpurchaseOrderLineItemDataArray = [];
+    purchaseOrderLineItemDataArray.map((each) => {
+      if (each.poId === poId) {
+        tempFilteredpurchaseOrderLineItemDataArray.push(each);
+      }
+    });
+    console.log(
+      "tempFilteredpurchaseOrderLineItemDataArray",
+      tempFilteredpurchaseOrderLineItemDataArray
+    );
+    setFilteredpurchaseOrderLineItemDataArray(
+      tempFilteredpurchaseOrderLineItemDataArray
+    );
   };
   // purchase order Agent specific code end
   if (true) {
@@ -221,33 +268,47 @@ export default function PurchaseOrderAgent() {
                           <thead>
                             <tr>
                               <th>Sr. No.</th>
-                              <th>SoID</th>
                               <th>PoID</th>
                               <th>prodName</th>
                               <th>qty</th>
                               <th>orderValue</th>
                               <th>status</th>
-                              <th>Create PO Line Item</th>
+                              {
+                                // <th>Create PO Line Item</th>
+                              }
                             </tr>
                           </thead>
                           <tbody>
                             {masterTableData.map((order, index) => (
                               <tr>
                                 <td>{index + 1}</td>
-                                <td>{order[0]}</td>
-                                <td>{order[1]}</td>
+                                {
+                                  // <td>{order[1]}</td>
+                                }
+                                <td>
+                                  <Button
+                                    onClick={() =>
+                                      handleShowPODetails(order[0], order[1])
+                                    }
+                                    variant="primary"
+                                  >
+                                    {order[1]}
+                                  </Button>{" "}
+                                </td>
                                 <td>{order[2]}</td>
                                 <td>{formatBigNumber(order[3])}</td>
                                 <td>{formatBigNumber(order[4])}</td>
                                 <td>{order[6]}</td>
-                                <td>
-                                  <Button
-                                    onClick={createPOLineItem(order[0],order[1])}
-                                    variant="primary"
-                                  >
-                                    Click
-                                  </Button>{" "}
-                                </td>
+                                {
+                                  //   <td>
+                                  //   <Button
+                                  //     onClick={createPOLineItem(order[0],order[1])}
+                                  //     variant="primary"
+                                  //   >
+                                  //     Click
+                                  //   </Button>{" "}
+                                  // </td>
+                                }
                               </tr>
                             ))}
                           </tbody>
@@ -357,14 +418,18 @@ export default function PurchaseOrderAgent() {
                         </Modal>
                       </Tab>
                       <Tab
-                        eventKey="View purchase order Line items"
+                        disabled={showPODetails}
+                        id="viewOrder-tab"
+                        eventKey="ViewPurchaseOrderLineItems"
                         title="POLineItem"
                       >
                         <Table striped bordered hover>
                           <thead>
                             <tr>
                               <th>Sr. No.</th>
-                              <th>SoID</th>
+                              {
+                                // <th>SoID</th>
+                              }
                               <th>PoID</th>
                               <th>Material Name</th>
                               <th>qty</th>
@@ -379,11 +444,13 @@ export default function PurchaseOrderAgent() {
                             </tr>
                           </thead>
                           <tbody>
-                            {purchaseOrderLineItemDataArray.map(
+                            {filteredpurchaseOrderLineItemDataArray.map(
                               (item, index) => (
                                 <tr>
                                   <td>{index + 1}</td>
-                                  <td>{item.soId}</td>
+                                  {
+                                    // <td>{item.soId}</td>
+                                  }
                                   <td>{item.poId}</td>
                                   <td>{item.materialName}</td>
                                   <td>{item.Qty}</td>
@@ -411,6 +478,24 @@ export default function PurchaseOrderAgent() {
                             )}
                           </tbody>
                         </Table>
+                        <Button
+                          onClick={createPOLineItem(
+                            selectedSO,
+                            selectedPO
+                          )}
+                          variant="primary"
+                        >
+                          Create PO Line Item
+                        </Button>{" "}
+                        
+                        <Button
+                          onClick={
+                            () => updateBlockDataOrderStatus(selectedSO, ["Status"], ["Vendor Accepted"])
+                          }
+                          variant="primary"
+                        >
+                          Update Status
+                        </Button>{" "}
                         <Modal
                           className="mt-5"
                           show={updateReceiveDataModalShow}
