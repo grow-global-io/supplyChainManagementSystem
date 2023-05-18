@@ -18,6 +18,8 @@ import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.jso
 import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
+import * as loadingImage from "../../assets/loading.json";
+
 import {
   formatBigNumber,
   getCollectionData,
@@ -26,6 +28,8 @@ import {
 } from "../../utils/fbutils";
 import { updateCollectionData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
+import Lottie from "react-lottie";
+import { Toaster } from "react-hot-toast";
 const navItem = [];
 export default function PurchaseOrderAgent() {
   const [masterProductDataArray, setmasterProductDataArray] = useState([]);
@@ -35,9 +39,11 @@ export default function PurchaseOrderAgent() {
     useState([]);
   // blockChainMasterData start
   const [masterTableData, setMasterTableData] = useState([]);
+  const [filteredMasterTableData, setFilteredMasterTableData] = useState([]);
   //  blockChainMasterData end
   const [role, setRole] = useState("");
   const [save, setSave] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const fetchCollectionData = async () => {
     setmasterProductDataArray(await getCollectionData("masterProductData"));
@@ -52,11 +58,12 @@ export default function PurchaseOrderAgent() {
     fetchCollectionData();
   }, [save]);
   useEffect(() => {
-    console.log("masterTableData", masterTableData);
+    // console.log("masterTableData", masterTableData);
+    setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Order Received"));
+
   }, [masterTableData]);
 
   const verifyRole = async () => {
-    console.log("verifyRole");
     await window.ethereum.request({ method: "eth_requestAccounts" });
     const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
     const network = await provider.getNetwork();
@@ -67,7 +74,6 @@ export default function PurchaseOrderAgent() {
       SuppChain.abi,
       signer
     );
-    console.log("suppContract", suppContract);
     const tx = await suppContract.getRole();
     setMasterTableData(await suppContract.getAllOrderDetails());
     setRole(tx);
@@ -106,20 +112,16 @@ export default function PurchaseOrderAgent() {
       console.log("PODataP", POData);
     }
     setPOData({ ...POData, [e.target.id]: e.target.value });
-    console.log("POData", POData);
   };
   const createPOLineItem = (soId, poId) => async () => {
-    console.log("poId", poId);
-    console.log("soId", soId);
     POData.poId = poId;
     POData.soId = soId;
     setCurrentPO(poId);
     handlePOModalShow();
   };
   const handlePODataSubmit = async () => {
+    setLoading(true);
     POData.vendorName = selectedVendors;
-    console.log("POData", POData);
-    console.log("soId", POData.soId);
     await saveData(POData, "purchaseOrderLineItem");
     setSave(!save);
     await updateBlockDataOrderStatus(
@@ -127,29 +129,29 @@ export default function PurchaseOrderAgent() {
       ["Status"],
       ["Looking for Vendor Acceptance"]
     );
+    setLoading(false);
     handlePOModalClose();
   };
   const updateBlockDataOrderStatus = async (soId, col, val) => {
-    // setLoading(true)
     try {
+      setLoading(true)
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
       const network = await provider.getNetwork();
       const signer = provider.getSigner();
-
+      
       const suppContract = new ethers.Contract(
         getConfigByChain(network.chainId)[0].suppChainAddress,
         SuppChain.abi,
         signer
-      );
-      console.log(soId);
+        );
       const tx = await suppContract.update(soId, col, val);
-      console.log("tx", tx);
+      setLoading(false)
+
       // toast('Role Assignment in progress !!', { icon: '👏' })
     } catch (e) {
       // toast.error('An error occured. Check console !!')
-      console.log(e);
-      // setLoading(false)
+      setLoading(false)
     }
   };
   const [vendorList, setVendorList] = useState([]);
@@ -160,21 +162,15 @@ export default function PurchaseOrderAgent() {
       if (each.materialName === POData.materialName) {
         // console.log("each", each);
         each.materialVendorResponsible.map((vendor) => {
-          console.log("vendor", vendor);
           tempVendorList.push({ value: vendor, label: vendor });
         });
       }
     });
-    console.log("tempVendorList", tempVendorList);
     setVendorList(tempVendorList);
-    console.log("vendorList", vendorList);
   }, [POData.materialName]);
   const [selectedVendors, setSelectedVendors] = useState([]);
   const handleMultipleVendorChange = (e) => {
-    setSelectedVendors(Array.isArray(e) ? e.map((x) => x.value) : []);
-    console.log("selectedVendors", selectedVendors);
-    // POData.vendorName = selectedVendors;
-    // console.log("POData", POData);
+    setSelectedVendors(Array.isArray(e) ? e.map((x) => console.log(x)) : []);
   };
   const [receiveDateUpdatePOId, setReceiveDateUpdatePOId] = useState("");
   const [receiveDateUpdateCollectionId, setReceiveDateUpdateCollectionId] =
@@ -195,7 +191,6 @@ export default function PurchaseOrderAgent() {
     POData.receiveDate = e.target.value;
   };
   const handleUpdateReceiveDataSubmit = async () => {
-    console.log("POData", POData);
     await updateCollectionData("purchaseOrderLineItem", POData.id, POData);
     setSave(!save);
     // updateBlockDataOrderStatus(POData.soId, ["Status"], ["Vendor Accepted"]);
@@ -213,13 +208,10 @@ export default function PurchaseOrderAgent() {
     setShowPODetails(false);
     setSelectedPO(poId);
     setSelectedSO(soId);
-    console.log("poId", poId);
-    console.log("soId", soId);
     // open View purchase order Line items tab
     const tab = document.getElementById(
       "uncontrolled-tab-example-tab-ViewPurchaseOrderLineItems"
     );
-    console.log("tab", tab);
     // wait for 1 sec
     setTimeout(() => {
       tab.click();
@@ -227,10 +219,7 @@ export default function PurchaseOrderAgent() {
     , 1000);
 
     // filter purchase order line item data array
-    console.log(
-      "purchaseOrderLineItemDataArray",
-      purchaseOrderLineItemDataArray
-    );
+   
     let tempFilteredpurchaseOrderLineItemDataArray = [];
     purchaseOrderLineItemDataArray.map((each) => {
       if (each.poId === poId) {
@@ -245,11 +234,31 @@ export default function PurchaseOrderAgent() {
       tempFilteredpurchaseOrderLineItemDataArray
     );
   };
+  const [loaderSize, setLoaderSize] = useState(220);
+
+  const loadingLoader = {
+    loop: true,
+    autoplay: true,
+    animationData: loadingImage,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
   // purchase order Agent specific code end
   if (true) {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
-        <div>
+        <Toaster position='top-center' reverseOrder='false' />
+
+        {
+          loading === true?(
+            <Lottie
+            options={loadingLoader}
+            height={loaderSize}
+            width={loaderSize}
+          />
+          ):(
+            <div>
           <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
             Welcome Purchase Order Manager
           </h1>
@@ -279,7 +288,7 @@ export default function PurchaseOrderAgent() {
                             </tr>
                           </thead>
                           <tbody>
-                            {masterTableData.map((order, index) => (
+                            {filteredMasterTableData.map((order, index) => (
                               <tr>
                                 <td>{index + 1}</td>
                                 {
@@ -544,6 +553,8 @@ export default function PurchaseOrderAgent() {
             </Row>
           </Container>
         </div>
+          )
+        }
       </Navbar>
     );
   } else {
