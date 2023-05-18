@@ -19,8 +19,8 @@ import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
 import { getCollectionData, saveData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
-import {formatBigNumber} from "../../utils/fbutils"
-import toast, { Toaster } from 'react-hot-toast'
+import { formatBigNumber } from "../../utils/fbutils";
+import toast, { Toaster } from "react-hot-toast";
 import * as loadingImage from "../../assets/loading.json";
 import Lottie from "react-lottie";
 
@@ -33,7 +33,6 @@ const loadingLoader = {
   },
 };
 
-
 const navItem = [];
 export const SalesRep = () => {
   const [masterProductDataArray, setmasterProductDataArray] = useState([]);
@@ -41,7 +40,7 @@ export const SalesRep = () => {
   const [vendorDataArray, setVendorDataArray] = useState([]);
   // blockChainMasterData start
   const [masterTableData, setMasterTableData] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [loaderSize, setLoaderSize] = useState(220);
   //  blockChainMasterData end
   const [role, setRole] = useState("");
@@ -101,12 +100,12 @@ export const SalesRep = () => {
     );
     console.log("suppContract", suppContract);
     const tx = await suppContract.getRole();
-    const mTableData = await suppContract.getAllOrderDetails()
+    const mTableData = await suppContract.getAllOrderDetails();
     setMasterTableData(mTableData);
 
-    const b = mTableData[0][3]
-    console.log("test", (Number(b) / Math.pow(10, 18))*10 ** 18)
-    
+    const b = mTableData[0][3];
+    console.log("test", (Number(b) / Math.pow(10, 18)) * 10 ** 18);
+
     setRole(tx);
   };
   const [masterProductData, setmasterProductData] = useState({
@@ -212,9 +211,9 @@ export const SalesRep = () => {
     console.log("updateTotalPrice");
     setTotalPrice(
       orderData.orderProductQuantity *
-      masterProductDataArray.find(
-        (product) => product.productName === orderData.orderProductName
-      )?.productUnitPrice
+        masterProductDataArray.find(
+          (product) => product.productName === orderData.orderProductName
+        )?.productUnitPrice
     );
   };
   const handleChange = (e) => {
@@ -233,7 +232,7 @@ export const SalesRep = () => {
   };
   const handleOrderDataBlockChainSubmit = async (orderData) => {
     try {
-      setLoading(true)
+      setLoading(true);
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
       const network = await provider.getNetwork();
@@ -255,17 +254,15 @@ export const SalesRep = () => {
       );
       var soId;
       suppContract.on("GetSoID", (_soId) => {
-        toast.success(`So ID generated was ${JSON.stringify(_soId)}`)
-        
-      })
+        toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
+      });
       const receipt = await provider
         .waitForTransaction(tx.hash, 1, 150000)
         .then(() => {
-          toast.success(`Role assigned successfully !!`)
-          getOrderDetails()
-          setLoading(false)
-        })
-      
+          toast.success(`Role assigned successfully !!`);
+          getOrderDetails();
+          setLoading(false);
+        });
     } catch (e) {
       console.log(e);
     }
@@ -277,7 +274,18 @@ export const SalesRep = () => {
     console.log("orderData", orderData);
     handleOrderDataBlockChainSubmit(orderData);
   };
-
+  const formatDate = (date) => {
+    const tempDate = date.toString();
+    if (tempDate.length < 8) {
+      return "";
+    }
+    const year = tempDate.slice(0, 4);
+    const month = tempDate.slice(4, 6);
+    const day = tempDate.slice(6, 8);
+    const finalDate = year + "-" + month + "-" + day;
+    console.log(finalDate);
+    return finalDate;
+  };
   useEffect(() => {
     if (masterProductDataArray) {
       const filteredArray = masterProductDataArray.filter((each) => {
@@ -300,19 +308,18 @@ export const SalesRep = () => {
       }
     }
   }, [orderData.orderProductQuantity]);
-  
-  
-    return (
-      <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
-        <Toaster position='top-center' reverseOrder='false' />
-        {loading === true ? (
-          <Lottie
-            options={loadingLoader}
-            height={loaderSize}
-            width={loaderSize}
-          />
-        ):(
-          <div>
+
+  return (
+    <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
+      <Toaster position="top-center" reverseOrder="false" />
+      {loading === true ? (
+        <Lottie
+          options={loadingLoader}
+          height={loaderSize}
+          width={loaderSize}
+        />
+      ) : (
+        <div>
           <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
             Welcome Sales Representative
           </h1>
@@ -344,7 +351,7 @@ export const SalesRep = () => {
                             aria-label="Default select example"
                             name="orderProductName"
                           >
-                            <option >Select Product</option>
+                            <option>Select Product</option>
                             {masterProductDataArray.map((product) => {
                               return (
                                 <option value={product.productName}>
@@ -435,7 +442,7 @@ export const SalesRep = () => {
                     {
                       // display master product data
                     }
-                    <Table striped bordered hover>
+                    <Table className="mt-2" striped bordered hover>
                       <thead>
                         <tr>
                           <th>Sr No.</th>
@@ -454,19 +461,24 @@ export const SalesRep = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {masterTableData.map((order,index) => (
+                        {masterTableData.map((order, index) => (
                           <tr>
-                          {
-                            console.log('here',formatBigNumber(order.customerFinalDeliveryDate))
-                          }
-                            <td>{index+1}</td>
+                            {console.log(
+                              "here",
+                              formatBigNumber(order.customerFinalDeliveryDate)
+                            )}
+                            <td>{index + 1}</td>
                             <td>{order[0]}</td>
                             <td>{order[1]}</td>
                             <td>{order[2]}</td>
                             <td>{formatBigNumber(order[3])}</td>
                             <td>{formatBigNumber(order[4])}</td>
-                            <td>{(order[6])}</td>
-                            <td>{formatBigNumber(order.customerFinalDeliveryDate)}</td>
+                            <td>{order[6]}</td>
+                            <td>
+                              {formatDate(
+                                formatBigNumber(order.customerFinalDeliveryDate)
+                              )}
+                            </td>
                             <td>{order[7]}</td>
                             <td>{order[8]}</td>
                             <td>{order[9]}</td>
@@ -480,8 +492,8 @@ export const SalesRep = () => {
               </Card>
             </Row>
           </Container>
-        </div >
-        )}
-        
-      </Navbar>
-    )}
+        </div>
+      )}
+    </Navbar>
+  );
+};

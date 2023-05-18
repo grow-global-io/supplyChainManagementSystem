@@ -150,6 +150,8 @@ export const BatchManager = () => {
                             <td>{index + 1}</td>
                             <td>
                               <Button
+                              style={{ backgroundColor: "transparent",
+                                    border: "none",color:"black",textDecoration:"underline"  }}
                                 onClick={() => handleShow(order)}
                                 variant="primary"
                               >

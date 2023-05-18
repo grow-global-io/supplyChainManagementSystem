@@ -317,6 +317,8 @@ export const ProductionManager = () => {
                                     }
                                     <td>
                                       <Button
+                                      style={{ backgroundColor: "transparent",
+                                    border: "none",color:"black",textDecoration:"underline"  }}
                                         onClick={() =>
                                           handleShowPODetails(order[0], order[1])
                                         }
@@ -533,7 +535,7 @@ export const ProductionManager = () => {
                               }
                               variant="primary"
                             >
-                              Update Status
+                              Mark as Ready for Batching
                             </Button>{" "}
                             <Modal
                               className="mt-5"

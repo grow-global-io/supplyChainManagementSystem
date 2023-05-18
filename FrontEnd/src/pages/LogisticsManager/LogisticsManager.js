@@ -315,6 +315,8 @@ export const LogisticsManager = () => {
                                 }
                                 <td>
                                   <Button
+                                    style={{ backgroundColor: "transparent",
+                                    border: "none",color:"black",textDecoration:"underline"  }}
                                     onClick={() =>
                                       handleShowPODetails(
                                         order[0],
@@ -502,7 +504,7 @@ export const LogisticsManager = () => {
                                         updateReceiveDate(item);
                                       }}
                                     >
-                                      Click
+                                      Update Receive Date
                                     </Button>
                                   </td>
                                 </tr>
@@ -540,7 +542,7 @@ export const LogisticsManager = () => {
                           }
                           variant="primary"
                         >
-                          Update Final Receive Date
+                          Update Customer Final Receive Date
                         </Button>{" "}
                         <Modal
                           className="mt-5"

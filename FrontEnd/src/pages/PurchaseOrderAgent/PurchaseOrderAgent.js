@@ -59,7 +59,7 @@ export default function PurchaseOrderAgent() {
   }, [save]);
   useEffect(() => {
     // console.log("masterTableData", masterTableData);
-    setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Order Received"));
+    setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Order Received"||each.status==="Looking for Vendor Acceptance"));
 
   }, [masterTableData]);
 
@@ -296,6 +296,8 @@ export default function PurchaseOrderAgent() {
                                 }
                                 <td>
                                   <Button
+                                    style={{ backgroundColor: "transparent",
+                                    border: "none",color:"black",textDecoration:"underline"  }}
                                     onClick={() =>
                                       handleShowPODetails(order[0], order[1])
                                     }
@@ -479,7 +481,7 @@ export default function PurchaseOrderAgent() {
                                         updateReceiveDate(item);
                                       }}
                                     >
-                                      Click
+                                      Update Receive Date
                                     </Button>
                                   </td>
                                 </tr>
@@ -503,7 +505,7 @@ export default function PurchaseOrderAgent() {
                           }
                           variant="primary"
                         >
-                          Update Status
+                          Mark as Vendor Accepted
                         </Button>{" "}
                         <Modal
                           className="mt-5"
