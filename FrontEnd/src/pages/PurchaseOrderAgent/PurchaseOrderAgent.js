@@ -170,7 +170,7 @@ export default function PurchaseOrderAgent() {
   }, [POData.materialName]);
   const [selectedVendors, setSelectedVendors] = useState([]);
   const handleMultipleVendorChange = (e) => {
-    setSelectedVendors(Array.isArray(e) ? e.map((x) => console.log(x)) : []);
+    setSelectedVendors(Array.isArray(e) ? e.map((x) => x.value) : []);
   };
   const [receiveDateUpdatePOId, setReceiveDateUpdatePOId] = useState("");
   const [receiveDateUpdateCollectionId, setReceiveDateUpdateCollectionId] =
