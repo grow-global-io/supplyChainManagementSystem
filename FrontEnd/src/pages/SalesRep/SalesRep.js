@@ -438,23 +438,39 @@ export const SalesRep = () => {
                     <Table striped bordered hover>
                       <thead>
                         <tr>
+                          <th>Sr No.</th>
                           <th>SoID</th>
                           <th>PoID</th>
                           <th>prodName</th>
                           <th>qty</th>
                           <th>orderValue</th>
                           <th>status</th>
+                          <th>customerFinalDeliveryDate</th>
+                          <th>barCode</th>
+                          <th>batchNo</th>
+                          <th>masterLabel</th>
+                          <th>invoicePath</th>
+                          <th>trackingNo</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {masterTableData.map((order) => (
+                        {masterTableData.map((order,index) => (
                           <tr>
+                          {
+                            console.log('here',formatBigNumber(order.customerFinalDeliveryDate))
+                          }
+                            <td>{index+1}</td>
                             <td>{order[0]}</td>
                             <td>{order[1]}</td>
                             <td>{order[2]}</td>
                             <td>{formatBigNumber(order[3])}</td>
                             <td>{formatBigNumber(order[4])}</td>
                             <td>{(order[6])}</td>
+                            <td>{formatBigNumber(order.customerFinalDeliveryDate)}</td>
+                            <td>{order[7]}</td>
+                            <td>{order[8]}</td>
+                            <td>{order[9]}</td>
+                            <td>{order[11]}</td>
                           </tr>
                         ))}
                       </tbody>

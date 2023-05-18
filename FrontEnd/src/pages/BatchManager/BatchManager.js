@@ -13,39 +13,35 @@ import {
   Dropdown,
 } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
+import Select from "react-select";
 import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.json";
 import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
-import { getCollectionData, saveData } from "../../utils/fbutils";
+import {
+  formatBigNumber,
+  getCollectionData,
+  getCollectionDataWithId,
+  saveData,
+} from "../../utils/fbutils";
+import { updateCollectionData } from "../../utils/fbutils";
+import { getStatus } from "../../assets/statusConfig";
 const navItem = [];
 export const BatchManager = () => {
+  // blockChainMasterData start
+  const [masterTableData, setMasterTableData] = useState([]);
+  //  blockChainMasterData end
   const [role, setRole] = useState("");
-  const [show, setShow] = useState(false);
-  const [selectedMaterial, setSelectedMaterial] = useState("");
+  const [save, setSave] = useState(false);
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-  const [vendorDataArray, setVendorDataArray] = useState([]);
-  const [materialDataArray, setMaterialDataArray] = useState([]);
-  const [purchaseOrderDataArray, setPurchaseOrderDataArray] = useState([]);
-  const [receiveDate, setReceiveDate] = useState("");
-  const fetchCollectionData = async () => {
-    const data2 = await getCollectionData("MaterialData");
-    setMaterialDataArray(data2);
-    const data1 = await getCollectionData("VendorProductData");
-    setVendorProductDataArray(data1);
-    const data3 = await getCollectionData("Vendor");
-    setVendorDataArray(data3);
-    const data4 = await getCollectionData("PurchaseOrder");
-    setPurchaseOrderDataArray(data4);
-  };
-  const [vendorProductDataArray, setVendorProductDataArray] = useState([]);
-  const [quantity, setQuantity] = useState(0);
+  const fetchCollectionData = async () => {};
   useEffect(() => {
     verifyRole();
     fetchCollectionData();
-  }, []);
+  }, [save]);
+  useEffect(() => {
+    console.log("masterTableData", masterTableData);
+  }, [masterTableData]);
 
   const verifyRole = async () => {
     console.log("verifyRole");
@@ -61,67 +57,78 @@ export const BatchManager = () => {
     );
     console.log("suppContract", suppContract);
     const tx = await suppContract.getRole();
-    console.log("tx", tx);
+    setMasterTableData(await suppContract.getAllOrderDetails());
     setRole(tx);
-    console.log("role", role);
-  };
-  const checkout = async () => {
-    console.log("checkOut");
-  };
-  const [selectedOption, setSelectedOption] = useState("");
-
-  const handleChangeDropDown = (event) => {
-    console.log("event.target.value", event.target.value);
-    setSelectedOption(event.target.value);
-    console.log("selectedOption", selectedOption);
-  };
-  const handleShow2 = (item) => {
-    // setSelectedMaterial(item);
-    // console.log("selectedMaterial", selectedMaterial);
-    return () => {
-      setSelectedMaterial(item);
-      console.log("item", selectedMaterial);
-      handleShow();
-    };
-  };
-  const handleChange = (name, value) => {
-    console.log("name", name);
-    console.log("value", value);
-    setQuantity(value);
-  };
-  const handleReceiveDateChange = (event) => {
-    console.log("event.target.value", event.target.value);
-    setReceiveDate(event.target.value);
-    console.log("receiveDate", receiveDate);
   };
 
+  const updateBlockDataOrderStatus = async (soId, col, val) => {
+    // setLoading(true)
+    try {
+      console.log("soId", soId);
+      console.log("col", col);
+      console.log("val", val);
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+      const network = await provider.getNetwork();
+      const signer = provider.getSigner();
+
+      const suppContract = new ethers.Contract(
+        getConfigByChain(network.chainId)[0].suppChainAddress,
+        SuppChain.abi,
+        signer
+      );
+      console.log(soId);
+      const tx = await suppContract.update(soId, col, val);
+      console.log("tx", tx);
+      // toast('Role Assignment in progress !!', { icon: '👏' })
+    } catch (e) {
+      // toast.error('An error occured. Check console !!')
+      console.log(e);
+      // setLoading(false)
+    }
+  };
+  //
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const [currentSoId, setCurrentSoId] = useState(0);
+  
+  const handleShow = (item) => {
+    setShow(true);
+    setCurrentSoId(item[0]);
+    console.log("currentSoId", currentSoId);
+    console.log("item", item);
+  };
+  const [barCode, setBarCode] = useState("");
+  const [batchNumber, setBatchNumber] = useState("");
+  const [masterLabel, setMasterLabel] = useState("");
+  const handleChange = (e) => {
+    if (e.target.id === "barCode") {
+      setBarCode(e.target.value);
+    }
+    if (e.target.id === "batchNumber") {
+      setBatchNumber(e.target.value);
+    }
+    if (e.target.id === "masterLabel") {
+      setMasterLabel(e.target.value);
+    }
+  }
   const handleSave = async () => {
-    console.log("handleSave");
-    const data = {
-      materialName: selectedMaterial.materialName,
-      materialCode: selectedMaterial.materialCode,
-      materialSKUBatchNumber: selectedMaterial.materialSKUBatchNumber,
-      materialUnitPrice: selectedMaterial.materialUnitPrice,
-      materialVendorResponsible: selectedMaterial.materialVendorResponsible,
-      materialShelfLife: selectedMaterial.materialShelfLife,
-      materialBarCode: selectedMaterial.materialBarCode,
-      quantity: quantity,
-      vendorName: selectedOption,
-      receiveDate: receiveDate,
-    };
-    console.log("data", data);
-    await saveData(data, "PurchaseOrder");
     handleClose();
-  };
-  if (role === "Sales Representative") {
+    console.log("handleSave");
+    console.log("currentSoId", currentSoId);
+    console.log("barCode", barCode);
+    console.log("batchNumber", batchNumber);
+    console.log("masterLabel", masterLabel);
+    await updateBlockDataOrderStatus(currentSoId, ["BarCode","BatchNo","Master Label","Status"], [barCode,batchNumber,masterLabel,"Ready for Customer Delivery"]);
+  }
+  if (true) {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <div>
-          <h1>Welcome Batch Manager</h1>
+          <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
+            Welcome Batch Manager
+          </h1>
           <Container>
-            {
-              // <Button onClick={verifyRole} variant="primary">verifyRole</Button>{" "}
-            }
             <Row>
               <Card>
                 <Card.Body>
@@ -129,42 +136,39 @@ export const BatchManager = () => {
                     <Table striped bordered hover>
                       <thead>
                         <tr>
-                          <th>Sr No.</th>
-                          <th>material Name</th>
-                          <th>material Code</th>
-                          <th>materialSKUBatchNumber</th>
-                          <th>material Unit Price</th>
-                          <th>materialVendorResponsible</th>
-                          <th>vendor</th>
-                          <th>quantity</th>
-                          <th>receive Date</th>
-                          <th>change Status</th>
+                          <th>Sr. No.</th>
+                          <th>PoID</th>
+                          <th>prodName</th>
+                          <th>qty</th>
+                          <th>orderValue</th>
+                          <th>status</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {purchaseOrderDataArray.map((item, index) => {
-                          return (
-                            <tr>
-                              <td>{index + 1}</td>
-                              <td>{item.materialName}</td>
-                              <td>{item.materialCode}</td>
-                              <td>{item.materialSKUBatchNumber}</td>
-                              <td>{item.materialUnitPrice}</td>
-                              <td>{item.materialVendorResponsible}</td>
-                              <td>{item.vendorName}</td>
-                              <td>{item.quantity}</td>
-                              <td>{item.receiveDate}</td>
-                              <td>
-                                <button onClick={handleShow}>Add</button>
-                              </td>
-                            </tr>
-                          );
-                        })}
+                        {masterTableData.map((order, index) => (
+                          <tr>
+                            <td>{index + 1}</td>
+                            <td>
+                              <Button
+                                onClick={() => handleShow(order)}
+                                variant="primary"
+                              >
+                                {order[1]}
+                              </Button>{" "}
+                            </td>
+                            <td>{order[2]}</td>
+                            <td>{formatBigNumber(order[3])}</td>
+                            <td>{formatBigNumber(order[4])}</td>
+                            <td>{order[6]}</td>
+                          </tr>
+                        ))}
                       </tbody>
                     </Table>
                     <Modal className="mt-5" show={show} onHide={handleClose}>
                       <Modal.Header closeButton>
-                        <Modal.Title>Change PO status</Modal.Title>
+                        <Modal.Title>
+                          Update Bar-code, Batch Number,Master Label
+                        </Modal.Title>
                       </Modal.Header>
                       <Modal.Body>
                         <Form>
@@ -172,20 +176,33 @@ export const BatchManager = () => {
                             className="mb-3"
                             controlId="barCode"
                           >
-                            <Form.Label>Bar Code</Form.Label>
+                            <Form.Label>Bar-Code</Form.Label>
                             <Form.Control
-                              type="number"
+                              type="text"
                               placeholder=""
+                              onChange={handleChange}
                             />
                           </Form.Group>
                           <Form.Group
                             className="mb-3"
                             controlId="batchNumber"
                           >
-                            <Form.Label>Btach Number</Form.Label>
+                            <Form.Label>Batch Number</Form.Label>
                             <Form.Control
-                              type="number"
+                              type="text"
                               placeholder=""
+                              onChange={handleChange}
+                            />
+                          </Form.Group>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="masterLabel"
+                          >
+                            <Form.Label>Master Label</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder=""
+                              onChange={handleChange}
                             />
                           </Form.Group>
                         </Form>
@@ -194,7 +211,7 @@ export const BatchManager = () => {
                         <Button variant="secondary" onClick={handleClose}>
                           Close
                         </Button>
-                        <Button variant="primary" onClick={handleClose}>
+                        <Button variant="primary" onClick={handleSave}>
                           Save Changes
                         </Button>
                       </Modal.Footer>
