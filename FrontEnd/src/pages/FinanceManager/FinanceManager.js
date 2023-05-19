@@ -98,28 +98,16 @@ export const FinanceManager = () => {
    console.log("currentSoId", currentSoId);
    console.log("item", item);
  };
- const [barCode, setBarCode] = useState("");
- const [batchNumber, setBatchNumber] = useState("");
- const [masterLabel, setMasterLabel] = useState("");
+ const [invoicePath, setInvoicePath] = useState("");
  const handleChange = (e) => {
-   if (e.target.id === "barCode") {
-     setBarCode(e.target.value);
-   }
-   if (e.target.id === "batchNumber") {
-     setBatchNumber(e.target.value);
-   }
-   if (e.target.id === "masterLabel") {
-     setMasterLabel(e.target.value);
-   }
+    setInvoicePath(e.target.value);
  }
  const handleSave = async () => {
    handleClose();
+   console.log(currentSoId)
    console.log("handleSave");
-   console.log("currentSoId", currentSoId);
-   console.log("barCode", barCode);
-   console.log("batchNumber", batchNumber);
-   console.log("masterLabel", masterLabel);
-   await updateBlockDataOrderStatus(currentSoId, ["BarCode","BatchNo","Master Label","Status"], [barCode,batchNumber,masterLabel,"Ready for Customer Delivery"]);
+    console.log("invoicePath", invoicePath);
+   await updateBlockDataOrderStatus(currentSoId, ["Invoice Path","Status"], [invoicePath,"Paid"]);
  }
  if (true) {
    return (
@@ -152,7 +140,7 @@ export const FinanceManager = () => {
                              <Button
                              style={{ backgroundColor: "transparent",
                                    border: "none",color:"black",textDecoration:"underline"  }}
-                              //  onClick={() => handleShow(order)}
+                               onClick={() => handleShow(order)}
                                variant="primary"
                              >
                                {order[1]}
@@ -169,38 +157,16 @@ export const FinanceManager = () => {
                    <Modal className="mt-5" show={show} onHide={handleClose}>
                      <Modal.Header closeButton>
                        <Modal.Title>
-                         Update Bar-code, Batch Number,Master Label
+                         Update Invoice Details
                        </Modal.Title>
                      </Modal.Header>
                      <Modal.Body>
                        <Form>
                          <Form.Group
                            className="mb-3"
-                           controlId="barCode"
+                           controlId="invoicePath"
                          >
-                           <Form.Label>Bar-Code</Form.Label>
-                           <Form.Control
-                             type="text"
-                             placeholder=""
-                             onChange={handleChange}
-                           />
-                         </Form.Group>
-                         <Form.Group
-                           className="mb-3"
-                           controlId="batchNumber"
-                         >
-                           <Form.Label>Batch Number</Form.Label>
-                           <Form.Control
-                             type="text"
-                             placeholder=""
-                             onChange={handleChange}
-                           />
-                         </Form.Group>
-                         <Form.Group
-                           className="mb-3"
-                           controlId="masterLabel"
-                         >
-                           <Form.Label>Master Label</Form.Label>
+                           <Form.Label>Invoice Path</Form.Label>
                            <Form.Control
                              type="text"
                              placeholder=""

@@ -283,7 +283,7 @@ export const SalesRep = () => {
     const month = tempDate.slice(4, 6);
     const day = tempDate.slice(6, 8);
     const finalDate = year + "-" + month + "-" + day;
-    console.log(finalDate);
+    // console.log(finalDate);
     return finalDate;
   };
   useEffect(() => {
@@ -308,7 +308,72 @@ export const SalesRep = () => {
       }
     }
   }, [orderData.orderProductQuantity]);
+  const [trackingDataModal, setTrackingDataModal] = useState(false);
+  const handleTrackingDataModalClose = () => setTrackingDataModal(false);
+  const handleTrackingDataModalShow = (item) => {
+    setTrackingDataModal(true);
+    console.log(item);
+    setCurrentSoId(item[0]);
+  };
+  const [finalTrackingNumber, setFinalTrackingNumber] = useState("");
+  const [customerFinalDeliveryDate, setCustomerFinalDeliveryDate] = useState("");
+  const [currentSoId, setCurrentSoId] = useState("");
+  const handleChangeMethod = (e) => {
+    if(e.target.id === "trackingNumber"){
+      setFinalTrackingNumber(e.target.value);
+    }
+    else if(e.target.id === "customerFinalDeliveryDate"){
+      const finalReceiveDate = e.target.value;
+      const finalReceiveDateWithoutDashes = finalReceiveDate.replace(/-/g, "");
+      setCustomerFinalDeliveryDate(finalReceiveDateWithoutDashes);
+    }
+    // console.log(e.target.value);
+    // console.log(e.target.id);
+  }
+  const updateBlockDataOrderStatus = async (soId, col, val) => {
+    // setLoading(true)
+    try {
+      console.log("soId", soId);
+      console.log("col", col);
+      console.log("val", val);
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+      const network = await provider.getNetwork();
+      const signer = provider.getSigner();
 
+      const suppContract = new ethers.Contract(
+        getConfigByChain(network.chainId)[0].suppChainAddress,
+        SuppChain.abi,
+        signer
+      );
+      console.log(soId);
+      const tx = await suppContract.update(soId, col, val);
+      console.log("tx", tx);
+      // toast('Role Assignment in progress !!', { icon: '👏' })
+    } catch (e) {
+      // toast.error('An error occured. Check console !!')
+      console.log(e);
+      // setLoading(false)
+    }
+  };
+  const handleFinalDataSubmit = async () =>{
+    console.log("handleFinalDataSubmit");
+    // console.log(finalData);
+    console.log(finalTrackingNumber);
+    console.log(customerFinalDeliveryDate);
+    console.log(currentSoId);
+    // customer final delivery date is present
+    if(customerFinalDeliveryDate){
+      console.log("customerFinalDeliveryDate is present");
+      await updateBlockDataOrderStatus(currentSoId,["Customer Final Delivery Date","Status","Tracking No"],[customerFinalDeliveryDate,"Completed",finalTrackingNumber]);
+    }
+    // customer final delivery date is not present
+    else{
+      console.log("customerFinalDeliveryDate is not present");
+      await updateBlockDataOrderStatus(currentSoId,["Status","Tracking No"],["Completed",finalTrackingNumber]);
+    }
+    handleTrackingDataModalClose();
+  }
   return (
     <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
       <Toaster position="top-center" reverseOrder="false" />
@@ -439,6 +504,49 @@ export const SalesRep = () => {
                         </Button>
                       </Modal.Footer>
                     </Modal>
+                    <Modal
+                      className="mt-5"
+                      show={trackingDataModal}
+                      onHide={handleTrackingDataModalClose}
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title>Update Tracking Number</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Form>
+                          <Form.Group className="mb-3" controlId="trackingNumber">
+                            <Form.Label>Tracking Number</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder=""
+                              onChange={handleChangeMethod}
+                            />
+                          </Form.Group>
+                          <Form.Group className="mb-3" controlId="customerFinalDeliveryDate">
+                            <Form.Label>Customer Delivery Date</Form.Label>
+                            <Form.Control
+                              type="date"
+                              placeholder=""
+                              onChange={handleChangeMethod}
+                            />
+                          </Form.Group>
+                        </Form>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          variant="secondary"
+                          onClick={handleTrackingDataModalClose}
+                        >
+                          Close
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={handleFinalDataSubmit}
+                        >
+                          Save Changes
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
                     {
                       // display master product data
                     }
@@ -456,19 +564,27 @@ export const SalesRep = () => {
                           <th>barCode</th>
                           <th>batchNo</th>
                           <th>masterLabel</th>
-                          <th>invoicePath</th>
+                          <th>View Invoice</th>
                           <th>trackingNo</th>
                         </tr>
                       </thead>
                       <tbody>
                         {masterTableData.map((order, index) => (
                           <tr>
-                            {console.log(
-                              "here",
-                              formatBigNumber(order.customerFinalDeliveryDate)
-                            )}
                             <td>{index + 1}</td>
-                            <td>{order[0]}</td>
+                            <td>
+                              {
+                                <button
+                                style={{ backgroundColor: "transparent",
+                                   border: "none",color:"black",textDecoration:"underline"  }}
+                                  onClick={() => {
+                                    handleTrackingDataModalShow(order);
+                                  }}
+                                >
+                                  {order[0]}
+                                </button>
+                              }
+                            </td>
                             <td>{order[1]}</td>
                             <td>{order[2]}</td>
                             <td>{formatBigNumber(order[3])}</td>
@@ -482,6 +598,13 @@ export const SalesRep = () => {
                             <td>{order[7]}</td>
                             <td>{order[8]}</td>
                             <td>{order[9]}</td>
+                            <td>
+                              {
+                                <a href={order[10]} target="_blank">
+                                  View Invoice
+                                </a>
+                              }
+                            </td>
                             <td>{order[11]}</td>
                           </tr>
                         ))}
