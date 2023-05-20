@@ -17,7 +17,7 @@ import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.jso
 import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
-import { getCollectionData, saveData } from "../../utils/fbutils";
+import { getCollectionData, saveData, saveInvoice, savePdf,getFileDownloadURL } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
 import { formatBigNumber } from "../../utils/fbutils";
 import toast, { Toaster } from "react-hot-toast";
@@ -316,20 +316,33 @@ export const SalesRep = () => {
     setCurrentSoId(item[0]);
   };
   const [finalTrackingNumber, setFinalTrackingNumber] = useState("");
-  const [customerFinalDeliveryDate, setCustomerFinalDeliveryDate] = useState("");
+  const [customerFinalDeliveryDate, setCustomerFinalDeliveryDate] =
+    useState("");
   const [currentSoId, setCurrentSoId] = useState("");
+  // invoice pdf
+  const [invoicePdf, setInvoicePdf] = useState("");
   const handleChangeMethod = (e) => {
-    if(e.target.id === "trackingNumber"){
+    if (e.target.id === "trackingNumber") {
       setFinalTrackingNumber(e.target.value);
-    }
-    else if(e.target.id === "customerFinalDeliveryDate"){
+    } else if (e.target.id === "customerFinalDeliveryDate") {
       const finalReceiveDate = e.target.value;
       const finalReceiveDateWithoutDashes = finalReceiveDate.replace(/-/g, "");
       setCustomerFinalDeliveryDate(finalReceiveDateWithoutDashes);
     }
+    else if(e.target.id === "invoicePdf"){
+      // handle only pdf
+      // show warning if not pdf
+      if(e.target.files[0].type !== "application/pdf"){
+        toast.error("Please upload a pdf file only");
+        return;
+      }
+      console.log(e.target.files[0]);
+
+      setInvoicePdf(e.target.files[0])
+    }
     // console.log(e.target.value);
     // console.log(e.target.id);
-  }
+  };
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     // setLoading(true)
     try {
@@ -356,23 +369,63 @@ export const SalesRep = () => {
       // setLoading(false)
     }
   };
-  const handleFinalDataSubmit = async () =>{
+  const handleFinalDataSubmit = async () => {
     console.log("handleFinalDataSubmit");
     // console.log(finalData);
+    // const invoicePdfUrl = await savePdf(invoicePdf, "invoicePdf");
     console.log(finalTrackingNumber);
     console.log(customerFinalDeliveryDate);
     console.log(currentSoId);
     // customer final delivery date is present
-    if(customerFinalDeliveryDate){
+    if (customerFinalDeliveryDate) {
       console.log("customerFinalDeliveryDate is present");
-      await updateBlockDataOrderStatus(currentSoId,["Customer Final Delivery Date","Status","Tracking No"],[customerFinalDeliveryDate,"Completed",finalTrackingNumber]);
+      await updateBlockDataOrderStatus(
+        currentSoId,
+        ["Customer Final Delivery Date", "Status", "Tracking No"],
+        [customerFinalDeliveryDate, "Completed", finalTrackingNumber]
+      );
     }
     // customer final delivery date is not present
-    else{
+    else {
       console.log("customerFinalDeliveryDate is not present");
-      await updateBlockDataOrderStatus(currentSoId,["Status","Tracking No"],["Completed",finalTrackingNumber]);
+      await updateBlockDataOrderStatus(
+        currentSoId,
+        ["Status", "Tracking No"],
+        ["Completed", finalTrackingNumber]
+      );
     }
     handleTrackingDataModalClose();
+  };
+  const viewInvoice = async (item) => {
+    // const downloadUrl = await getFileDownloadURL("invoicePdf/exp 7 IOT.pdf")
+    // console.log(downloadUrl);
+    console.log("viewInvoice", item);
+    // // open link in new tab
+    window.open(
+      `${item}`,
+      "_blank"
+    );
+  };
+  const [updateInvoiceModal, setUpdateInvoiceModal] = useState(false);
+  const handleUpdateInvoiceModalClose = () => setUpdateInvoiceModal(false);
+  const handleUpdateInvoiceModalShow = (item) => {
+    console.log("handleUpdateInvoiceModalShow", item);
+    setUpdateInvoiceModal(true);
+    console.log(item);
+    setCurrentSoId(item[0]);
+  }
+  const handleInvoiceUpdate = async () => {
+    console.log("handleInvoiceUpdate");
+    console.log(currentSoId);
+    console.log(invoicePdf);
+    const invoicePdfUrl = await savePdf(invoicePdf, "invoicePdf");
+    console.log(invoicePdfUrl);
+    await updateBlockDataOrderStatus(
+      currentSoId,
+      ["Invoice Path"],
+      [invoicePdfUrl]
+    );
+    handleUpdateInvoiceModalClose();
   }
   return (
     <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
@@ -514,7 +567,10 @@ export const SalesRep = () => {
                       </Modal.Header>
                       <Modal.Body>
                         <Form>
-                          <Form.Group className="mb-3" controlId="trackingNumber">
+                          <Form.Group
+                            className="mb-3"
+                            controlId="trackingNumber"
+                          >
                             <Form.Label>Tracking Number</Form.Label>
                             <Form.Control
                               type="text"
@@ -522,7 +578,10 @@ export const SalesRep = () => {
                               onChange={handleChangeMethod}
                             />
                           </Form.Group>
-                          <Form.Group className="mb-3" controlId="customerFinalDeliveryDate">
+                          <Form.Group
+                            className="mb-3"
+                            controlId="customerFinalDeliveryDate"
+                          >
                             <Form.Label>Customer Delivery Date</Form.Label>
                             <Form.Control
                               type="date"
@@ -542,6 +601,44 @@ export const SalesRep = () => {
                         <Button
                           variant="primary"
                           onClick={handleFinalDataSubmit}
+                        >
+                          Save Changes
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                    <Modal
+                      className="mt-5"
+                      show={updateInvoiceModal}
+                      onHide={handleUpdateInvoiceModalClose}
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title>Update Invoice</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Form>
+                          <Form.Group
+                            className="mb-3"
+                            controlId="invoicePdf"
+                          >
+                            <Form.Label>Upload Invoice Pdf</Form.Label>
+                            <Form.Control
+                              type="file"
+                              placeholder=""
+                              onChange={handleChangeMethod}
+                            />
+                          </Form.Group>
+                        </Form>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          variant="secondary"
+                          onClick={handleUpdateInvoiceModalClose}
+                        >
+                          Close
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={handleInvoiceUpdate}
                         >
                           Save Changes
                         </Button>
@@ -575,8 +672,12 @@ export const SalesRep = () => {
                             <td>
                               {
                                 <button
-                                style={{ backgroundColor: "transparent",
-                                   border: "none",color:"black",textDecoration:"underline"  }}
+                                  style={{
+                                    backgroundColor: "transparent",
+                                    border: "none",
+                                    color: "black",
+                                    textDecoration: "underline",
+                                  }}
                                   onClick={() => {
                                     handleTrackingDataModalShow(order);
                                   }}
@@ -600,10 +701,46 @@ export const SalesRep = () => {
                             <td>{order[9]}</td>
                             <td>
                               {
-                                <a href={order[10]} target="_blank">
-                                  View Invoice
-                                </a>
+                                // display link only if invoice is generated
+                                order[10] !== "" ? (
+                                  // <a href={order[10]} target="_blank">
+                                  //   View Invoice
+                                  // </a>
+                                  <button
+                                    style={{
+                                      backgroundColor: "transparent",
+                                      border: "none",
+                                      color: "black",
+                                      textDecoration: "underline",
+                                    }}
+                                    onClick= {
+                                      () => {
+                                        viewInvoice(order[10]);
+                                      }
+                                    }
+                                  >
+                                    View Invoice
+                                  </button>
+                                ) : (
+                                  ""
+                                )
+                                
                               }
+                              <button
+                                    style={{
+                                      backgroundColor: "transparent",
+                                      border: "none",
+                                      color: "black",
+                                      textDecoration: "underline",
+                                    }}
+                                    onClick= {
+                                      () => {
+                                        handleUpdateInvoiceModalShow(order);
+                                      }
+                                    }
+                                  >
+                                    update Invoice
+                                  </button>
                             </td>
                             <td>{order[11]}</td>
                           </tr>

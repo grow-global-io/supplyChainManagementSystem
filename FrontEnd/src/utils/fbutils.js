@@ -1,4 +1,5 @@
 import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
+import { getStorage, ref, uploadBytes,getDownloadURL} from "firebase/storage";
 import { db } from "../config/fbconfig";
 import { v4 as uuidv4 } from "uuid";
 export const getData = async () => {
@@ -13,7 +14,46 @@ export const saveData = async (data, collectionName) => {
   await setDoc(docRef, data);
   console.log("Document written with ID: ", docRef.id);
 };
+// save pdf to firebase storage
+// export const savePdf = async (file, collectionName) => {
+//   const storage = getStorage();
+//   const storageRef = ref(storage, `${collectionName}/${file.name}`);
+//   await setDoc(storageRef, file);
+//   console.log("Document written with ID: ", storageRef.id);
+//   return storageRef;
+// }
+export const savePdf = async (file, collectionName) => {
+  const storage = getStorage();
+  // unique file name
+  const uniqueFileName = uuidv4();
+  // const storageRef = ref(storage, `${collectionName}/${uniqueFileName}`);
+  const storageRef = ref(storage, `${collectionName}/${uniqueFileName}`);
 
+  try {
+    await uploadBytes(storageRef, file);
+    console.log("PDF uploaded successfully!");
+    
+    const downloadURL = await getDownloadURL(storageRef);
+    console.log("PDF download URL:", downloadURL);
+    return downloadURL;
+  } catch (error) {
+    console.error("Error uploading PDF: ", error);
+    return null;
+  }
+};
+export const getFileDownloadURL = async (storagePath) => {
+  const storage = getStorage();
+  const fileRef = ref(storage, storagePath);
+
+  try {
+    const downloadURL = await getDownloadURL(fileRef);
+    console.log("PDF download URL:", downloadURL);
+    return downloadURL;
+  } catch (error) {
+    console.error("Error retrieving download URL: ", error);
+    return null;
+  }
+};
 // get collection data
 export const getCollectionData = async (collectionName) => {
   // console.log("here", collectionName);
