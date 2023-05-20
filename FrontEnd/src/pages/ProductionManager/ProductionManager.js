@@ -170,7 +170,6 @@ export const ProductionManager = () => {
       );
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
-      // setLoading(false);
       // toast('Role Assignment in progress !!', { icon: '👏' })
       console.log("tx", tx);
       const receipt = await provider

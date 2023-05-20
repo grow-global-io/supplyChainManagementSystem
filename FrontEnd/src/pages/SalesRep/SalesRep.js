@@ -17,7 +17,7 @@ import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.jso
 import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
-import { getCollectionData, saveData, saveInvoice, savePdf,getFileDownloadURL } from "../../utils/fbutils";
+import { getCollectionData, saveData, saveInvoice, savePdf, getFileDownloadURL } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
 import { formatBigNumber } from "../../utils/fbutils";
 import toast, { Toaster } from "react-hot-toast";
@@ -42,6 +42,10 @@ export const SalesRep = () => {
   const [masterTableData, setMasterTableData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loaderSize, setLoaderSize] = useState(220);
+  const [modalStatus, setModalStatus] = useState("");
+  const [statusModalShow, setStatusModalShow] = useState(false);
+  const [progressWidth, setProgressWidth] = React.useState("0%");
+
   //  blockChainMasterData end
   const [role, setRole] = useState("");
   const [save, setSave] = useState(false);
@@ -57,13 +61,66 @@ export const SalesRep = () => {
   const handleVendorModalClose = () => setVendorModal(false);
   const handleVendorModalShow = () => setVendorModal(true);
   const [filteredMasterTableData, setFilteredMasterTableData] = useState([]);
+  const [counter, setCounter] = useState(0);
+  const setCounterFunc = (status) => {
+
+    if (status === "Order Received") {
+      setCounter(0)
+      setProgressWidth("0%");
+
+    }
+    else if (status === "Looking for Vendor Acceptance") {
+      setCounter(1)
+      setProgressWidth("10%");
+
+    }
+    else if (status === "Vendor Accepted") {
+      setCounter(2)
+      setProgressWidth("20%");
+
+    }
+    else if (status === "Fullfilled") {
+      setCounter(3)
+      setProgressWidth("30%");
+
+    }
+    else if (status === "Ready for Production") {
+      setCounter(4)
+      setProgressWidth("40%");
+
+    }
+    else if (status === "Ready for Batching") {
+      setCounter(5)
+      setProgressWidth("50%");
+
+    }
+    else if (status === "Ready for Customer Delivery") {
+      setCounter(6)
+      setProgressWidth("70%");
+
+    }
+    else if (status === "Ready for Invoice") {
+      setCounter(7)
+      setProgressWidth("80%");
+
+    }
+    else if (status === "Paid") {
+      setCounter(8)
+      setProgressWidth("90%");
+
+    }
+    else if (status === "Completed") {
+      setCounter(9)
+      setProgressWidth("100%");
+    }
+  }
   useEffect(() => {
     console.log('this is called');
 
     setFilteredMasterTableData([]);
     console.log("masterTableData", masterTableData);
     // setFilteredMasterTableData(masterTableData);
-    setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Paid" || each.status==="Completed" || each.status==="Order Received" ));
+    setFilteredMasterTableData(masterTableData.filter(each => each.status === "Paid" || each.status === "Completed" || each.status === "Order Received"));
 
   }, [masterTableData]);
   const fetchBlockchainData = async () => {
@@ -121,12 +178,12 @@ export const SalesRep = () => {
     console.log("suppContract", suppContract);
     const role = await suppContract.getRole();
 
-    if(role!=="Sales Representative"){
+    if (role !== "Sales Representative") {
       console.log("You are not a Sales Representative");
       toast.error("You are not a Sales Representative");
       return;
     }
-    else{
+    else {
       console.log("Welcome Sales Representative");
       // window.alert("Welcome Sales Representative");
       toast.success("Welcome Sales Representative");
@@ -242,9 +299,9 @@ export const SalesRep = () => {
     console.log("updateTotalPrice");
     setTotalPrice(
       orderData.orderProductQuantity *
-        masterProductDataArray.find(
-          (product) => product.productName === orderData.orderProductName
-        )?.productUnitPrice
+      masterProductDataArray.find(
+        (product) => product.productName === orderData.orderProductName
+      )?.productUnitPrice
     );
   };
   const handleChange = (e) => {
@@ -360,10 +417,10 @@ export const SalesRep = () => {
       const finalReceiveDateWithoutDashes = finalReceiveDate.replace(/-/g, "");
       setCustomerFinalDeliveryDate(finalReceiveDateWithoutDashes);
     }
-    else if(e.target.id === "invoicePdf"){
+    else if (e.target.id === "invoicePdf") {
       // handle only pdf
       // show warning if not pdf
-      if(e.target.files[0].type !== "application/pdf"){
+      if (e.target.files[0].type !== "application/pdf") {
         toast.error("Please upload a pdf file only");
         return;
       }
@@ -375,8 +432,8 @@ export const SalesRep = () => {
     // console.log(e.target.id);
   };
   const updateBlockDataOrderStatus = async (soId, col, val) => {
-    setLoading(true)
     try {
+      setLoading(true)
       console.log("soId", soId);
       console.log("col", col);
       console.log("val", val);
@@ -404,7 +461,7 @@ export const SalesRep = () => {
     } catch (e) {
       // toast.error('An error occured. Check console !!')
       console.log(e);
-      // setLoading(false)
+      setLoading(false)
     }
   };
   const handleFinalDataSubmit = async () => {
@@ -486,7 +543,7 @@ export const SalesRep = () => {
   useEffect(() => {
     verifyRole();
   }, []);
-  if(role === "Sales Representative"){
+  if (role === "Sales Representative") {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <Toaster position="top-center" reverseOrder="false" />
@@ -539,7 +596,7 @@ export const SalesRep = () => {
                               })}
                             </Form.Select>
                           </Form.Group>
-  
+
                           <Form.Group
                             className="mb-3"
                             controlId="orderProductQuantity"
@@ -704,6 +761,115 @@ export const SalesRep = () => {
                           </Button>
                         </Modal.Footer>
                       </Modal>
+                      <Modal
+                        className="mt-5"
+                        show={statusModalShow}
+                        onHide={() => {
+                          setModalStatus("")
+                          setStatusModalShow(false)
+                          setCounter(0)
+                        }}
+
+                        style={{ height: "100%", width: "100%" }}
+                      >
+                        <Modal.Title style={{ padding: "30px" }}>
+                          Status
+                        </Modal.Title>
+                        <Modal.Body style={{ backgroundColor: "#cfcfcf" }}>
+                          <div className="progress-bar1">
+                            <div
+                              className="progress1"
+                              id="progress"
+                              style={{ width: progressWidth }}
+                            ></div>
+                            <div
+                              className={
+                                counter >= 0
+                                  ? "progress-step progress-step-active"
+                                  : "progress-step"
+                              }
+                            ></div>
+                            <div
+                              className={
+                                counter >= 1
+                                  ? "progress-step progress-step-active"
+                                  : "progress-step"
+                              }
+                            ></div>
+                            <div
+                              className={
+                                counter >= 2
+                                  ? "progress-step progress-step-active"
+                                  : "progress-step"
+                              }
+                            ></div>
+                            <div
+                              className={
+                                counter >= 3
+                                  ? "progress-step progress-step-active"
+                                  : "progress-step"
+                              }
+                            ></div>
+                            <div
+                              className={
+                                counter >= 4
+                                  ? "progress-step progress-step-active"
+                                  : "progress-step"
+                              }
+                            ></div>
+                            <div
+                              className={
+                                counter >= 5
+                                  ? "progress-step progress-step-active"
+                                  : "progress-step"
+                              }
+                            ></div>
+                            <div
+                              className={
+                                counter >= 6
+                                  ? "progress-step progress-step-active"
+                                  : "progress-step"
+                              }
+                            ></div>
+                            <div
+                              className={
+                                counter >= 7
+                                  ? "progress-step progress-step-active"
+                                  : "progress-step"
+                              }
+                            ></div>
+                            <div
+                              className={
+                                counter >= 8
+                                  ? "progress-step progress-step-active"
+                                  : "progress-step"
+                              }
+                            ></div>
+                            <div
+                              className={
+                                counter >= 9
+                                  ? "progress-step progress-step-active"
+                                  : "progress-step"
+                              }
+                            ></div>
+                          </div>
+                          <div style={{display:"flex",justifyContent:"space-between"}}>
+                            <p style={{fontSize:"1em"}}>Order <br/> Received</p>
+                            <p style={{fontSize:"1em"}}>Looking <br/> for Vendor <br/> Acceptance</p>
+                            <p style={{fontSize:"1em"}}>Vendor <br/> Accepted</p>
+                            <p style={{fontSize:"1em"}}>Fullfilled</p>
+                            <p style={{fontSize:"1em"}}>Ready for <br/> Production</p>
+                            <p style={{fontSize:"1em"}}>Ready for <br/> Batching</p>
+                            <p style={{fontSize:"1em"}}>Ready for <br/> Customer <br/> Delivery</p>
+                            <p style={{fontSize:"1em"}}>Ready for <br/> Invoice</p>
+                            <p style={{fontSize:"1em"}}>Paid</p>
+                            <p style={{fontSize:"1em"}}>Completed</p>
+                          </div>
+                          <h3 className="text-center mt-5" style={{ color: "#1A237E" }}>
+                            {modalStatus}
+                          </h3>
+                        </Modal.Body>
+                      </Modal>
                       {
                         // display master product data
                       }
@@ -750,7 +916,13 @@ export const SalesRep = () => {
                               <td>{order[2]}</td>
                               <td>{formatBigNumber(order[3])}</td>
                               <td>{formatBigNumber(order[4])}</td>
-                              <td>{order[6]}</td>
+                              <td style={{ textDecoration: "underline", cursor: "pointer" }}
+                                onClick={() => {
+                                  setModalStatus(order[6]);
+                                  setStatusModalShow(true);
+                                  setCounterFunc(order[6])
+                                }}
+                              >{order[6]}</td>
                               <td>
                                 {formatDate(
                                   formatBigNumber(order.customerFinalDeliveryDate)
@@ -773,7 +945,7 @@ export const SalesRep = () => {
                                         color: "black",
                                         textDecoration: "underline",
                                       }}
-                                      onClick= {
+                                      onClick={
                                         () => {
                                           viewInvoice(order[10]);
                                         }
@@ -784,23 +956,23 @@ export const SalesRep = () => {
                                   ) : (
                                     ""
                                   )
-                                  
+
                                 }
                                 <button
-                                      style={{
-                                        backgroundColor: "transparent",
-                                        border: "none",
-                                        color: "black",
-                                        textDecoration: "underline",
-                                      }}
-                                      onClick= {
-                                        () => {
-                                          handleUpdateInvoiceModalShow(order);
-                                        }
-                                      }
-                                    >
-                                      update Invoice
-                                    </button>
+                                  style={{
+                                    backgroundColor: "transparent",
+                                    border: "none",
+                                    color: "black",
+                                    textDecoration: "underline",
+                                  }}
+                                  onClick={
+                                    () => {
+                                      handleUpdateInvoiceModalShow(order);
+                                    }
+                                  }
+                                >
+                                  update Invoice
+                                </button>
                               </td>
                               <td>{order[11]}</td>
                             </tr>
@@ -817,7 +989,7 @@ export const SalesRep = () => {
       </Navbar>
     );
   }
-  else{
+  else {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <div>

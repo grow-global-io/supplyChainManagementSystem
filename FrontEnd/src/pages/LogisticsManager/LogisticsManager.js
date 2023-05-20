@@ -158,8 +158,8 @@ export const LogisticsManager = () => {
     handlePOModalClose();
   };
   const updateBlockDataOrderStatus = async (soId, col, val) => {
-    setLoading(true)
     try {
+      setLoading(true)
       console.log("soId", soId);
       console.log("col", col);
       console.log("val", val);
@@ -183,12 +183,12 @@ export const LogisticsManager = () => {
         // getOrderDetails();
         setFilteredpurchaseOrderLineItemDataArray([]);
         fetchBlockchainData();
-        setLoading(false);
-        });
-        const tab = document.getElementById(
-          "uncontrolled-tab-example-tab-ViewPurchaseOrderLineItems"
+      });
+      const tab = document.getElementById(
+        "uncontrolled-tab-example-tab-ViewPurchaseOrderLineItems"
         );
-          console.log("tab", tab);
+        console.log("tab", tab);
+        setLoading(false);
         // disableTab(tab);
       // toast('Role Assignment in progress !!', { icon: '👏' })
     } catch (e) {

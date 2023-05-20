@@ -163,8 +163,8 @@ export const WarehouseManager = () => {
     handlePOModalClose();
   };
   const updateBlockDataOrderStatus = async (soId, col, val) => {
-    setLoading(true)
     try {
+      setLoading(true)
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
       const network = await provider.getNetwork();

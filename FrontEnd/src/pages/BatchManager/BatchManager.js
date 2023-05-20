@@ -96,11 +96,8 @@ export const BatchManager = () => {
 
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
-      setLoading(true)
-      console.log("soId", soId);
-      console.log("col", col);
-      console.log("val", val);
       await window.ethereum.request({ method: "eth_requestAccounts" });
+      setLoading(true)
       const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
       const network = await provider.getNetwork();
       const signer = provider.getSigner();
