@@ -119,14 +119,25 @@ export const SalesRep = () => {
       signer
     );
     console.log("suppContract", suppContract);
-    const tx = await suppContract.getRole();
+    const role = await suppContract.getRole();
+
+    if(role!=="Sales Representative"){
+      console.log("You are not a Sales Representative");
+      toast.error("You are not a Sales Representative");
+      return;
+    }
+    else{
+      console.log("Welcome Sales Representative");
+      // window.alert("Welcome Sales Representative");
+      toast.success("Welcome Sales Representative");
+    }
     const mTableData = await suppContract.getAllOrderDetails();
     setMasterTableData(mTableData);
 
     const b = mTableData[0][3];
     console.log("test", (Number(b) / Math.pow(10, 18)) * 10 ** 18);
 
-    setRole(tx);
+    setRole(role);
   };
   const [masterProductData, setmasterProductData] = useState({
     productName: "",
@@ -454,285 +465,272 @@ export const SalesRep = () => {
     );
     handleUpdateInvoiceModalClose();
   }
-  return (
-    <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
-      <Toaster position="top-center" reverseOrder="false" />
-      {loading === true ? (
-        <Lottie
-          options={loadingLoader}
-          height={loaderSize}
-          width={loaderSize}
-        />
-      ) : (
-        <div>
-          <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
-            Welcome Sales Representative
-          </h1>
-          <Container>
-            <Row>
-              <Card>
-                <Card.Body>
-                  <Col>
-                    <Button onClick={createOrder} variant="primary">
-                      Create Order
-                    </Button>{" "}
-                    <Modal
-                      className="mt-5"
-                      show={createOrderModal}
-                      onHide={handleCreateOrderModalClose}
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title>Add Order Details</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Form.Group
-                          className="mb-3"
-                          controlId="orderProductName"
-                        >
-                          <Form.Label>Product Name</Form.Label>
-                          <Form.Select
-                            value={orderData.orderProductName}
-                            onChange={handleChange}
-                            aria-label="Default select example"
-                            name="orderProductName"
-                          >
-                            <option>Select Product</option>
-                            {masterProductDataArray.map((product) => {
-                              return (
-                                <option value={product.productName}>
-                                  {product.productName}
-                                </option>
-                              );
-                            })}
-                          </Form.Select>
-                        </Form.Group>
+  const verifyRole = async () => {
+    console.log("verifyRole");
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+    const network = await provider.getNetwork();
+    const signer = provider.getSigner();
 
-                        <Form.Group
-                          className="mb-3"
-                          controlId="orderProductQuantity"
-                        >
-                          <Form.Label>Quantity</Form.Label>
-                          <Form.Control
-                            onChange={handleChange}
-                            value={orderData.orderProductQuantity}
-                            type="number"
-                            placeholder=""
-                            name="orderProductQuantity"
-                            disabled={orderData.orderProductName === ""}
-                          />
-                        </Form.Group>
-                        <Form.Group
-                          className="mb-3"
-                          controlId="orderProductPrice"
-                        >
-                          <Form.Label>Total Price</Form.Label>
-                          <Form.Control
-                            type="number"
-                            disabled
-                            placeholder=""
-                            name="orderProductTotalPrice"
-                            value={orderData.orderProductTotalPrice}
-                          />
-                        </Form.Group>
-                        <Form.Group
-                          className="mb-3"
-                          controlId="orderProductStatus"
-                        >
-                          <Form.Label>Status</Form.Label>
-                          <Form.Select
-                            onChange={handleChange}
-                            name="orderProductStatus"
-                            value={orderData.orderProductStatus}
-                          >
-                            <option>Select order status</option>
-                            <option value={getStatus(1)[0].name}>
-                              {getStatus(1)[0].name}
-                            </option>
-                            <option value={getStatus(2)[0].name}>
-                              {getStatus(2)[0].name}
-                            </option>
-                            <option value={getStatus(3)[0].name}>
-                              {getStatus(3)[0].name}
-                            </option>
-                            <option value={getStatus(4)[0].name}>
-                              {getStatus(4)[0].name}
-                            </option>
-                            <option value={getStatus(5)[0].name}>
-                              {getStatus(5)[0].name}
-                            </option>
-                            <option value={getStatus(6)[0].name}>
-                              {getStatus(6)[0].name}
-                            </option>
-                            <option value={getStatus(7)[0].name}>
-                              {getStatus(7)[0].name}
-                            </option>
-                            <option value={getStatus(8)[0].name}>
-                              {getStatus(8)[0].name}
-                            </option>
-                          </Form.Select>
-                        </Form.Group>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={handleCreateOrderModalClose}
-                        >
-                          Close
-                        </Button>
-                        <Button variant="primary" onClick={orderDataSubmit}>
-                          Save Changes
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal
-                      className="mt-5"
-                      show={trackingDataModal}
-                      onHide={handleTrackingDataModalClose}
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title>Update Tracking Number</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Form>
+    const suppContract = new ethers.Contract(
+      getConfigByChain(network.chainId)[0].suppChainAddress,
+      SuppChain.abi,
+      signer
+    );
+    console.log("suppContract", suppContract);
+    const tx = await suppContract.getRole();
+    console.log("tx", tx);
+    setRole(tx);
+    console.log("role", role);
+  };
+  useEffect(() => {
+    verifyRole();
+  }, []);
+  if(role === "Sales Representative"){
+    return (
+      <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
+        <Toaster position="top-center" reverseOrder="false" />
+        {loading === true ? (
+          <Lottie
+            options={loadingLoader}
+            height={loaderSize}
+            width={loaderSize}
+          />
+        ) : (
+          <div>
+            <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
+              Welcome Sales Representative
+            </h1>
+            <Container>
+              <Row>
+                <Card>
+                  <Card.Body>
+                    <Col>
+                      <Button onClick={createOrder} variant="primary">
+                        Create Order
+                      </Button>{" "}
+                      <Modal
+                        className="mt-5"
+                        show={createOrderModal}
+                        onHide={handleCreateOrderModalClose}
+                      >
+                        <Modal.Header closeButton>
+                          <Modal.Title>Add Order Details</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
                           <Form.Group
                             className="mb-3"
-                            controlId="trackingNumber"
+                            controlId="orderProductName"
                           >
-                            <Form.Label>Tracking Number</Form.Label>
+                            <Form.Label>Product Name</Form.Label>
+                            <Form.Select
+                              value={orderData.orderProductName}
+                              onChange={handleChange}
+                              aria-label="Default select example"
+                              name="orderProductName"
+                            >
+                              <option>Select Product</option>
+                              {masterProductDataArray.map((product) => {
+                                return (
+                                  <option value={product.productName}>
+                                    {product.productName}
+                                  </option>
+                                );
+                              })}
+                            </Form.Select>
+                          </Form.Group>
+  
+                          <Form.Group
+                            className="mb-3"
+                            controlId="orderProductQuantity"
+                          >
+                            <Form.Label>Quantity</Form.Label>
                             <Form.Control
-                              type="text"
+                              onChange={handleChange}
+                              value={orderData.orderProductQuantity}
+                              type="number"
                               placeholder=""
-                              onChange={handleChangeMethod}
+                              name="orderProductQuantity"
+                              disabled={orderData.orderProductName === ""}
                             />
                           </Form.Group>
                           <Form.Group
                             className="mb-3"
-                            controlId="customerFinalDeliveryDate"
+                            controlId="orderProductPrice"
                           >
-                            <Form.Label>Customer Delivery Date</Form.Label>
+                            <Form.Label>Total Price</Form.Label>
                             <Form.Control
-                              type="date"
+                              type="number"
+                              disabled
                               placeholder=""
-                              onChange={handleChangeMethod}
+                              name="orderProductTotalPrice"
+                              value={orderData.orderProductTotalPrice}
                             />
                           </Form.Group>
-                        </Form>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={handleTrackingDataModalClose}
-                        >
-                          Close
-                        </Button>
-                        <Button
-                          variant="primary"
-                          onClick={handleFinalDataSubmit}
-                        >
-                          Save Changes
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    <Modal
-                      className="mt-5"
-                      show={updateInvoiceModal}
-                      onHide={handleUpdateInvoiceModalClose}
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title>Update Invoice</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Form>
                           <Form.Group
                             className="mb-3"
-                            controlId="invoicePdf"
+                            controlId="orderProductStatus"
                           >
-                            <Form.Label>Upload Invoice Pdf</Form.Label>
-                            <Form.Control
-                              type="file"
-                              placeholder=""
-                              onChange={handleChangeMethod}
-                            />
+                            <Form.Label>Status</Form.Label>
+                            <Form.Select
+                              onChange={handleChange}
+                              name="orderProductStatus"
+                              value={orderData.orderProductStatus}
+                            >
+                              <option>Select order status</option>
+                              <option value={getStatus(1)[0].name}>
+                                {getStatus(1)[0].name}
+                              </option>
+                              <option value={getStatus(2)[0].name}>
+                                {getStatus(2)[0].name}
+                              </option>
+                              <option value={getStatus(3)[0].name}>
+                                {getStatus(3)[0].name}
+                              </option>
+                              <option value={getStatus(4)[0].name}>
+                                {getStatus(4)[0].name}
+                              </option>
+                              <option value={getStatus(5)[0].name}>
+                                {getStatus(5)[0].name}
+                              </option>
+                              <option value={getStatus(6)[0].name}>
+                                {getStatus(6)[0].name}
+                              </option>
+                              <option value={getStatus(7)[0].name}>
+                                {getStatus(7)[0].name}
+                              </option>
+                              <option value={getStatus(8)[0].name}>
+                                {getStatus(8)[0].name}
+                              </option>
+                            </Form.Select>
                           </Form.Group>
-                        </Form>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={handleUpdateInvoiceModalClose}
-                        >
-                          Close
-                        </Button>
-                        <Button
-                          variant="primary"
-                          onClick={handleInvoiceUpdate}
-                        >
-                          Save Changes
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                    {
-                      // display master product data
-                    }
-                    <Table className="mt-2" striped bordered hover>
-                      <thead>
-                        <tr>
-                          <th>Sr No.</th>
-                          <th>SoID</th>
-                          <th>PoID</th>
-                          <th>prodName</th>
-                          <th>qty</th>
-                          <th>orderValue</th>
-                          <th>status</th>
-                          <th>customerFinalDeliveryDate</th>
-                          <th>barCode</th>
-                          <th>batchNo</th>
-                          <th>masterLabel</th>
-                          <th>View Invoice</th>
-                          <th>trackingNo</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredMasterTableData.map((order, index) => (
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button
+                            variant="secondary"
+                            onClick={handleCreateOrderModalClose}
+                          >
+                            Close
+                          </Button>
+                          <Button variant="primary" onClick={orderDataSubmit}>
+                            Save Changes
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+                      <Modal
+                        className="mt-5"
+                        show={trackingDataModal}
+                        onHide={handleTrackingDataModalClose}
+                      >
+                        <Modal.Header closeButton>
+                          <Modal.Title>Update Tracking Number</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          <Form>
+                            <Form.Group
+                              className="mb-3"
+                              controlId="trackingNumber"
+                            >
+                              <Form.Label>Tracking Number</Form.Label>
+                              <Form.Control
+                                type="text"
+                                placeholder=""
+                                onChange={handleChangeMethod}
+                              />
+                            </Form.Group>
+                            <Form.Group
+                              className="mb-3"
+                              controlId="customerFinalDeliveryDate"
+                            >
+                              <Form.Label>Customer Delivery Date</Form.Label>
+                              <Form.Control
+                                type="date"
+                                placeholder=""
+                                onChange={handleChangeMethod}
+                              />
+                            </Form.Group>
+                          </Form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button
+                            variant="secondary"
+                            onClick={handleTrackingDataModalClose}
+                          >
+                            Close
+                          </Button>
+                          <Button
+                            variant="primary"
+                            onClick={handleFinalDataSubmit}
+                          >
+                            Save Changes
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+                      <Modal
+                        className="mt-5"
+                        show={updateInvoiceModal}
+                        onHide={handleUpdateInvoiceModalClose}
+                      >
+                        <Modal.Header closeButton>
+                          <Modal.Title>Update Invoice</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          <Form>
+                            <Form.Group
+                              className="mb-3"
+                              controlId="invoicePdf"
+                            >
+                              <Form.Label>Upload Invoice Pdf</Form.Label>
+                              <Form.Control
+                                type="file"
+                                placeholder=""
+                                onChange={handleChangeMethod}
+                              />
+                            </Form.Group>
+                          </Form>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button
+                            variant="secondary"
+                            onClick={handleUpdateInvoiceModalClose}
+                          >
+                            Close
+                          </Button>
+                          <Button
+                            variant="primary"
+                            onClick={handleInvoiceUpdate}
+                          >
+                            Save Changes
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+                      {
+                        // display master product data
+                      }
+                      <Table className="mt-2" striped bordered hover>
+                        <thead>
                           <tr>
-                            <td>{index + 1}</td>
-                            <td>
-                              {
-                                <button
-                                  style={{
-                                    backgroundColor: "transparent",
-                                    border: "none",
-                                    color: "black",
-                                    textDecoration: "underline",
-                                  }}
-                                  onClick={() => {
-                                    handleTrackingDataModalShow(order);
-                                  }}
-                                >
-                                  {order[0]}
-                                </button>
-                              }
-                            </td>
-                            <td>{order[1]}</td>
-                            <td>{order[2]}</td>
-                            <td>{formatBigNumber(order[3])}</td>
-                            <td>{formatBigNumber(order[4])}</td>
-                            <td>{order[6]}</td>
-                            <td>
-                              {formatDate(
-                                formatBigNumber(order.customerFinalDeliveryDate)
-                              )}
-                            </td>
-                            <td>{order[7]}</td>
-                            <td>{order[8]}</td>
-                            <td>{order[9]}</td>
-                            <td>
-                              {
-                                // display link only if invoice is generated
-                                order[10] !== "" ? (
-                                  // <a href={order[10]} target="_blank">
-                                  //   View Invoice
-                                  // </a>
+                            <th>Sr No.</th>
+                            <th>SoID</th>
+                            <th>PoID</th>
+                            <th>prodName</th>
+                            <th>qty</th>
+                            <th>orderValue</th>
+                            <th>status</th>
+                            <th>customerFinalDeliveryDate</th>
+                            <th>barCode</th>
+                            <th>batchNo</th>
+                            <th>masterLabel</th>
+                            <th>View Invoice</th>
+                            <th>trackingNo</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredMasterTableData.map((order, index) => (
+                            <tr>
+                              <td>{index + 1}</td>
+                              <td>
+                                {
                                   <button
                                     style={{
                                       backgroundColor: "transparent",
@@ -740,47 +738,100 @@ export const SalesRep = () => {
                                       color: "black",
                                       textDecoration: "underline",
                                     }}
-                                    onClick= {
-                                      () => {
-                                        viewInvoice(order[10]);
-                                      }
-                                    }
-                                  >
-                                    View Invoice
-                                  </button>
-                                ) : (
-                                  ""
-                                )
-                                
-                              }
-                              <button
-                                    style={{
-                                      backgroundColor: "transparent",
-                                      border: "none",
-                                      color: "black",
-                                      textDecoration: "underline",
+                                    onClick={() => {
+                                      handleTrackingDataModalShow(order);
                                     }}
-                                    onClick= {
-                                      () => {
-                                        handleUpdateInvoiceModalShow(order);
-                                      }
-                                    }
                                   >
-                                    update Invoice
+                                    {order[0]}
                                   </button>
-                            </td>
-                            <td>{order[11]}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </Col>
+                                }
+                              </td>
+                              <td>{order[1]}</td>
+                              <td>{order[2]}</td>
+                              <td>{formatBigNumber(order[3])}</td>
+                              <td>{formatBigNumber(order[4])}</td>
+                              <td>{order[6]}</td>
+                              <td>
+                                {formatDate(
+                                  formatBigNumber(order.customerFinalDeliveryDate)
+                                )}
+                              </td>
+                              <td>{order[7]}</td>
+                              <td>{order[8]}</td>
+                              <td>{order[9]}</td>
+                              <td>
+                                {
+                                  // display link only if invoice is generated
+                                  order[10] !== "" ? (
+                                    // <a href={order[10]} target="_blank">
+                                    //   View Invoice
+                                    // </a>
+                                    <button
+                                      style={{
+                                        backgroundColor: "transparent",
+                                        border: "none",
+                                        color: "black",
+                                        textDecoration: "underline",
+                                      }}
+                                      onClick= {
+                                        () => {
+                                          viewInvoice(order[10]);
+                                        }
+                                      }
+                                    >
+                                      View Invoice
+                                    </button>
+                                  ) : (
+                                    ""
+                                  )
+                                  
+                                }
+                                <button
+                                      style={{
+                                        backgroundColor: "transparent",
+                                        border: "none",
+                                        color: "black",
+                                        textDecoration: "underline",
+                                      }}
+                                      onClick= {
+                                        () => {
+                                          handleUpdateInvoiceModalShow(order);
+                                        }
+                                      }
+                                    >
+                                      update Invoice
+                                    </button>
+                              </td>
+                              <td>{order[11]}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </Col>
+                  </Card.Body>
+                </Card>
+              </Row>
+            </Container>
+          </div>
+        )}
+      </Navbar>
+    );
+  }
+  else{
+    return (
+      <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
+        <div>
+          <Container>
+            <Row>
+              <Card>
+                <Card.Body>
+                  <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>You don't have permission</h1>
                 </Card.Body>
               </Card>
             </Row>
           </Container>
         </div>
-      )}
-    </Navbar>
-  );
+      </Navbar>
+    );
+  }
 };
