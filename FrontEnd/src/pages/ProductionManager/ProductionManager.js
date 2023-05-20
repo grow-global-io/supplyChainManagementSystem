@@ -59,7 +59,27 @@ export const ProductionManager = () => {
   useEffect(() => {
     console.log("masterTableData", masterTableData);
   }, [masterTableData]);
+  const [filteredMasterTableData, setFilteredMasterTableData] = useState([]);
+  useEffect(() => {
+    console.log('this is called');
 
+    setFilteredMasterTableData([]);
+    console.log("masterTableData", masterTableData);
+    // setFilteredMasterTableData(masterTableData);
+    setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Ready for Production"));
+
+  }, [masterTableData]);
+  const fetchBlockchainData = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+    const network = await provider.getNetwork();
+    const signer = provider.getSigner();
+    const suppContract = new ethers.Contract(
+      getConfigByChain(network.chainId)[0].suppChainAddress,
+      SuppChain.abi,
+      signer
+    );
+    setMasterTableData(await suppContract.getAllOrderDetails());
+  }
   const verifyRole = async () => {
     console.log("verifyRole");
     await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -150,9 +170,18 @@ export const ProductionManager = () => {
       );
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
-      setLoading(false);
+      // setLoading(false);
       // toast('Role Assignment in progress !!', { icon: '👏' })
       console.log("tx", tx);
+      const receipt = await provider
+      .waitForTransaction(tx.hash, 1, 150000)
+      .then(() => {
+        // toast.success(`Role assigned successfully !!`);
+        // getOrderDetails();
+          fetchBlockchainData();
+          setLoading(false);
+        });
+
     } catch (e) {
       // toast.error('An error occured. Check console !!')
       console.log(e);
@@ -311,7 +340,7 @@ export const ProductionManager = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              {masterTableData.map((order, index) => (
+                              {filteredMasterTableData.map((order, index) => (
                                 <tr>
                                   <td>{index + 1}</td>
                                   {

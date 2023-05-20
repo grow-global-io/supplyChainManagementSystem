@@ -56,7 +56,27 @@ export const SalesRep = () => {
   const [vendorModal, setVendorModal] = useState(false);
   const handleVendorModalClose = () => setVendorModal(false);
   const handleVendorModalShow = () => setVendorModal(true);
+  const [filteredMasterTableData, setFilteredMasterTableData] = useState([]);
+  useEffect(() => {
+    console.log('this is called');
 
+    setFilteredMasterTableData([]);
+    console.log("masterTableData", masterTableData);
+    // setFilteredMasterTableData(masterTableData);
+    setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Paid" || each.status==="Completed" || each.status==="Order Received" ));
+
+  }, [masterTableData]);
+  const fetchBlockchainData = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+    const network = await provider.getNetwork();
+    const signer = provider.getSigner();
+    const suppContract = new ethers.Contract(
+      getConfigByChain(network.chainId)[0].suppChainAddress,
+      SuppChain.abi,
+      signer
+    );
+    setMasterTableData(await suppContract.getAllOrderDetails());
+  }
   const fetchCollectionData = async () => {
     setmasterProductDataArray(await getCollectionData("masterProductData"));
     setmasterMaterialDataArray(await getCollectionData("masterMaterialData"));
@@ -344,7 +364,7 @@ export const SalesRep = () => {
     // console.log(e.target.id);
   };
   const updateBlockDataOrderStatus = async (soId, col, val) => {
-    // setLoading(true)
+    setLoading(true)
     try {
       console.log("soId", soId);
       console.log("col", col);
@@ -362,6 +382,13 @@ export const SalesRep = () => {
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
       console.log("tx", tx);
+      const receipt = await provider
+        .waitForTransaction(tx.hash, 1, 150000)
+        .then(() => {
+          // toast.success(`Role assigned successfully !!`);
+          getOrderDetails();
+          setLoading(false);
+        });
       // toast('Role Assignment in progress !!', { icon: '👏' })
     } catch (e) {
       // toast.error('An error occured. Check console !!')
@@ -666,7 +693,7 @@ export const SalesRep = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {masterTableData.map((order, index) => (
+                        {filteredMasterTableData.map((order, index) => (
                           <tr>
                             <td>{index + 1}</td>
                             <td>

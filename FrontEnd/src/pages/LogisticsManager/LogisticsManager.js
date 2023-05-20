@@ -12,6 +12,9 @@ import {
   Card,
   Dropdown,
 } from "react-bootstrap";
+import * as loadingImage from "../../assets/loading.json";
+import Lottie from "react-lottie";
+
 import Form from "react-bootstrap/Form";
 import Select from "react-select";
 import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.json";
@@ -26,6 +29,7 @@ import {
 } from "../../utils/fbutils";
 import { updateCollectionData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
+import { Toaster } from "react-hot-toast";
 const navItem = [];
 export const LogisticsManager = () => {
   const [masterProductDataArray, setmasterProductDataArray] = useState([]);
@@ -35,10 +39,34 @@ export const LogisticsManager = () => {
     useState([]);
   // blockChainMasterData start
   const [masterTableData, setMasterTableData] = useState([]);
+  const [filteredMasterTableData, setFilteredMasterTableData] = useState([]);
+  useEffect(() => {
+    console.log('this is called');
+
+    setFilteredMasterTableData([]);
+    console.log("masterTableData", masterTableData);
+    // setFilteredMasterTableData(masterTableData);
+    setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Vendor Accepted"||each.status==="Ready for Customer Delivery"));
+    const tab = document.getElementById(
+      "uncontrolled-tab-example-tab-ViewPurchaseOrderLineItems"
+    );
+      console.log("tab", tab);
+      tab.disabled = true;
+  }, [masterTableData]);
   //  blockChainMasterData end
   const [role, setRole] = useState("");
   const [save, setSave] = useState(false);
-
+  const fetchBlockchainData = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+    const network = await provider.getNetwork();
+    const signer = provider.getSigner();
+    const suppContract = new ethers.Contract(
+      getConfigByChain(network.chainId)[0].suppChainAddress,
+      SuppChain.abi,
+      signer
+    );
+    setMasterTableData(await suppContract.getAllOrderDetails());
+  }
   const fetchCollectionData = async () => {
     setmasterProductDataArray(await getCollectionData("masterProductData"));
     setmasterMaterialDataArray(await getCollectionData("masterMaterialData"));
@@ -130,7 +158,7 @@ export const LogisticsManager = () => {
     handlePOModalClose();
   };
   const updateBlockDataOrderStatus = async (soId, col, val) => {
-    // setLoading(true)
+    setLoading(true)
     try {
       console.log("soId", soId);
       console.log("col", col);
@@ -148,6 +176,20 @@ export const LogisticsManager = () => {
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
       console.log("tx", tx);
+      const receipt = await provider
+      .waitForTransaction(tx.hash, 1, 150000)
+      .then(() => {
+        // toast.success(`Role assigned successfully !!`);
+        // getOrderDetails();
+        setFilteredpurchaseOrderLineItemDataArray([]);
+        fetchBlockchainData();
+        setLoading(false);
+        });
+        const tab = document.getElementById(
+          "uncontrolled-tab-example-tab-ViewPurchaseOrderLineItems"
+        );
+          console.log("tab", tab);
+        // disableTab(tab);
       // toast('Role Assignment in progress !!', { icon: '👏' })
     } catch (e) {
       // toast.error('An error occured. Check console !!')
@@ -175,8 +217,9 @@ export const LogisticsManager = () => {
     const finalReceiveDateWithoutDashes = finalReceiveDate.replace(/-/g, "");
     console.log("finalReceiveDateWithoutDashes", finalReceiveDateWithoutDashes);
     handleFinalReceiveDateModalClose();
-
+    // setLoading(true);
     await updateBlockDataOrderStatus(POData[0],["Customer Final Delivery Date","Status"],[finalReceiveDateWithoutDashes,"Ready for Invoice"]);
+
     // setSave(!save);
   };
   const [vendorList, setVendorList] = useState([]);
@@ -221,10 +264,20 @@ export const LogisticsManager = () => {
     setReceiveDate(e.target.value);
     POData.receiveDate = e.target.value;
   };
+  const loadingLoader = {
+    loop: true,
+    autoplay: true,
+    animationData: loadingImage,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
   const handleUpdateReceiveDataSubmit = async () => {
     console.log("POData", POData);
+    setLoading(true);
     await updateCollectionData("purchaseOrderLineItem", POData.id, POData);
-    setSave(!save);
+    // setSave(!save);
+    setLoading(false);
     // updateBlockDataOrderStatus(POData.soId, ["Status"], ["Vendor Accepted"]);
     handleUpdateReceiveDataModalClose();
   };
@@ -273,11 +326,22 @@ export const LogisticsManager = () => {
       tempFilteredpurchaseOrderLineItemDataArray
     );
   };
+  const [loading, setLoading] = useState(false);
+  const [loaderSize, setLoaderSize] = useState(220);
   // purchase order Agent specific code end
   if (true) {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
-        <div>
+      <Toaster position='top-center' reverseOrder='false' />
+      {
+        loading === true?(
+          <Lottie
+          options={loadingLoader}
+          height={loaderSize}
+          width={loaderSize}
+        />
+        ):(
+          <div>
           <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
             Welcome Logistics Manager
           </h1>
@@ -307,7 +371,7 @@ export const LogisticsManager = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {masterTableData.map((order, index) => (
+                            {filteredMasterTableData.map((order, index) => (
                               <tr>
                                 <td>{index + 1}</td>
                                 {
@@ -632,6 +696,8 @@ export const LogisticsManager = () => {
             </Row>
           </Container>
         </div>
+        )
+      }
       </Navbar>
     );
   } else {

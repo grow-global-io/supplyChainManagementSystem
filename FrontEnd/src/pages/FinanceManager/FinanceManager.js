@@ -18,6 +18,9 @@ import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.jso
 import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
+import * as loadingImage from "../../assets/loading.json";
+import Lottie from "react-lottie";
+import { Toaster } from "react-hot-toast";
 import {
   formatBigNumber,
   getCollectionData,
@@ -33,7 +36,37 @@ export const FinanceManager = () => {
  //  blockChainMasterData end
  const [role, setRole] = useState("");
  const [save, setSave] = useState(false);
+ const [filteredMasterTableData, setFilteredMasterTableData] = useState([]);
+ useEffect(() => {
+   console.log('this is called');
 
+   setFilteredMasterTableData([]);
+   console.log("masterTableData", masterTableData);
+   // setFilteredMasterTableData(masterTableData);
+   setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Ready for Invoice"));
+
+ }, [masterTableData]);
+ const fetchBlockchainData = async () => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+  const network = await provider.getNetwork();
+  const signer = provider.getSigner();
+  const suppContract = new ethers.Contract(
+    getConfigByChain(network.chainId)[0].suppChainAddress,
+    SuppChain.abi,
+    signer
+  );
+  setMasterTableData(await suppContract.getAllOrderDetails());
+}
+const loadingLoader = {
+  loop: true,
+  autoplay: true,
+  animationData: loadingImage,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
+const [loading, setLoading] = useState(false);
+const [loaderSize, setLoaderSize] = useState(220);
  const fetchCollectionData = async () => {};
  useEffect(() => {
    verifyRole();
@@ -42,7 +75,6 @@ export const FinanceManager = () => {
  useEffect(() => {
    console.log("masterTableData", masterTableData);
  }, [masterTableData]);
-
  const verifyRole = async () => {
    console.log("verifyRole");
    await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -62,8 +94,8 @@ export const FinanceManager = () => {
  };
 
  const updateBlockDataOrderStatus = async (soId, col, val) => {
-   // setLoading(true)
    try {
+     setLoading(true)
      console.log("soId", soId);
      console.log("col", col);
      console.log("val", val);
@@ -81,6 +113,14 @@ export const FinanceManager = () => {
      const tx = await suppContract.update(soId, col, val);
      console.log("tx", tx);
      // toast('Role Assignment in progress !!', { icon: '👏' })
+     const receipt = await provider
+      .waitForTransaction(tx.hash, 1, 150000)
+      .then(() => {
+        // toast.success(`Role assigned successfully !!`);
+        // getOrderDetails();
+          fetchBlockchainData();
+          setLoading(false);
+        });
    } catch (e) {
      // toast.error('An error occured. Check console !!')
      console.log(e);
@@ -112,7 +152,16 @@ export const FinanceManager = () => {
  if (true) {
    return (
      <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
-       <div>
+     <Toaster position='top-center' reverseOrder='false' />
+     {
+       loading === true?(
+         <Lottie
+         options={loadingLoader}
+         height={loaderSize}
+         width={loaderSize}
+       />
+       ):(
+        <div>
          <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
            Welcome Finance Manager
          </h1>
@@ -133,7 +182,7 @@ export const FinanceManager = () => {
                        </tr>
                      </thead>
                      <tbody>
-                       {masterTableData.map((order, index) => (
+                       {filteredMasterTableData.map((order, index) => (
                          <tr>
                            <td>{index + 1}</td>
                            <td>
@@ -190,6 +239,8 @@ export const FinanceManager = () => {
            </Row>
          </Container>
        </div>
+       )
+     }
      </Navbar>
    );
  } else {

@@ -26,6 +26,9 @@ import {
 } from "../../utils/fbutils";
 import { updateCollectionData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
+import * as loadingImage from "../../assets/loading.json";
+import Lottie from "react-lottie";
+import { Toaster } from "react-hot-toast";
 const navItem = [];
 export const WarehouseManager = () => {
   const [masterProductDataArray, setmasterProductDataArray] = useState([]);
@@ -35,10 +38,40 @@ export const WarehouseManager = () => {
     useState([]);
   // blockChainMasterData start
   const [masterTableData, setMasterTableData] = useState([]);
+  const [filteredMasterTableData, setFilteredMasterTableData] = useState([]);
+  useEffect(() => {
+    console.log('this is called');
+
+    setFilteredMasterTableData([]);
+    console.log("masterTableData", masterTableData);
+    // setFilteredMasterTableData(masterTableData);
+    setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Fullfilled"));
+
+  }, [masterTableData]);
   //  blockChainMasterData end
   const [role, setRole] = useState("");
   const [save, setSave] = useState(false);
-
+  const fetchBlockchainData = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+    const network = await provider.getNetwork();
+    const signer = provider.getSigner();
+    const suppContract = new ethers.Contract(
+      getConfigByChain(network.chainId)[0].suppChainAddress,
+      SuppChain.abi,
+      signer
+    );
+    setMasterTableData(await suppContract.getAllOrderDetails());
+  }
+  const loadingLoader = {
+    loop: true,
+    autoplay: true,
+    animationData: loadingImage,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+  const [loading, setLoading] = useState(false);
+  const [loaderSize, setLoaderSize] = useState(220);
   const fetchCollectionData = async () => {
     setmasterProductDataArray(await getCollectionData("masterProductData"));
     setmasterMaterialDataArray(await getCollectionData("masterMaterialData"));
@@ -130,7 +163,7 @@ export const WarehouseManager = () => {
     handlePOModalClose();
   };
   const updateBlockDataOrderStatus = async (soId, col, val) => {
-    // setLoading(true)
+    setLoading(true)
     try {
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
@@ -145,6 +178,15 @@ export const WarehouseManager = () => {
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
       console.log("tx", tx);
+      const receipt = await provider
+      .waitForTransaction(tx.hash, 1, 150000)
+      .then(() => {
+        // toast.success(`Role assigned successfully !!`);
+        // getOrderDetails();
+          fetchBlockchainData();
+          setLoading(false);
+        });
+
       // toast('Role Assignment in progress !!', { icon: '👏' })
     } catch (e) {
       // toast.error('An error occured. Check console !!')
@@ -200,8 +242,10 @@ export const WarehouseManager = () => {
   };
   const handleUpdateReceiveDataSubmit = async () => {
     console.log("POData", POData);
+    setLoading(true);
     await updateCollectionData("purchaseOrderLineItem", POData.id, POData);
     setSave(!save);
+    setLoading(false);
     // updateBlockDataOrderStatus(POData.soId, ["Status"], ["Vendor Accepted"]);
     handleUpdateReceiveDataModalClose();
   };
@@ -252,7 +296,16 @@ export const WarehouseManager = () => {
   if (true) {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
-        <div>
+      <Toaster position='top-center' reverseOrder='false' />
+      {
+        loading === true?(
+          <Lottie
+          options={loadingLoader}
+          height={loaderSize}
+          width={loaderSize}
+        />
+        ):(
+          <div>
           <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
             Welcome Warehouse Manager
           </h1>
@@ -282,7 +335,7 @@ export const WarehouseManager = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {masterTableData.map((order, index) => (
+                            {filteredMasterTableData.map((order, index) => (
                               <tr>
                                 <td>{index + 1}</td>
                                 {
@@ -576,6 +629,8 @@ export const WarehouseManager = () => {
             </Row>
           </Container>
         </div>
+        )
+      }
       </Navbar>
     );
   } else {

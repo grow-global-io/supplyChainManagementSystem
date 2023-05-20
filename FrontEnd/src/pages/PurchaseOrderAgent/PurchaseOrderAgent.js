@@ -53,12 +53,27 @@ export default function PurchaseOrderAgent() {
       await getCollectionDataWithId("purchaseOrderLineItem")
     );
   };
+  const fetchBlockchainData = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+    const network = await provider.getNetwork();
+    const signer = provider.getSigner();
+    const suppContract = new ethers.Contract(
+      getConfigByChain(network.chainId)[0].suppChainAddress,
+      SuppChain.abi,
+      signer
+    );
+    setMasterTableData(await suppContract.getAllOrderDetails());
+  }
   useEffect(() => {
     verifyRole();
     fetchCollectionData();
   }, [save]);
   useEffect(() => {
-    // console.log("masterTableData", masterTableData);
+    console.log('this is called');
+
+    setFilteredMasterTableData([]);
+    console.log("masterTableData", masterTableData);
+    // setFilteredMasterTableData(masterTableData);
     setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Order Received"||each.status==="Looking for Vendor Acceptance"));
 
   }, [masterTableData]);
@@ -146,7 +161,17 @@ export default function PurchaseOrderAgent() {
         signer
         );
       const tx = await suppContract.update(soId, col, val);
-      setLoading(false)
+      // setLoading(false)
+      // verifyRole();
+      
+      const receipt = await provider
+      .waitForTransaction(tx.hash, 1, 150000)
+      .then(() => {
+        // toast.success(`Role assigned successfully !!`);
+        // getOrderDetails();
+          fetchBlockchainData();
+          setLoading(false);
+        });
 
       // toast('Role Assignment in progress !!', { icon: '👏' })
     } catch (e) {
@@ -191,8 +216,10 @@ export default function PurchaseOrderAgent() {
     POData.receiveDate = e.target.value;
   };
   const handleUpdateReceiveDataSubmit = async () => {
+    setLoading(true);
     await updateCollectionData("purchaseOrderLineItem", POData.id, POData);
     setSave(!save);
+    setLoading(false);
     // updateBlockDataOrderStatus(POData.soId, ["Status"], ["Vendor Accepted"]);
     handleUpdateReceiveDataModalClose();
   };
