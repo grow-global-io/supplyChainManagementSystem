@@ -135,17 +135,24 @@ export default function PurchaseOrderAgent() {
     handlePOModalShow();
   };
   const handlePODataSubmit = async () => {
-    setLoading(true);
-    POData.vendorName = selectedVendors;
-    await saveData(POData, "purchaseOrderLineItem");
-    setSave(!save);
-    await updateBlockDataOrderStatus(
-      POData.soId,
-      ["Status"],
-      ["Looking for Vendor Acceptance"]
-    );
-    setLoading(false);
-    handlePOModalClose();
+    try{
+
+      setLoading(true);
+      POData.vendorName = selectedVendors;
+      await saveData(POData, "purchaseOrderLineItem");
+      setSave(!save);
+      await updateBlockDataOrderStatus(
+        POData.soId,
+        ["Status"],
+        ["Looking for Vendor Acceptance"]
+        );
+        setLoading(false);
+        handlePOModalClose();
+      }
+      catch(err){
+        throw err;
+        setLoading(false);
+      }
   };
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
