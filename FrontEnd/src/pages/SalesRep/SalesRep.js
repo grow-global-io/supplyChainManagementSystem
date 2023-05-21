@@ -119,8 +119,8 @@ export const SalesRep = () => {
 
     setFilteredMasterTableData([]);
     console.log("masterTableData", masterTableData);
-    // setFilteredMasterTableData(masterTableData);
-    setFilteredMasterTableData(masterTableData.filter(each => each.status === "Paid" || each.status === "Completed" || each.status === "Order Received"));
+    setFilteredMasterTableData(masterTableData);
+    // setFilteredMasterTableData(masterTableData.filter(each => each.status === "Paid" || each.status === "Completed" || each.status === "Order Received"));
 
   }, [masterTableData]);
   const fetchBlockchainData = async () => {
@@ -417,16 +417,22 @@ export const SalesRep = () => {
       const finalReceiveDateWithoutDashes = finalReceiveDate.replace(/-/g, "");
       setCustomerFinalDeliveryDate(finalReceiveDateWithoutDashes);
     }
-    else if (e.target.id === "invoicePdf") {
+    else if(e.target.id === "invoicePdf"){
       // handle only pdf
       // show warning if not pdf
-      if (e.target.files[0].type !== "application/pdf") {
-        toast.error("Please upload a pdf file only");
-        return;
+      // reset if not pdf
+      // accept only pdf
+      if(e.target.files[0].type === "application/pdf"){
+        console.log(e.target.files[0]);
+        setInvoicePdf(e.target.files[0]);
       }
-      console.log(e.target.files[0]);
-
-      setInvoicePdf(e.target.files[0])
+      else{
+        toast.error("Please upload only pdf");
+        const fileInput = document.getElementById("invoicePdf");
+        fileInput.value = "";
+        // alert("Please upload only pdf");
+        setInvoicePdf("");
+      }
     }
     // console.log(e.target.value);
     // console.log(e.target.id);
@@ -502,10 +508,29 @@ export const SalesRep = () => {
     );
   };
   const [updateInvoiceModal, setUpdateInvoiceModal] = useState(false);
-  const handleUpdateInvoiceModalClose = () => setUpdateInvoiceModal(false);
+  const handleUpdateInvoiceModalClose = () => {
+    // const fileInput = document.getElementById("invoicePdf");
+    // fileInput.value = "";
+    setInvoicePdf("");
+    const fileInput = document.getElementById("invoicePdf");
+    console.log('while closing',fileInput);
+    // reset if any file is present
+    if(fileInput){
+      fileInput.value = "";
+    }
+    setUpdateInvoiceModal(false);
+  }
+
   const handleUpdateInvoiceModalShow = (item) => {
+    setInvoicePdf("");
     console.log("handleUpdateInvoiceModalShow", item);
     setUpdateInvoiceModal(true);
+    const fileInput = document.getElementById("invoicePdf");
+    console.log(fileInput);
+    // reset if any file is present
+    if(fileInput){
+      fileInput.value = "";
+    }
     console.log(item);
     setCurrentSoId(item[0]);
   }
@@ -513,6 +538,17 @@ export const SalesRep = () => {
     console.log("handleInvoiceUpdate");
     console.log(currentSoId);
     console.log(invoicePdf);
+    // check if invoice pdf is present
+    if(!invoicePdf){
+      toast.error("Please upload invoice pdf");
+      return;
+    }
+    // check if invoice is pdf
+    if(invoicePdf.type !== "application/pdf"){
+      toast.error("Please upload only pdf");
+      setInvoicePdf("");
+      return;
+    }
     const invoicePdfUrl = await savePdf(invoicePdf, "invoicePdf");
     console.log(invoicePdfUrl);
     await updateBlockDataOrderStatus(
@@ -520,6 +556,9 @@ export const SalesRep = () => {
       ["Invoice Path"],
       [invoicePdfUrl]
     );
+    // const fileInput = document.getElementById("invoicePdf");
+    // fileInput.value = "";
+    setInvoicePdf("");
     handleUpdateInvoiceModalClose();
   }
   const verifyRole = async () => {
@@ -878,7 +917,6 @@ export const SalesRep = () => {
                           <tr>
                             <th>Sr No.</th>
                             <th>SoID</th>
-                            <th>PoID</th>
                             <th>prodName</th>
                             <th>qty</th>
                             <th>orderValue</th>
@@ -912,7 +950,6 @@ export const SalesRep = () => {
                                   </button>
                                 }
                               </td>
-                              <td>{order[1]}</td>
                               <td>{order[2]}</td>
                               <td>{formatBigNumber(order[3])}</td>
                               <td>{formatBigNumber(order[4])}</td>
