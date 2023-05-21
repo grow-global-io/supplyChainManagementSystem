@@ -17,7 +17,13 @@ import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.jso
 import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
-import { getCollectionData, saveData, saveInvoice, savePdf, getFileDownloadURL } from "../../utils/fbutils";
+import {
+  getCollectionData,
+  saveData,
+  saveInvoice,
+  savePdf,
+  getFileDownloadURL,
+} from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
 import { formatBigNumber } from "../../utils/fbutils";
 import toast, { Toaster } from "react-hot-toast";
@@ -63,65 +69,45 @@ export const SalesRep = () => {
   const [filteredMasterTableData, setFilteredMasterTableData] = useState([]);
   const [counter, setCounter] = useState(0);
   const setCounterFunc = (status) => {
-
     if (status === "Order Received") {
-      setCounter(0)
+      setCounter(0);
       setProgressWidth("0%");
-
-    }
-    else if (status === "Looking for Vendor Acceptance") {
-      setCounter(1)
+    } else if (status === "Looking for Vendor Acceptance") {
+      setCounter(1);
       setProgressWidth("10%");
-
-    }
-    else if (status === "Vendor Accepted") {
-      setCounter(2)
+    } else if (status === "Vendor Accepted") {
+      setCounter(2);
       setProgressWidth("20%");
-
-    }
-    else if (status === "Fullfilled") {
-      setCounter(3)
+    } else if (status === "Fullfilled") {
+      setCounter(3);
       setProgressWidth("30%");
-
-    }
-    else if (status === "Ready for Production") {
-      setCounter(4)
+    } else if (status === "Ready for Production") {
+      setCounter(4);
       setProgressWidth("40%");
-
-    }
-    else if (status === "Ready for Batching") {
-      setCounter(5)
+    } else if (status === "Ready for Batching") {
+      setCounter(5);
       setProgressWidth("50%");
-
-    }
-    else if (status === "Ready for Customer Delivery") {
-      setCounter(6)
+    } else if (status === "Ready for Customer Delivery") {
+      setCounter(6);
       setProgressWidth("70%");
-
-    }
-    else if (status === "Ready for Invoice") {
-      setCounter(7)
+    } else if (status === "Ready for Invoice") {
+      setCounter(7);
       setProgressWidth("80%");
-
-    }
-    else if (status === "Paid") {
-      setCounter(8)
+    } else if (status === "Paid") {
+      setCounter(8);
       setProgressWidth("90%");
-
-    }
-    else if (status === "Completed") {
-      setCounter(9)
+    } else if (status === "Completed") {
+      setCounter(9);
       setProgressWidth("100%");
     }
-  }
+  };
   useEffect(() => {
-    console.log('this is called');
+    console.log("this is called");
 
     setFilteredMasterTableData([]);
     console.log("masterTableData", masterTableData);
     setFilteredMasterTableData(masterTableData);
     // setFilteredMasterTableData(masterTableData.filter(each => each.status === "Paid" || each.status === "Completed" || each.status === "Order Received"));
-
   }, [masterTableData]);
   const fetchBlockchainData = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
@@ -133,7 +119,7 @@ export const SalesRep = () => {
       signer
     );
     setMasterTableData(await suppContract.getAllOrderDetails());
-  }
+  };
   const fetchCollectionData = async () => {
     setmasterProductDataArray(await getCollectionData("masterProductData"));
     setmasterMaterialDataArray(await getCollectionData("masterMaterialData"));
@@ -182,8 +168,7 @@ export const SalesRep = () => {
       console.log("You are not a Sales Representative");
       toast.error("You are not a Sales Representative");
       return;
-    }
-    else {
+    } else {
       console.log("Welcome Sales Representative");
       // window.alert("Welcome Sales Representative");
       toast.success("Welcome Sales Representative");
@@ -299,9 +284,9 @@ export const SalesRep = () => {
     console.log("updateTotalPrice");
     setTotalPrice(
       orderData.orderProductQuantity *
-      masterProductDataArray.find(
-        (product) => product.productName === orderData.orderProductName
-      )?.productUnitPrice
+        masterProductDataArray.find(
+          (product) => product.productName === orderData.orderProductName
+        )?.productUnitPrice
     );
   };
   const handleChange = (e) => {
@@ -416,17 +401,15 @@ export const SalesRep = () => {
       const finalReceiveDate = e.target.value;
       const finalReceiveDateWithoutDashes = finalReceiveDate.replace(/-/g, "");
       setCustomerFinalDeliveryDate(finalReceiveDateWithoutDashes);
-    }
-    else if(e.target.id === "invoicePdf"){
+    } else if (e.target.id === "invoicePdf") {
       // handle only pdf
       // show warning if not pdf
       // reset if not pdf
       // accept only pdf
-      if(e.target.files[0].type === "application/pdf"){
+      if (e.target.files[0].type === "application/pdf") {
         console.log(e.target.files[0]);
         setInvoicePdf(e.target.files[0]);
-      }
-      else{
+      } else {
         toast.error("Please upload only pdf");
         const fileInput = document.getElementById("invoicePdf");
         fileInput.value = "";
@@ -439,7 +422,7 @@ export const SalesRep = () => {
   };
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
-      setLoading(true)
+      setLoading(true);
       console.log("soId", soId);
       console.log("col", col);
       console.log("val", val);
@@ -467,7 +450,7 @@ export const SalesRep = () => {
     } catch (e) {
       // toast.error('An error occured. Check console !!')
       console.log(e);
-      setLoading(false)
+      setLoading(false);
     }
   };
   const handleFinalDataSubmit = async () => {
@@ -502,10 +485,7 @@ export const SalesRep = () => {
     // console.log(downloadUrl);
     console.log("viewInvoice", item);
     // // open link in new tab
-    window.open(
-      `${item}`,
-      "_blank"
-    );
+    window.open(`${item}`, "_blank");
   };
   const [updateInvoiceModal, setUpdateInvoiceModal] = useState(false);
   const handleUpdateInvoiceModalClose = () => {
@@ -513,13 +493,13 @@ export const SalesRep = () => {
     // fileInput.value = "";
     setInvoicePdf("");
     const fileInput = document.getElementById("invoicePdf");
-    console.log('while closing',fileInput);
+    console.log("while closing", fileInput);
     // reset if any file is present
-    if(fileInput){
+    if (fileInput) {
       fileInput.value = "";
     }
     setUpdateInvoiceModal(false);
-  }
+  };
 
   const handleUpdateInvoiceModalShow = (item) => {
     setInvoicePdf("");
@@ -528,23 +508,23 @@ export const SalesRep = () => {
     const fileInput = document.getElementById("invoicePdf");
     console.log(fileInput);
     // reset if any file is present
-    if(fileInput){
+    if (fileInput) {
       fileInput.value = "";
     }
     console.log(item);
     setCurrentSoId(item[0]);
-  }
+  };
   const handleInvoiceUpdate = async () => {
     console.log("handleInvoiceUpdate");
     console.log(currentSoId);
     console.log(invoicePdf);
     // check if invoice pdf is present
-    if(!invoicePdf){
+    if (!invoicePdf) {
       toast.error("Please upload invoice pdf");
       return;
     }
     // check if invoice is pdf
-    if(invoicePdf.type !== "application/pdf"){
+    if (invoicePdf.type !== "application/pdf") {
       toast.error("Please upload only pdf");
       setInvoicePdf("");
       return;
@@ -560,7 +540,7 @@ export const SalesRep = () => {
     // fileInput.value = "";
     setInvoicePdf("");
     handleUpdateInvoiceModalClose();
-  }
+  };
   const verifyRole = async () => {
     console.log("verifyRole");
     await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -594,7 +574,9 @@ export const SalesRep = () => {
           />
         ) : (
           <div>
-            <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
+            <h1
+              style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}
+            >
               Welcome Sales Representative
             </h1>
             <Container>
@@ -772,10 +754,7 @@ export const SalesRep = () => {
                         </Modal.Header>
                         <Modal.Body>
                           <Form>
-                            <Form.Group
-                              className="mb-3"
-                              controlId="invoicePdf"
-                            >
+                            <Form.Group className="mb-3" controlId="invoicePdf">
                               <Form.Label>Upload Invoice Pdf</Form.Label>
                               <Form.Control
                                 type="file"
@@ -804,17 +783,16 @@ export const SalesRep = () => {
                         className="mt-5"
                         show={statusModalShow}
                         onHide={() => {
-                          setModalStatus("")
-                          setStatusModalShow(false)
-                          setCounter(0)
+                          setModalStatus("");
+                          setStatusModalShow(false);
+                          setCounter(0);
                         }}
-
                         style={{ height: "100%", width: "100%" }}
                       >
                         <Modal.Title style={{ padding: "30px" }}>
                           Status
                         </Modal.Title>
-                        <Modal.Body style={{ backgroundColor: "#cfcfcf" }}>
+                        <Modal.Body style={{ backgroundColor: "#cfcfcf",padding:"2.5rem" }}>
                           <div className="progress-bar1">
                             <div
                               className="progress1"
@@ -892,19 +870,108 @@ export const SalesRep = () => {
                               }
                             ></div>
                           </div>
-                          <div style={{display:"flex",justifyContent:"space-between"}}>
-                            <p style={{fontSize:"1em"}}>Order <br/> Received</p>
-                            <p style={{fontSize:"1em"}}>Looking <br/> for Vendor <br/> Acceptance</p>
-                            <p style={{fontSize:"1em"}}>Vendor <br/> Accepted</p>
-                            <p style={{fontSize:"1em"}}>Fullfilled</p>
-                            <p style={{fontSize:"1em"}}>Ready for <br/> Production</p>
-                            <p style={{fontSize:"1em"}}>Ready for <br/> Batching</p>
-                            <p style={{fontSize:"1em"}}>Ready for <br/> Customer <br/> Delivery</p>
-                            <p style={{fontSize:"1em"}}>Ready for <br/> Invoice</p>
-                            <p style={{fontSize:"1em"}}>Paid</p>
-                            <p style={{fontSize:"1em"}}>Completed</p>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <p
+                              style={{
+                                transform: "translate(-15px, 10px)",
+                                fontSize: "1em",
+                                textAlign: "center",
+                              }}
+                            >
+                              Order <br /> Received
+                            </p>
+                            <p
+                              style={{
+                                transform: "translate(-16px, -97px)",
+                                fontSize: "1em",
+                                textAlign: "center",
+                              }}
+                            >
+                              Looking <br /> for Vendor <br /> Acceptance
+                            </p>
+
+                            <p
+                              style={{
+                                fontSize: "1em",
+                                transform: "translate(-22px, 10px)",
+                                textAlign: "center",
+                              }}
+                            >
+                              Vendor <br /> Accepted
+                            </p>
+                            <p
+                              style={{
+                                fontSize: "1em",
+                                transform: "translate(-15px, -80px)",
+                                textAlign: "center",
+                              }}
+                            >
+                              Fullfilled
+                            </p>
+                            <p
+                              style={{
+                                fontSize: "1em",
+                                transform: "translate(-10px, 10px)",
+                                textAlign: "center",
+                              }}
+                            >
+                              Ready for <br /> Production
+                            </p>
+                            <p
+                              style={{
+                                fontSize: "1em",
+                                transform: "translate(-10px, -80px)",
+                                textAlign: "center",
+                              }}
+                            >
+                              Ready for <br /> Batching
+                            </p>
+                            <p
+                              style={{
+                                fontSize: "1em",
+                                transform: "translate(-9px, 10px)",
+                                textAlign: "center",
+                              }}
+                            >
+                              Ready for <br /> Customer <br /> Delivery
+                            </p>
+                            <p
+                              style={{
+                                fontSize: "1em",
+                                transform: "translate(-11px, -80px)",
+                                textAlign: "center",
+                              }}
+                            >
+                              Ready for <br /> Invoice
+                            </p>
+                            <p
+                              style={{
+                                fontSize: "1em",
+                                transform: "translate(7px, 10px)",
+                                textAlign: "center",
+                              }}
+                            >
+                              Paid
+                            </p>
+                            <p
+                              style={{
+                                fontSize: "1em",
+                                transform: "translate(24px, -80px)",
+                                textAlign: "center",
+                              }}
+                            >
+                              Completed
+                            </p>
                           </div>
-                          <h3 className="text-center mt-5" style={{ color: "#1A237E" }}>
+                          <h3
+                            className="text-center mt-5"
+                            style={{ color: "#1A237E" }}
+                          >
                             {modalStatus}
                           </h3>
                         </Modal.Body>
@@ -953,16 +1020,24 @@ export const SalesRep = () => {
                               <td>{order[2]}</td>
                               <td>{formatBigNumber(order[3])}</td>
                               <td>{formatBigNumber(order[4])}</td>
-                              <td style={{ textDecoration: "underline", cursor: "pointer" }}
+                              <td
+                                style={{
+                                  textDecoration: "underline",
+                                  cursor: "pointer",
+                                }}
                                 onClick={() => {
                                   setModalStatus(order[6]);
                                   setStatusModalShow(true);
-                                  setCounterFunc(order[6])
+                                  setCounterFunc(order[6]);
                                 }}
-                              >{order[6]}</td>
+                              >
+                                {order[6]}
+                              </td>
                               <td>
                                 {formatDate(
-                                  formatBigNumber(order.customerFinalDeliveryDate)
+                                  formatBigNumber(
+                                    order.customerFinalDeliveryDate
+                                  )
                                 )}
                               </td>
                               <td>{order[7]}</td>
@@ -982,18 +1057,15 @@ export const SalesRep = () => {
                                         color: "black",
                                         textDecoration: "underline",
                                       }}
-                                      onClick={
-                                        () => {
-                                          viewInvoice(order[10]);
-                                        }
-                                      }
+                                      onClick={() => {
+                                        viewInvoice(order[10]);
+                                      }}
                                     >
                                       View Invoice
                                     </button>
                                   ) : (
                                     ""
                                   )
-
                                 }
                                 <button
                                   style={{
@@ -1002,11 +1074,9 @@ export const SalesRep = () => {
                                     color: "black",
                                     textDecoration: "underline",
                                   }}
-                                  onClick={
-                                    () => {
-                                      handleUpdateInvoiceModalShow(order);
-                                    }
-                                  }
+                                  onClick={() => {
+                                    handleUpdateInvoiceModalShow(order);
+                                  }}
                                 >
                                   update Invoice
                                 </button>
@@ -1025,8 +1095,7 @@ export const SalesRep = () => {
         )}
       </Navbar>
     );
-  }
-  else {
+  } else {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <div>
@@ -1034,7 +1103,15 @@ export const SalesRep = () => {
             <Row>
               <Card>
                 <Card.Body>
-                  <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>You don't have permission</h1>
+                  <h1
+                    style={{
+                      color: "blue",
+                      fontSize: "32px",
+                      fontWeight: "normal",
+                    }}
+                  >
+                    You don't have permission
+                  </h1>
                 </Card.Body>
               </Card>
             </Row>
