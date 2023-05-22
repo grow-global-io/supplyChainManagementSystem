@@ -65,6 +65,7 @@ function RoleAdmin(props) {
       console.log(e)
       setLoading(false)
     }
+    console.log("txRole",tx)
   }
 
   return (

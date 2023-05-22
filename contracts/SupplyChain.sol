@@ -1,19 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
-
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@identity.com/gateway-protocol-eth/contracts/Gated.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
-    event ManufacturerAdded(address indexed _account);
 
-    //product code
-    uint256 public uid;
-    uint256 sku;
+contract SupplyChain is Ownable, Gated {
+    
+    
     uint256 private so_ID;
     uint256 private start_so_ID;
 
@@ -38,12 +33,9 @@ contract SupplyChain is Initializable, ContextUpgradeable, OwnableUpgradeable {
     event GetSoID(string _soId);
 
 
-    function initialize() public initializer {
-        __Ownable_init();
-        //owner = msg.sender;
+    constructor(uint256  gatekeeperNetwork) Gated(0xF65b6396dF6B7e2D8a6270E3AB6c7BB08BAEF22E, gatekeeperNetwork) {
         so_ID = 16532;
         start_so_ID = 16532;
-        uid = 1;
     }
 
     /*****. Create Some Helper functions Start ***********/

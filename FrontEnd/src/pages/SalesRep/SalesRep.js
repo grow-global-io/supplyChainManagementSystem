@@ -40,7 +40,10 @@ const loadingLoader = {
 };
 
 const navItem = [];
+
+
 export const SalesRep = () => {
+
   const [masterProductDataArray, setmasterProductDataArray] = useState([]);
   const [masterMaterialDataArray, setmasterMaterialDataArray] = useState([]);
   const [vendorDataArray, setVendorDataArray] = useState([]);
@@ -176,8 +179,8 @@ export const SalesRep = () => {
     const mTableData = await suppContract.getAllOrderDetails();
     setMasterTableData(mTableData);
 
-    const b = mTableData[0][3];
-    console.log("test", (Number(b) / Math.pow(10, 18)) * 10 ** 18);
+    // const b = mTableData[0][3];
+    // console.log("test", (Number(b) / Math.pow(10, 18)) * 10 ** 18);
 
     setRole(role);
   };

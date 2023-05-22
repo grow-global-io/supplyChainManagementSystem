@@ -788,6 +788,11 @@
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
 
+"@identity.com/gateway-protocol-eth@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@identity.com/gateway-protocol-eth/-/gateway-protocol-eth-0.0.4.tgz#d27c05735bf37874b9594baa4ae24803cc15c568"
+  integrity sha512-taEgq8tpKo4NTXnECqUEnVz3j550BSDvHtCfONzaazkROVjEw1ZoBImUbxfukNrKqrDnGzF4jOUewVBOcJctAA==
+
 "@josephg/resolvable@^1.0.0":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@josephg/resolvable/-/resolvable-1.0.1.tgz#69bc4db754d79e1a2f17a650d3466e038d94a5eb"

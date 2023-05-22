@@ -30,6 +30,7 @@ import { Toaster } from "react-hot-toast";
 import { updateCollectionData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
 const navItem = [];
+
 export const BatchManager = () => {
   // blockChainMasterData start
   const [masterTableData, setMasterTableData] = useState([]);
