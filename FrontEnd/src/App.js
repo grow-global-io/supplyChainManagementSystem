@@ -89,7 +89,7 @@ function App() {
         </div>
       ) : (
         <div className="App">
-          <GatewayProvider gatekeeperNetwork={getConfigByChain(chain?.id)[0].gatekeeperNetwork}
+            <GatewayProvider gatekeeperNetwork="ignREusXmGrscGNUesoU9mxfds9AiYTezUKex2PsZV6"
             wallet={wallet}
           >
             <ThemeProvider theme={theme}>
