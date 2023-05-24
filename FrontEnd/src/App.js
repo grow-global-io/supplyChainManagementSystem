@@ -24,6 +24,7 @@ import { CustomError } from './pages/CustomError/customError'
 import { useGateway } from "@civic/ethereum-gateway-react";
 import { useAccount, useNetwork } from 'wagmi'
 import { GatewayProvider, IdentityButton, ButtonMode } from "@civic/ethereum-gateway-react";
+import TrackOrder from "./pages/TrackOrder/TrackOrder";
 
 const globeLoader = {
   loop: true,
@@ -96,6 +97,9 @@ function App() {
               <BrowserRouter>
                 <Routes>
 
+                  <Route exact path="/trackOrder" element={
+                    <TrackOrder />
+                  } />
                   <Route exact path="/roleAdmin" element={
                     <RoleAdmin />
                   } />

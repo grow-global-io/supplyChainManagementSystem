@@ -160,6 +160,19 @@ export default function Home() {
                     Assign
                   </Button>
                 </Link>
+                <Link
+                  to="/trackOrder"
+                  style={{ textDecoration: "none", color: "#fff" }}
+                >
+                  <Button
+                    className={classes.HomeBtn}
+                    size="large"
+                    variant="outlined"
+                    color="primary"
+                  >
+                    Track Order
+                  </Button>
+                </Link>
                 {chain && (
                   <IdentityButton mode={ButtonMode.LIGHT} animation={true} />
                   // <button onclick={requestGatewayToken}>Civic Pass</button>
