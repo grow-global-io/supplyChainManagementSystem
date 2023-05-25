@@ -5,7 +5,10 @@ import { getCollectionData } from '../../utils/fbutils';
 import { ethers } from 'ethers';
 import { getConfigByChain } from '../../assets/config';
 import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.json";
-import { Modal, Table } from 'react-bootstrap';
+import { Modal, Table, Toast } from 'react-bootstrap';
+import { useAccount, useNetwork } from 'wagmi'
+import toast, { Toaster } from "react-hot-toast";
+
 
 
 const TrackOrder = () => {
@@ -13,6 +16,7 @@ const TrackOrder = () => {
     const [data, setData] = React.useState([])
     const [statusModalShow, setStatusModalShow] = React.useState(false)
     const [counter, setCounter] = React.useState(0);
+    const { address } = useAccount()
     const [progressWidth, setProgressWidth] = React.useState("0%");
 
     const setCounterFunc = (status) => {
@@ -63,10 +67,12 @@ const TrackOrder = () => {
         setStatusModalShow(true)
     }
     React.useEffect(() => {
-        async function getData() {
-            await fetchBlockchainData();
+        if (address) {
+            fetchBlockchainData();
+        } else {
+            toast.error("Connect your wallet first !!")
         }
-        getData();
+
 
     }, [])
     const navItem = [];
@@ -74,15 +80,16 @@ const TrackOrder = () => {
     return (
         <div>
             <Navbar pageTitle={"Track Order"} navItems={navItem}>
+                <Toaster position='top-center' reverseOrder='false' />
                 <Dropdown>
                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
                         Select
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        {masterTableData.map((product) => {
-                            return <Dropdown.Item onClick={() => setData(product)}>{product["PoID"] + " " + product[2]}</Dropdown.Item>
-                        })
-                        }
+                        {address &&
+                            masterTableData.map((product) => {
+                                return <Dropdown.Item onClick={() => setData(product)}>{product["PoID"] + " " + product[2]}</Dropdown.Item>
+                            })}
                     </Dropdown.Menu>
                 </Dropdown>
                 {

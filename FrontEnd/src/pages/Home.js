@@ -7,13 +7,12 @@ import { Link } from "react-router-dom";
 import { getRole } from '../assets/roleConfig'
 import * as supplyChain from "../assets/supply-chain-and-shipping.json";
 import Lottie from "react-lottie";
-import { getData } from "../utils/fbutils";
+import { getData, createContractObject } from "../utils/fbutils";
 import { useGateway } from "@civic/ethereum-gateway-react";
 import { GatewayProvider, IdentityButton, ButtonMode } from "@civic/ethereum-gateway-react";
 import { useAccount, useNetwork } from 'wagmi'
-import { getConfigByChain } from '../assets/config'
-import { ethers } from "ethers";
-import SuppChain from "../artifacts/contracts/SupplyChain.sol/SupplyChain.json";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import toast, { Toaster } from "react-hot-toast";
 
 const suppChainLoader = {
   loop: true,
@@ -34,50 +33,48 @@ export default function Home() {
   const [wallet, setWallet] = useState();
   const [role, setRole] = useState()
   const [pageURL, setPageURL] = useState()
+  const [admin,setAdmin] = useState()
 
   useEffect(() => {
     if (!connector) return;
     connector.getSigner().then(setWallet);
+    
   }, [connector]);
 
   useEffect(() => {
     const data = getData();
-    verifyRole()
-    getPageURL()
+    if (address) {
+      getAdmin()
+      verifyRole()
+      getPageURL()
+    }
     console.log("role", role);
     console.log("gatewayStatus", gatewayStatus);
-    console.log("gatewayToken",gatewayToken)
+    console.log("gatewayToken", gatewayToken)
   }, [address])
 
   const classes = useStyles();
   const [loaderSize, setLoaderSize] = useState(520);
   const navItem = [];
-  
+
+  const getAdmin = async () => {
+    const contract = await createContractObject();
+    const owner = await contract.owner;
+    setAdmin(await owner())
+  };
+
 
   const verifyRole = async () => {
-    console.log("verifyRole");
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
-    console.log("suppContract", suppContract);
+    const suppContract = await createContractObject();
     const tx = await suppContract.getRole();
-    console.log("contract", getConfigByChain(network.chainId)[0].suppChainAddress)
-    console.log("role is:",tx)
     setRole(tx)
     getPageURL(tx)
   };
 
   const getPageURL = (role) => {
-    if (role === getRole(1)[0].name){
+    if (role === getRole(1)[0].name) {
       setPageURL("/SalesRep")
-    } else if (role === getRole(2)[0].name){
+    } else if (role === getRole(2)[0].name) {
       setPageURL("/PurchaseOrderAgent")
     } else if (role === getRole(3)[0].name) {
       setPageURL("/ProductionManager")
@@ -91,7 +88,7 @@ export default function Home() {
       setPageURL("/BatchManager")
     } else if (role === getRole(8)[0].name) {
       setPageURL("/LogisticsManager")
-    }else{
+    } else {
       setPageURL("/CustomError")
     }
   }
@@ -101,6 +98,7 @@ export default function Home() {
     <>
       <div className={classes.pageWrap}>
         <Navbar navItems={navItem}>
+          <Toaster position='top-center' reverseOrder='false' />
           <Grid
             container
             spacing={3}
@@ -146,57 +144,85 @@ export default function Home() {
               }}
             >
               <div className={classes.HomeCardWrap}>
-                <h1 className={classes.pageHeading}>Welcome User</h1>
-                <Link
-                  to="/roleAdmin"
-                  style={{ textDecoration: "none", color: "#fff" }}
-                >
-                  <Button
-                    className={classes.HomeBtn}
-                    size="large"
-                    variant="outlined"
-                    color="primary"
-                  >
-                    Assign
-                  </Button>
-                </Link>
-                <Link
-                  to="/trackOrder"
-                  style={{ textDecoration: "none", color: "#fff" }}
-                >
-                  <Button
-                    className={classes.HomeBtn}
-                    size="large"
-                    variant="outlined"
-                    color="primary"
-                  >
-                    Track Order
-                  </Button>
-                </Link>
-                {chain && (
-                  <IdentityButton mode={ButtonMode.LIGHT} animation={true} />
-                  // <button onclick={requestGatewayToken}>Civic Pass</button>
-                  
+                {address ? (
+                  <>
+                    <h1 className={classes.pageHeading}>Welcome User</h1>
+                    
+                    <Link
+                      to="/trackOrder"
+                      style={{ textDecoration: "none", color: "#fff" }}
+                    >
+                      <Button
+                        className={classes.HomeBtn}
+                        size="large"
+                        variant="outlined"
+                        color="primary"
+                      >
+                        Track Order
+                      </Button>
+                    </Link>
+                    {chain && (
+                      <IdentityButton mode={ButtonMode.LIGHT} animation={true} />
+                      // <button onclick={requestGatewayToken}>Civic Pass</button>
+
+                    )}
+
+                    <br />
+
+                    <h1 className={classes.pageHeading}>Visit As</h1>
+                    {admin === address ? (
+                      <>
+                      <Link
+                        to="/roleAdmin"
+                        style={{ textDecoration: "none", color: "#fff" }}
+                      >
+                        <Button
+                          className={classes.HomeBtn}
+                          size="large"
+                          variant="outlined"
+                          color="primary"
+                        >
+                          Assign Role
+                        </Button>
+                      </Link>
+                        <Link
+                          to={pageURL}
+                          style={{ textDecoration: "none", color: "#fff" }}
+                        >
+                          <Button
+                            className={classes.HomeBtn}
+                            size="large"
+                            variant="outlined"
+                            color="primary"
+                          >
+                            My Dashboard
+                          </Button>
+                        </Link>
+                      </>
+                    ):(
+                        <Link
+                          to={pageURL}
+                          style={{ textDecoration: "none", color: "#fff" }}
+                        >
+                          <Button
+                            className={classes.HomeBtn}
+                            size="large"
+                            variant="outlined"
+                            color="primary"
+                          >
+                            My Dashboard
+                          </Button>
+                        </Link>
+                    )}
+                    
+                    
+                  </>
+                ) : (
+                  <>
+                    <h1 className={classes.pageHeading}>Connect Wallet To Start</h1>
+                    <ConnectButton />
+                  </>
                 )}
-
-                <br />
-
-                <h1 className={classes.pageHeading}>Visit As</h1>
-                <Link
-                  to={pageURL}
-                  style={{ textDecoration: "none", color: "#fff" }}
-                >
-                  <Button
-                    className={classes.HomeBtn}
-                    size="large"
-                    variant="outlined"
-                    color="primary"
-                  >
-                    My Dashboard
-                  </Button>
-                </Link>
-                
-
               </div>
             </Grid>
           </Grid>

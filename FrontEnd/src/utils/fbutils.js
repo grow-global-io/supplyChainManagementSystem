@@ -2,6 +2,10 @@ import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 import { getStorage, ref, uploadBytes,getDownloadURL} from "firebase/storage";
 import { db } from "../config/fbconfig";
 import { v4 as uuidv4 } from "uuid";
+import {getConfigByChain} from '../assets/config'
+import {ethers} from 'ethers'
+import SuppChain from '../artifacts/contracts/SupplyChain.sol/SupplyChain.json'
+
 export const getData = async () => {
   const docRef = doc(db, "Vendor", "C0Uv0fnFq9ERcRLkzH9p");
   const docSnap = await getDoc(docRef);
@@ -88,3 +92,17 @@ export const updateCollectionData = async (collectionName, id, data) => {
 export const formatBigNumber = (bigNumber) => {
   return (Number(bigNumber) / Math.pow(10, 18)) * 10 ** 18
 }
+
+export const createContractObject = async () => {
+  await window.ethereum.request({ method: "eth_requestAccounts" });
+  const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+  const network = await provider.getNetwork();
+  const signer = provider.getSigner();
+
+  const suppContract = new ethers.Contract(
+    getConfigByChain(network.chainId)[0].suppChainAddress,
+    SuppChain.abi,
+    signer
+  );
+  return suppContract
+};
