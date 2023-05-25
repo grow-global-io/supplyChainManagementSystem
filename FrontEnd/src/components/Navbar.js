@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useNetwork } from 'wagmi';
+import logo from '../assets/logo.png'
 
 const drawerWidth = 240;
 
@@ -126,10 +127,10 @@ export default function PersistentDrawerLeft({ pageTitle,navItems, children }) {
             
             <div style={{display:"flex",alignItems:"center"}}><img
             alt="."
-            src="/logo.png"
+            src={logo}
             style={{ height: "45px", width: "auto" }}
           />
-            &nbsp;SupplyChain-Dapp
+            &nbsp;Grow Supply Chain
           </div>
             
             <ConnectButton showBalance={false} chainStatus="icon" />
@@ -161,14 +162,14 @@ export default function PersistentDrawerLeft({ pageTitle,navItems, children }) {
               <ListItemText>Home</ListItemText>
             </ListItem>
           </Link>
-          <Link
+          {/* <Link
             to="/explorer"
             style={{ textDecoration: "none", color: "#fff" }}
           >
             <ListItem>
               <ListItemText>Explorer</ListItemText>
             </ListItem>
-          </Link>
+          </Link> */}
         </List>
         <List>
           {navItems.length !== 0 ? (
@@ -206,7 +207,7 @@ export default function PersistentDrawerLeft({ pageTitle,navItems, children }) {
               style={{ textDecoration: "none" }}
               href="https://github.com/rishav4101/eth-supplychain-dapp"
             >
-              <GitHubIcon style={{ color: "#fff" }} />
+              <img width={30} height={30} src={logo}/>
             </a>
           </div>
         </div>
