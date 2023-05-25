@@ -118,7 +118,7 @@ contract SupplyChain is Ownable, Gated {
     }
 
     /********* select * from OrderTable *********/
-    function getAllOrderDetails() external view onlySO returns (Order[] memory)  {
+    function getAllOrderDetails() external view returns (Order[] memory)  {
         
         uint256 totalOrderCount = so_ID; //16533
         uint256 currentIndex = 0; //0
