@@ -31,6 +31,7 @@ import { formatBigNumber } from "../../utils/fbutils";
 import toast, { Toaster } from "react-hot-toast";
 import * as loadingImage from "../../assets/loading.json";
 import Lottie from "react-lottie";
+import {BsPlusSquare } from 'react-icons/bs'
 
 const loadingLoader = {
   loop: true,
@@ -110,7 +111,7 @@ export const SalesRep = () => {
       setProgressWidth("66%");
     } else if (status === "Ready for Invoice") {
       setCounter(7);
-      setProgressWidth("76%");  
+      setProgressWidth("76%");
     } else if (status === "Paid") {
       setCounter(8);
       setProgressWidth("86%");
@@ -120,7 +121,7 @@ export const SalesRep = () => {
     }
   };
 
-  
+
   useEffect(() => {
     console.log("this is called");
 
@@ -304,9 +305,9 @@ export const SalesRep = () => {
     console.log("updateTotalPrice");
     setTotalPrice(
       orderData.orderProductQuantity *
-        masterProductDataArray.find(
-          (product) => product.productName === orderData.orderProductName
-        )?.productUnitPrice
+      masterProductDataArray.find(
+        (product) => product.productName === orderData.orderProductName
+      )?.productUnitPrice
     );
   };
   const handleChange = (e) => {
@@ -346,20 +347,20 @@ export const SalesRep = () => {
         orderData.orderProductStatus
       );
       suppContract.on("GetSoID", async (_soId) => {
-        await createHashData(orderData.orderProductStatus,_soId,tx.hash)
+        await createHashData(orderData.orderProductStatus, _soId, tx.hash)
         toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
         setLoading(false);
       });
       const receipt = await provider
         .waitForTransaction(tx.hash, 1, 150000)
         .then(() => {
-          toast.success(`Role assigned successfully !!`);
           getOrderDetails();
         });
     } catch (e) {
       console.log(e);
     }
   };
+  
 
   const orderDataSubmit = async (e) => {
     e.preventDefault();
@@ -587,13 +588,13 @@ export const SalesRep = () => {
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <Toaster position="top-center" reverseOrder="false" />
         {loading === true ? (
-         <>
-          <Lottie
-            options={loadingLoader}
-            height={loaderSize}
-            width={loaderSize}
-          />
-         </>
+          <>
+            <Lottie
+              options={loadingLoader}
+              height={loaderSize}
+              width={loaderSize}
+            />
+          </>
         ) : (
           <div>
             <h1
@@ -607,7 +608,7 @@ export const SalesRep = () => {
                   <Card.Body>
                     <Col>
                       <Button onClick={createOrder} variant="primary">
-                        Create Order
+                          <BsPlusSquare />&nbsp;&nbsp;Create Order
                       </Button>{" "}
                       <Modal
                         className="mt-5"
@@ -814,7 +815,7 @@ export const SalesRep = () => {
                         <Modal.Title style={{ padding: "30px" }}>
                           Status
                         </Modal.Title>
-                        <Modal.Body style={{ backgroundColor: "#cfcfcf",padding:"2.5rem" }}>
+                        <Modal.Body style={{ backgroundColor: "#cfcfcf", padding: "2.5rem" }}>
                           <div className="progress-bar1">
                             <div
                               className="progress1"
@@ -898,251 +899,251 @@ export const SalesRep = () => {
                               justifyContent: "space-between",
                             }}
                           >
-                          {
-                            url1 ? 
-                            <a
-                              style={{
-                                transform: "translate(-15px, 10px)",
-                                fontSize: "1em",
-                                textAlign: "center",
-                              }}
-                              href={common_url + url1}
-                              target="_blank"
-                            >
-                              Order <br /> Received
-                            </a> :
-                            <p
-                            style={{
-                              transform: "translate(-15px, 10px)",
-                              fontSize: "1em",
-                              textAlign: "center",
-                            }}
-                          >
-                            Order <br /> Received
-                          </p>
-                          }
+                            {
+                              url1 ?
+                                <a
+                                  style={{
+                                    transform: "translate(-15px, 10px)",
+                                    fontSize: "1em",
+                                    textAlign: "center",
+                                  }}
+                                  href={common_url + url1}
+                                  target="_blank"
+                                >
+                                  Order <br /> Received
+                                </a> :
+                                <p
+                                  style={{
+                                    transform: "translate(-15px, 10px)",
+                                    fontSize: "1em",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Order <br /> Received
+                                </p>
+                            }
 
-                          {
-                            url2 ? 
+                            {
+                              url2 ?
 
-                            <a
-                              style={{
-                                transform: "translate(-16px, -97px)",
-                                fontSize: "1em",
-                                textAlign: "center",
-                              }}
-                              href={common_url + url2}
-                              target="_blank"
-                            >
-                              Looking <br /> for Vendor <br /> Acceptance
-                            </a> :
-                            <p
-                            style={{
-                              transform: "translate(-16px, -97px)",
-                              fontSize: "1em",
-                              textAlign: "center",
-                            }}
-                          >
-                            Looking <br /> for Vendor <br /> Acceptance
-                          </p>
-                          }
+                                <a
+                                  style={{
+                                    transform: "translate(-16px, -97px)",
+                                    fontSize: "1em",
+                                    textAlign: "center",
+                                  }}
+                                  href={common_url + url2}
+                                  target="_blank"
+                                >
+                                  Looking <br /> for Vendor <br /> Acceptance
+                                </a> :
+                                <p
+                                  style={{
+                                    transform: "translate(-16px, -97px)",
+                                    fontSize: "1em",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Looking <br /> for Vendor <br /> Acceptance
+                                </p>
+                            }
 
-                          {
-                            url3 ?
-                            <a
-                              style={{
-                                fontSize: "1em",
-                                transform: "translate(-22px, 10px)",
-                                textAlign: "center",
-                              }}
-                              href={common_url + url3}
-                              target="_blank"
-                            >
-                              Vendor <br /> Accepted
-                            </a> :
-                            <p
-                            style={{
-                              fontSize: "1em",
-                              transform: "translate(-22px, 10px)",
-                              textAlign: "center",
-                            }}
-                          >
-                            Vendor <br /> Accepted
-                          </p>
-                          }
+                            {
+                              url3 ?
+                                <a
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-22px, 10px)",
+                                    textAlign: "center",
+                                  }}
+                                  href={common_url + url3}
+                                  target="_blank"
+                                >
+                                  Vendor <br /> Accepted
+                                </a> :
+                                <p
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-22px, 10px)",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Vendor <br /> Accepted
+                                </p>
+                            }
 
-                          {
-                            url4 ? 
+                            {
+                              url4 ?
 
-                            <a
-                              style={{
-                                fontSize: "1em",
-                                transform: "translate(-15px, -80px)",
-                                textAlign: "center",
-                              }}
-                              href={common_url + url4}
-                              target="_blank"
-                            >
-                              Fullfilled
-                            </a> :
-                            <p
-                            style={{
-                              fontSize: "1em",
-                              transform: "translate(-15px, -80px)",
-                              textAlign: "center",
-                            }}
-                          >
-                            Fullfilled
-                          </p>
-                          }
+                                <a
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-15px, -80px)",
+                                    textAlign: "center",
+                                  }}
+                                  href={common_url + url4}
+                                  target="_blank"
+                                >
+                                  Fullfilled
+                                </a> :
+                                <p
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-15px, -80px)",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Fullfilled
+                                </p>
+                            }
 
-                          {
-                            url5 ?
-                            
-                            <a
-                              style={{
-                                fontSize: "1em",
-                                transform: "translate(-10px, 10px)",
-                                textAlign: "center",
-                              }}
-                              href={common_url + url5}
-                              target="_blank"
-                            >
-                              Ready for <br /> Production
-                            </a> : 
-                            <p
-                            style={{
-                              fontSize: "1em",
-                              transform: "translate(-10px, 10px)",
-                              textAlign: "center",
-                            }}
-                          >
-                            Ready for <br /> Production
-                          </p>
-                          }
+                            {
+                              url5 ?
 
-                          {
-                            url6 ?
+                                <a
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-10px, 10px)",
+                                    textAlign: "center",
+                                  }}
+                                  href={common_url + url5}
+                                  target="_blank"
+                                >
+                                  Ready for <br /> Production
+                                </a> :
+                                <p
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-10px, 10px)",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Ready for <br /> Production
+                                </p>
+                            }
 
-                            <a
-                              style={{
-                                fontSize: "1em",
-                                transform: "translate(-10px, -80px)",
-                                textAlign: "center",
-                              }}
-                              href={common_url + url6}
-                              target="_blank"
-                            >
-                              Ready for <br /> Batching
-                            </a> :
-                            <p
-                            style={{
-                              fontSize: "1em",
-                              transform: "translate(-10px, -80px)",
-                              textAlign: "center",
-                            }}
-                          >
-                            Ready for <br /> Batching
-                          </p>
-                          }
+                            {
+                              url6 ?
 
-                          {
-                            url7 ? 
-                            <a
-                              style={{
-                                fontSize: "1em",
-                                transform: "translate(-9px, 10px)",
-                                textAlign: "center",
-                              }}
-                              href={common_url + url7}
-                              target="_blank"
-                            >
-                              Ready for <br /> Customer <br /> Delivery
-                            </a> :
-                            <p
-                            style={{
-                              fontSize: "1em",
-                              transform: "translate(-9px, 10px)",
-                              textAlign: "center",
-                            }}
-                          >
-                            Ready for <br /> Customer <br /> Delivery
-                          </p>
-                          }
+                                <a
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-10px, -80px)",
+                                    textAlign: "center",
+                                  }}
+                                  href={common_url + url6}
+                                  target="_blank"
+                                >
+                                  Ready for <br /> Batching
+                                </a> :
+                                <p
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-10px, -80px)",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Ready for <br /> Batching
+                                </p>
+                            }
 
-                          {
-                            url8 ?
-                            <a
-                              style={{
-                                fontSize: "1em",
-                                transform: "translate(-11px, -80px)",
-                                textAlign: "center",
-                              }}
-                              href={common_url + url8}
-                              target="_blank"
-                            >
-                              Ready for <br /> Invoice
-                            </a> :
-                            <p
-                            style={{
-                              fontSize: "1em",
-                              transform: "translate(-11px, -80px)",
-                              textAlign: "center",
-                            }}
-                          >
-                            Ready for <br /> Invoice
-                          </p>
-                          }
+                            {
+                              url7 ?
+                                <a
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-9px, 10px)",
+                                    textAlign: "center",
+                                  }}
+                                  href={common_url + url7}
+                                  target="_blank"
+                                >
+                                  Ready for <br /> Customer <br /> Delivery
+                                </a> :
+                                <p
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-9px, 10px)",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Ready for <br /> Customer <br /> Delivery
+                                </p>
+                            }
 
-                          {
-                            url9 ?
-                            <a
-                              style={{
-                                fontSize: "1em",
-                                transform: "translate(7px, 10px)",
-                                textAlign: "center",
-                              }}
-                              href={common_url + url9}
-                              target="_blank"
-                            >
-                              Paid
-                            </a> :
-                            <p
-                            style={{
-                              fontSize: "1em",
-                              transform: "translate(7px, 10px)",
-                              textAlign: "center",
-                            }}
-                          >
-                            Paid
-                          </p>
-                          }
+                            {
+                              url8 ?
+                                <a
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-11px, -80px)",
+                                    textAlign: "center",
+                                  }}
+                                  href={common_url + url8}
+                                  target="_blank"
+                                >
+                                  Ready for <br /> Invoice
+                                </a> :
+                                <p
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(-11px, -80px)",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Ready for <br /> Invoice
+                                </p>
+                            }
 
-                          {
-                            url10 ?
-                            <a
-                              style={{
-                                fontSize: "1em",
-                                transform: "translate(24px, -80px)",
-                                textAlign: "center",
-                              }}
-                              href={common_url + url10}
-                              target="_blank"
-                            >
-                              Completed
-                            </a> :
-                            <p
-                            style={{
-                              fontSize: "1em",
-                              transform: "translate(24px, -80px)",
-                              textAlign: "center",
-                            }}
-                          >
-                            Completed
-                          </p>
-                          }
-                          
-        
+                            {
+                              url9 ?
+                                <a
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(7px, 10px)",
+                                    textAlign: "center",
+                                  }}
+                                  href={common_url + url9}
+                                  target="_blank"
+                                >
+                                  Paid
+                                </a> :
+                                <p
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(7px, 10px)",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Paid
+                                </p>
+                            }
+
+                            {
+                              url10 ?
+                                <a
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(24px, -80px)",
+                                    textAlign: "center",
+                                  }}
+                                  href={common_url + url10}
+                                  target="_blank"
+                                >
+                                  Completed
+                                </a> :
+                                <p
+                                  style={{
+                                    fontSize: "1em",
+                                    transform: "translate(24px, -80px)",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  Completed
+                                </p>
+                            }
+
+
                           </div>
                           <h3
                             className="text-center mt-5"
@@ -1201,7 +1202,7 @@ export const SalesRep = () => {
                                   textDecoration: "underline",
                                   cursor: "pointer",
                                 }}
-                                onClick={ async () => {
+                                onClick={async () => {
                                   const res = await getHashData(order[0])
                                   // console.log(order[0])
                                   console.log(res)

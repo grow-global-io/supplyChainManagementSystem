@@ -19,6 +19,8 @@ import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
 import * as loadingImage from "../../assets/loading.json";
+import { BsPlusSquare } from 'react-icons/bs'
+import { SiCheckmarx } from 'react-icons/si'
 
 import {
   formatBigNumber,
@@ -534,7 +536,7 @@ export default function PurchaseOrderAgent() {
                               )}
                               variant="primary"
                             >
-                              Create PO Line Item
+                              <BsPlusSquare/> &nbsp;&nbsp;Create PO Line Item
                             </Button>{" "}
 
                             <Button
@@ -543,7 +545,7 @@ export default function PurchaseOrderAgent() {
                               }
                               variant="primary"
                             >
-                              Mark as Vendor Accepted
+                                <SiCheckmarx/>&nbsp;&nbsp;Mark as Vendor Accepted
                             </Button>{" "}
                             <Modal
                               className="mt-5"

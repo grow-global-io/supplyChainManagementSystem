@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import Navbar from "../../components/Navbar";
+import { SiCheckmarx } from 'react-icons/si'
 import {
   Container,
   Row,
@@ -528,7 +529,7 @@ export const WarehouseManager = () => {
                                         updatePOLineItemData(item);
                                       }}
                                     >
-                                      Update Data
+                                      <SiCheckmarx />&nbsp; &nbsp; Update Data
                                     </Button>
                                   </td>
                                 </tr>
@@ -557,7 +558,7 @@ export const WarehouseManager = () => {
                           }
                           variant="primary"
                         >
-                          Mark as Ready for Production
+                                <SiCheckmarx />&nbsp; &nbsp; Mark as Ready for Production
                         </Button>{" "}
                         <Modal
                           className="mt-5"

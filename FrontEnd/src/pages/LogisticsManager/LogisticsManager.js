@@ -21,6 +21,7 @@ import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.jso
 import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
+import { SiCheckmarx } from 'react-icons/si'
 import {
   formatBigNumber,
   getCollectionData,
@@ -572,7 +573,7 @@ export const LogisticsManager = () => {
                                             updateReceiveDate(item);
                                           }}
                                         >
-                                          Update Receive Date
+                                          <SiCheckmarx />&nbsp; &nbsp; Update Receive Date
                                         </Button>
                                       </td>
                                     </tr>
@@ -610,7 +611,7 @@ export const LogisticsManager = () => {
                               }
                               variant="primary"
                             >
-                              Update Customer Final Receive Date
+                                <SiCheckmarx />&nbsp; &nbsp; Update Customer Final Receive Date
                             </Button>{" "}
                             <Modal
                               className="mt-5"
