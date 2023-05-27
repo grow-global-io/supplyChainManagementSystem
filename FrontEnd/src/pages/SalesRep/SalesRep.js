@@ -23,6 +23,8 @@ import {
   saveInvoice,
   savePdf,
   getFileDownloadURL,
+  createHashData,
+  getHashData,
 } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
 import { formatBigNumber } from "../../utils/fbutils";
@@ -330,16 +332,16 @@ export const SalesRep = () => {
         orderPrice,
         orderData.orderProductStatus
       );
-      var soId;
-      suppContract.on("GetSoID", (_soId) => {
+      suppContract.on("GetSoID", async (_soId) => {
+        await createHashData(orderData.orderProductStatus,_soId,tx.hash)
         toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
+        setLoading(false);
       });
       const receipt = await provider
         .waitForTransaction(tx.hash, 1, 150000)
         .then(() => {
           toast.success(`Role assigned successfully !!`);
           getOrderDetails();
-          setLoading(false);
         });
     } catch (e) {
       console.log(e);
@@ -1030,7 +1032,10 @@ export const SalesRep = () => {
                                   textDecoration: "underline",
                                   cursor: "pointer",
                                 }}
-                                onClick={() => {
+                                onClick={ async () => {
+                                  const res = await getHashData(order[0])
+                                  // console.log(order[0])
+                                  console.log(res)
                                   setModalStatus(order[6]);
                                   setStatusModalShow(true);
                                   setCounterFunc(order[6]);
