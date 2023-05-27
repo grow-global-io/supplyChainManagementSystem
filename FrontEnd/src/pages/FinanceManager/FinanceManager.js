@@ -152,11 +152,13 @@ export const FinanceManager = () => {
         <Toaster position='top-center' reverseOrder='false' />
         {
           loading === true ? (
-            <Lottie
-              options={loadingLoader}
-              height={loaderSize}
-              width={loaderSize}
-            />
+            <>
+              <Lottie
+                options={loadingLoader}
+                height={loaderSize}
+                width={loaderSize}
+              />
+            </>
           ) : (
             <div>
               <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>

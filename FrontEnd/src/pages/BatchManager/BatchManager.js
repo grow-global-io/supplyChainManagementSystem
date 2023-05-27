@@ -38,7 +38,7 @@ export const BatchManager = () => {
   const [role, setRole] = useState("");
   const [save, setSave] = useState(false);
 
-  const fetchCollectionData = async () => {};
+  const fetchCollectionData = async () => { };
   useEffect(() => {
     verifyRole();
     fetchCollectionData();
@@ -53,7 +53,7 @@ export const BatchManager = () => {
     setFilteredMasterTableData([]);
     console.log("masterTableData", masterTableData);
     // setFilteredMasterTableData(masterTableData);
-    setFilteredMasterTableData(masterTableData.filter(each=>each.status==="Ready for Batching"));
+    setFilteredMasterTableData(masterTableData.filter(each => each.status === "Ready for Batching"));
 
   }, [masterTableData]);
   const fetchBlockchainData = async () => {
@@ -112,10 +112,10 @@ export const BatchManager = () => {
       const tx = await suppContract.update(soId, col, val);
       console.log("tx", tx);
       const receipt = await provider
-      .waitForTransaction(tx.hash, 1, 150000)
-      .then(() => {
-        // toast.success(`Role assigned successfully !!`);
-        // getOrderDetails();
+        .waitForTransaction(tx.hash, 1, 150000)
+        .then(() => {
+          // toast.success(`Role assigned successfully !!`);
+          // getOrderDetails();
           fetchBlockchainData();
           setLoading(false);
         });
@@ -131,7 +131,7 @@ export const BatchManager = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const [currentSoId, setCurrentSoId] = useState(0);
-  
+
   const handleShow = (item) => {
     setShow(true);
     setCurrentSoId(item[0]);
@@ -159,122 +159,126 @@ export const BatchManager = () => {
     console.log("barCode", barCode);
     console.log("batchNumber", batchNumber);
     console.log("masterLabel", masterLabel);
-    await updateBlockDataOrderStatus(currentSoId, ["BarCode","BatchNo","Master Label","Status"], [barCode,batchNumber,masterLabel,"Ready for Customer Delivery"]);
+    await updateBlockDataOrderStatus(currentSoId, ["BarCode", "BatchNo", "Master Label", "Status"], [barCode, batchNumber, masterLabel, "Ready for Customer Delivery"]);
   }
   if (true) {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
-      <Toaster position='top-center' reverseOrder='false' />
-      {
-        loading === true?(
-          <Lottie
-          options={loadingLoader}
-          height={loaderSize}
-          width={loaderSize}
-        />
-        ):(
-          <div>
-          <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
-            Welcome Batch Manager
-          </h1>
-          <Container>
-            <Row>
-              <Card>
-                <Card.Body>
-                  <Col>
-                    <Table striped bordered hover>
-                      <thead>
-                        <tr>
-                          <th>Sr. No.</th>
-                          <th>PoID</th>
-                          <th>prodName</th>
-                          <th>qty</th>
-                          <th>orderValue</th>
-                          <th>status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredMasterTableData.map((order, index) => (
-                          <tr>
-                            <td>{index + 1}</td>
-                            <td>
-                              <Button
-                              style={{ backgroundColor: "transparent",
-                                    border: "none",color:"black",textDecoration:"underline"  }}
-                                onClick={() => handleShow(order)}
-                                variant="primary"
+        <Toaster position='top-center' reverseOrder='false' />
+        {
+          loading === true ? (
+            <>
+              <Lottie
+                options={loadingLoader}
+                height={loaderSize}
+                width={loaderSize}
+              />
+            </>
+          ) : (
+            <div>
+              <h1 style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}>
+                Welcome Batch Manager
+              </h1>
+              <Container>
+                <Row>
+                  <Card>
+                    <Card.Body>
+                      <Col>
+                        <Table striped bordered hover>
+                          <thead>
+                            <tr>
+                              <th>Sr. No.</th>
+                              <th>PoID</th>
+                              <th>prodName</th>
+                              <th>qty</th>
+                              <th>orderValue</th>
+                              <th>status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filteredMasterTableData.map((order, index) => (
+                              <tr>
+                                <td>{index + 1}</td>
+                                <td>
+                                  <Button
+                                    style={{
+                                      backgroundColor: "transparent",
+                                      border: "none", color: "black", textDecoration: "underline"
+                                    }}
+                                    onClick={() => handleShow(order)}
+                                    variant="primary"
+                                  >
+                                    {order[1]}
+                                  </Button>{" "}
+                                </td>
+                                <td>{order[2]}</td>
+                                <td>{formatBigNumber(order[3])}</td>
+                                <td>{formatBigNumber(order[4])}</td>
+                                <td>{order[6]}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                        <Modal className="mt-5" show={show} onHide={handleClose}>
+                          <Modal.Header closeButton>
+                            <Modal.Title>
+                              Update Bar-code, Batch Number,Master Label
+                            </Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body>
+                            <Form>
+                              <Form.Group
+                                className="mb-3"
+                                controlId="barCode"
                               >
-                                {order[1]}
-                              </Button>{" "}
-                            </td>
-                            <td>{order[2]}</td>
-                            <td>{formatBigNumber(order[3])}</td>
-                            <td>{formatBigNumber(order[4])}</td>
-                            <td>{order[6]}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                    <Modal className="mt-5" show={show} onHide={handleClose}>
-                      <Modal.Header closeButton>
-                        <Modal.Title>
-                          Update Bar-code, Batch Number,Master Label
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Form>
-                          <Form.Group
-                            className="mb-3"
-                            controlId="barCode"
-                          >
-                            <Form.Label>Bar-Code</Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder=""
-                              onChange={handleChange}
-                            />
-                          </Form.Group>
-                          <Form.Group
-                            className="mb-3"
-                            controlId="batchNumber"
-                          >
-                            <Form.Label>Batch Number</Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder=""
-                              onChange={handleChange}
-                            />
-                          </Form.Group>
-                          <Form.Group
-                            className="mb-3"
-                            controlId="masterLabel"
-                          >
-                            <Form.Label>Master Label</Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder=""
-                              onChange={handleChange}
-                            />
-                          </Form.Group>
-                        </Form>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                          Close
-                        </Button>
-                        <Button variant="primary" onClick={handleSave}>
-                          Save Changes
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                  </Col>
-                </Card.Body>
-              </Card>
-            </Row>
-          </Container>
-        </div>
-        )
-      }
+                                <Form.Label>Bar-Code</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder=""
+                                  onChange={handleChange}
+                                />
+                              </Form.Group>
+                              <Form.Group
+                                className="mb-3"
+                                controlId="batchNumber"
+                              >
+                                <Form.Label>Batch Number</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder=""
+                                  onChange={handleChange}
+                                />
+                              </Form.Group>
+                              <Form.Group
+                                className="mb-3"
+                                controlId="masterLabel"
+                              >
+                                <Form.Label>Master Label</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  placeholder=""
+                                  onChange={handleChange}
+                                />
+                              </Form.Group>
+                            </Form>
+                          </Modal.Body>
+                          <Modal.Footer>
+                            <Button variant="secondary" onClick={handleClose}>
+                              Close
+                            </Button>
+                            <Button variant="primary" onClick={handleSave}>
+                              Save Changes
+                            </Button>
+                          </Modal.Footer>
+                        </Modal>
+                      </Col>
+                    </Card.Body>
+                  </Card>
+                </Row>
+              </Container>
+            </div>
+          )
+        }
       </Navbar>
     );
   } else {

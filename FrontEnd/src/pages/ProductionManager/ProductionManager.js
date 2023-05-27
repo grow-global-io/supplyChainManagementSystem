@@ -300,11 +300,13 @@ export const ProductionManager = () => {
         <Toaster position="top-center" reverseOrder="false" />
 
         {loading === true ? (
-          <Lottie
+          <>
+            <Lottie
             options={loadingLoader}
             height={loaderSize}
             width={loaderSize}
           />
+          </>
         ) : (
           <div>
             <h1

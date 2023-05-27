@@ -574,11 +574,13 @@ export const SalesRep = () => {
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
         <Toaster position="top-center" reverseOrder="false" />
         {loading === true ? (
+         <>
           <Lottie
             options={loadingLoader}
             height={loaderSize}
             width={loaderSize}
           />
+         </>
         ) : (
           <div>
             <h1
