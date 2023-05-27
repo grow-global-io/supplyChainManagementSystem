@@ -77,33 +77,35 @@ export const SalesRep = () => {
       setProgressWidth("0%");
     } else if (status === "Looking for Vendor Acceptance") {
       setCounter(1);
-      setProgressWidth("10%");
+      setProgressWidth("12%");
     } else if (status === "Vendor Accepted") {
       setCounter(2);
-      setProgressWidth("20%");
+      setProgressWidth("24%");
     } else if (status === "Fullfilled") {
       setCounter(3);
-      setProgressWidth("30%");
+      setProgressWidth("36%");
     } else if (status === "Ready for Production") {
       setCounter(4);
-      setProgressWidth("40%");
+      setProgressWidth("44%");
     } else if (status === "Ready for Batching") {
       setCounter(5);
-      setProgressWidth("50%");
+      setProgressWidth("56%");
     } else if (status === "Ready for Customer Delivery") {
       setCounter(6);
-      setProgressWidth("70%");
+      setProgressWidth("66%");
     } else if (status === "Ready for Invoice") {
       setCounter(7);
-      setProgressWidth("80%");
+      setProgressWidth("76%");
     } else if (status === "Paid") {
       setCounter(8);
-      setProgressWidth("90%");
+      setProgressWidth("86%");
     } else if (status === "Completed") {
       setCounter(9);
-      setProgressWidth("100%");
+      setProgressWidth("96%");
     }
   };
+
+  
   useEffect(() => {
     console.log("this is called");
 
