@@ -1,10 +1,58 @@
-import { doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
-import { getStorage, ref, uploadBytes,getDownloadURL} from "firebase/storage";
+import { doc, getDoc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../config/fbconfig";
 import { v4 as uuidv4 } from "uuid";
-import {getConfigByChain} from '../assets/config'
-import {ethers} from 'ethers'
+import { getConfigByChain } from '../assets/config'
+import { ethers } from 'ethers'
 import SuppChain from '../artifacts/contracts/SupplyChain.sol/SupplyChain.json'
+import { getStatus } from "../assets/statusConfig";
+export const createHashData = async (orderProductStatus, soId, hash) => {
+  console.log(orderProductStatus, soId, hash)
+  var data = {
+    [getStatus("1")[0].name]: "",
+    [getStatus("2")[0].name]: "",
+    [getStatus("3")[0].name]: "",
+    [getStatus("4")[0].name]: "",
+    [getStatus("5")[0].name]: "",
+    [getStatus("6")[0].name]: "",
+    [getStatus("7")[0].name]: "",
+    [getStatus("8")[0].name]: "",
+    [getStatus("9")[0].name]: "",
+    [getStatus("10")[0].name]: ""
+  }
+
+  data[orderProductStatus] = hash
+  try {
+    const docRef = doc(db, "tx.hash", soId);
+    await setDoc(docRef, data);
+  }
+  catch (err) {
+    throw err;
+  }
+}
+
+export const getHashData = async (soId) => {
+  const docRef = doc(db, "tx.hash", soId);
+  try {
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  }
+  catch (err) {
+    return err;
+  }
+}
+
+export const updateHashData = async (soId, orderStatus, hash) => {
+  const docRef = doc(db, "tx.hash", soId);
+  try {
+    await updateDoc(docRef, {
+      orderStatus: hash
+    })
+  }
+  catch (err) {
+    return err
+  }
+}
 
 export const getData = async () => {
   const docRef = doc(db, "Vendor", "C0Uv0fnFq9ERcRLkzH9p");
@@ -36,7 +84,7 @@ export const savePdf = async (file, collectionName) => {
   try {
     await uploadBytes(storageRef, file);
     console.log("PDF uploaded successfully!");
-    
+
     const downloadURL = await getDownloadURL(storageRef);
     console.log("PDF download URL:", downloadURL);
     return downloadURL;
