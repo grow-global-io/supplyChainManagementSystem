@@ -187,12 +187,12 @@ export const BatchManager = () => {
                         <Table striped bordered hover>
                           <thead>
                             <tr>
-                              <th>Sr. No.</th>
-                              <th>PoID</th>
-                              <th>prodName</th>
-                              <th>qty</th>
-                              <th>orderValue</th>
-                              <th>status</th>
+                              <th>SNo.</th>
+                              <th>Product Order Id</th>
+                              <th>Product Name</th>
+                              <th>Quantity</th>
+                              <th>Order Value</th>
+                              <th>Status</th>
                             </tr>
                           </thead>
                           <tbody>

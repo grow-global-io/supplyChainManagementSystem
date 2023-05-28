@@ -473,12 +473,12 @@ export const ProductManager = () => {
                         <Table striped bordered hover>
                           <thead>
                             <tr>
-                              <th>Sr No.</th>
+                              <th>SNo.</th>
                               <th>Product Name</th>
-                              <th>product Code</th>
-                              <th>product SKU/Batch Number</th>
-                              <th>product Unit Price</th>
-                              <th>product Material Linkage</th>
+                              <th>Product Code</th>
+                              <th>Product SKU/Batch Number</th>
+                              <th>Product Unit Price</th>
+                              <th>Product Material Linkage</th>
                             </tr>
                           </thead>
                           <tbody>
