@@ -27,6 +27,7 @@ import {
   getCollectionData,
   getCollectionDataWithId,
   saveData,
+  updateHashData,
 } from "../../utils/fbutils";
 import { updateCollectionData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
@@ -175,9 +176,10 @@ export default function PurchaseOrderAgent() {
 
       const receipt = await provider
         .waitForTransaction(tx.hash, 1, 150000)
-        .then(() => {
+        .then(async () => {
           // toast.success(`Role assigned successfully !!`);
           // getOrderDetails();
+          const res = await updateHashData(soId, "Vendor Accepted", tx.hash)
           fetchBlockchainData();
           setLoading(false);
         });
@@ -536,7 +538,7 @@ export default function PurchaseOrderAgent() {
                               )}
                               variant="primary"
                             >
-                              <BsPlusSquare/> &nbsp;&nbsp;Create PO Line Item
+                              <BsPlusSquare /> &nbsp;&nbsp;Create PO Line Item
                             </Button>{" "}
 
                             <Button
@@ -545,7 +547,7 @@ export default function PurchaseOrderAgent() {
                               }
                               variant="primary"
                             >
-                                <SiCheckmarx/>&nbsp;&nbsp;Mark as Vendor Accepted
+                              <SiCheckmarx />&nbsp;&nbsp;Mark as Vendor Accepted
                             </Button>{" "}
                             <Modal
                               className="mt-5"

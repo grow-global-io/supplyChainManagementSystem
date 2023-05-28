@@ -7,7 +7,6 @@ import { ethers } from 'ethers'
 import SuppChain from '../artifacts/contracts/SupplyChain.sol/SupplyChain.json'
 import { getStatus } from "../assets/statusConfig";
 export const createHashData = async (orderProductStatus, soId, hash) => {
-  console.log(orderProductStatus, soId, hash,"suiiiiiii")
   var data = {
     [getStatus("1")[0].name]: "",
     [getStatus("2")[0].name]: "",
@@ -45,11 +44,13 @@ export const getHashData = async (soId) => {
 }
 
 export const updateHashData = async (soId, orderStatus, hash) => {
+  console.log("updateHashData", soId, orderStatus, hash)
   const docRef = doc(db, "tx.hash", soId);
   try {
     await updateDoc(docRef, {
-      orderStatus: hash
+      [orderStatus]: hash
     })
+    console.log(`Updated`)
   }
   catch (err) {
     return err

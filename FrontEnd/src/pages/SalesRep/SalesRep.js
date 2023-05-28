@@ -125,7 +125,6 @@ export const SalesRep = () => {
 
 
   useEffect(() => {
-    console.log("this is called");
 
     setFilteredMasterTableData([]);
     console.log("masterTableData", masterTableData);
