@@ -576,9 +576,9 @@ export const WarehouseManager = () => {
                                     className="mb-3"
                                     controlId="shelfLife"
                                   >
-                                    <Form.Label>Shelf Life</Form.Label>
+                                    <Form.Label>{`Shelf Life(in months)`}</Form.Label>
                                     <Form.Control
-                                      type="text"
+                                      type="number"
                                       placeholder="Enter Shelf Life"
                                       onChange={handleUpdateReceiveDataChange}
                                     />
