@@ -175,6 +175,391 @@
       "contracts/SupplyChain.sol:SupplyChain": {
         "src": "contracts/SupplyChain.sol:9",
         "version": {
+          "withMetadata": "1ab0cfcc5406a06c9f51d1495ba0fd9258773e53ab42a478311f907b0a7f452c",
+          "withoutMetadata": "ce97950450f33013e1d013ea2bfb81daf13b915ca521776aa568a07155f6e1e8",
+          "linkedWithoutMetadata": "ce97950450f33013e1d013ea2bfb81daf13b915ca521776aa568a07155f6e1e8"
+        },
+        "inherit": [
+          "@identity.com/gateway-protocol-eth/contracts/Gated.sol:Gated",
+          "@openzeppelin/contracts/access/Ownable.sol:Ownable",
+          "@openzeppelin/contracts/utils/Context.sol:Context"
+        ],
+        "libraries": [
+          "@openzeppelin/contracts/utils/Strings.sol:Strings"
+        ],
+        "methods": [
+          "(uint256)",
+          "st2num(string)",
+          "addRole(address,string)",
+          "getRole()",
+          "createOrder(string,uint256,uint256,string)",
+          "getOrderDetails(string)",
+          "getAllOrderDetails()",
+          "update(string,string[],string[])"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "SupplyChain",
+            "src": "contracts/SupplyChain.sol:36"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "_gatewayTokenContract",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_address",
+              "contract": "Gated",
+              "src": "@identity.com/gateway-protocol-eth/contracts/Gated.sol:7"
+            },
+            {
+              "label": "_gatekeeperNetwork",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "Gated",
+              "src": "@identity.com/gateway-protocol-eth/contracts/Gated.sol:8"
+            },
+            {
+              "label": "so_ID",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_uint256",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:12"
+            },
+            {
+              "label": "start_so_ID",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_uint256",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:13"
+            },
+            {
+              "label": "orderData",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(Order)1287_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:30"
+            },
+            {
+              "label": "orders",
+              "offset": 0,
+              "slot": "6",
+              "type": "t_array(t_struct(Order)1287_storage)dyn_storage",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:31"
+            },
+            {
+              "label": "roles",
+              "offset": 0,
+              "slot": "7",
+              "type": "t_mapping(t_address,t_string_storage)",
+              "contract": "SupplyChain",
+              "src": "contracts/SupplyChain.sol:32"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_array(t_struct(Order)1287_storage)dyn_storage": {
+              "label": "struct SupplyChain.Order[]",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_address,t_string_storage)": {
+              "label": "mapping(address => string)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(Order)1287_storage)": {
+              "label": "mapping(string => struct SupplyChain.Order)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(Order)1287_storage": {
+              "label": "struct SupplyChain.Order",
+              "members": [
+                {
+                  "label": "SoID",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "PoID",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "prodName",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "qty",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "orderValue",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                },
+                {
+                  "label": "customerFinalDeliveryDate",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "5"
+                },
+                {
+                  "label": "status",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "6"
+                },
+                {
+                  "label": "barCode",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "7"
+                },
+                {
+                  "label": "batchNo",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "8"
+                },
+                {
+                  "label": "masterLabel",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "9"
+                },
+                {
+                  "label": "invoicePath",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "10"
+                },
+                {
+                  "label": "trackingNo",
+                  "type": "t_string_storage",
+                  "offset": 0,
+                  "slot": "11"
+                }
+              ],
+              "numberOfBytes": "384"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.12"
+      }
+    },
+    {
+      "@identity.com/gateway-protocol-eth/contracts/Gated.sol:Gated": {
+        "src": "@identity.com/gateway-protocol-eth/contracts/Gated.sol:6",
+        "version": {
+          "withMetadata": "a421134299974b6713d1c63bab55083b807bdf3c748fad2605f66078fb903179",
+          "withoutMetadata": "af1f0c848f5dcd7b51204671a2fe4aec8ae56ec58ea27a82090d33a31836c64e",
+          "linkedWithoutMetadata": "af1f0c848f5dcd7b51204671a2fe4aec8ae56ec58ea27a82090d33a31836c64e"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "(address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Gated",
+            "src": "@identity.com/gateway-protocol-eth/contracts/Gated.sol:13"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_gatewayTokenContract",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Gated",
+              "src": "@identity.com/gateway-protocol-eth/contracts/Gated.sol:7"
+            },
+            {
+              "label": "_gatekeeperNetwork",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_uint256",
+              "contract": "Gated",
+              "src": "@identity.com/gateway-protocol-eth/contracts/Gated.sol:8"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.12"
+      },
+      "@identity.com/gateway-protocol-eth/contracts/interfaces/IGatewayTokenVerifier.sol:IGatewayTokenVerifier": {
+        "src": "@identity.com/gateway-protocol-eth/contracts/interfaces/IGatewayTokenVerifier.sol:5",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "verifyToken(address,uint256)",
+          "verifyToken(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.12"
+      },
+      "@openzeppelin/contracts/access/Ownable.sol:Ownable": {
+        "src": "@openzeppelin/contracts/access/Ownable.sol:20",
+        "inherit": [
+          "@openzeppelin/contracts/utils/Context.sol:Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin/contracts/access/Ownable.sol:28"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.12"
+      },
+      "@openzeppelin/contracts/utils/Context.sol:Context": {
+        "src": "@openzeppelin/contracts/utils/Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.12"
+      },
+      "@openzeppelin/contracts/utils/Strings.sol:Strings": {
+        "src": "@openzeppelin/contracts/utils/Strings.sol:11",
+        "version": {
+          "withMetadata": "3df963f7cf7a3a8b69dca977627f39919e83962826d681a7f96a380948496bce",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [
+          "@openzeppelin/contracts/utils/math/Math.sol:Math"
+        ],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.12"
+      },
+      "@openzeppelin/contracts/utils/math/Math.sol:Math": {
+        "src": "@openzeppelin/contracts/utils/math/Math.sol:9",
+        "version": {
+          "withMetadata": "fc4deff058dfb9b5fab34d8350f3fc542ff6b691b1befab3e557a72ee3f6948c",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.12"
+      },
+      "contracts/SupplyChain.sol:SupplyChain": {
+        "src": "contracts/SupplyChain.sol:9",
+        "version": {
           "withMetadata": "65a3679ed6f6036496876228e5a2cc61930247bfd720ea1db6a908ede58a4a60",
           "withoutMetadata": "f29bf5c2bf4e45cf12d13893665c09acbaec73c7c5dbfd6b4a735ffd3263d40e",
           "linkedWithoutMetadata": "f29bf5c2bf4e45cf12d13893665c09acbaec73c7c5dbfd6b4a735ffd3263d40e"
