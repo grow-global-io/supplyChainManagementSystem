@@ -310,7 +310,7 @@ export default function PurchaseOrderAgent() {
                           id="uncontrolled-tab-example"
                           className="mb-3"
                         >
-                          <Tab eventKey="viewOrder" title="View Accepted Order">
+                          <Tab eventKey="viewOrder" title="My View">
                             <Table striped bordered hover>
                               <thead>
                                 <tr>

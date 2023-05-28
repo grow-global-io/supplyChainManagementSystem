@@ -1,13 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Navbar from "../../components/Navbar";
 import Dropdown from 'react-bootstrap/Dropdown';
-import { getCollectionData } from '../../utils/fbutils';
+import { getCollectionData, getHashData } from '../../utils/fbutils';
 import { ethers } from 'ethers';
 import { getConfigByChain } from '../../assets/config';
 import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.json";
 import { Modal, Table, Toast } from 'react-bootstrap';
 import { useAccount, useNetwork } from 'wagmi'
 import toast, { Toaster } from "react-hot-toast";
+import StatusModal from '../../components/StatusModal';
+import DropDown from '../../components/DropDown';
 
 
 
@@ -18,6 +20,20 @@ const TrackOrder = () => {
     const [counter, setCounter] = React.useState(0);
     const { address } = useAccount()
     const [progressWidth, setProgressWidth] = React.useState("0%");
+    const [modalStatus, setModalStatus] = useState("");
+
+    // Address States
+    const [url1, setUrl1] = useState()
+    const [url2, setUrl2] = useState()
+    const [url3, setUrl3] = useState()
+    const [url4, setUrl4] = useState()
+    const [url5, setUrl5] = useState()
+    const [url6, setUrl6] = useState()
+    const [url7, setUrl7] = useState()
+    const [url8, setUrl8] = useState()
+    const [url9, setUrl9] = useState()
+    const [url10, setUrl10] = useState()
+
 
     const setCounterFunc = (status) => {
         if (status === "Order Received") {
@@ -81,241 +97,79 @@ const TrackOrder = () => {
         <div>
             <Navbar pageTitle={"Track Order"} navItems={navItem}>
                 <Toaster position='top-center' reverseOrder='false' />
-                <Dropdown>
-                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                        Select
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                        {address &&
-                            masterTableData.map((product) => {
-                                return <Dropdown.Item onClick={() => setData(product)}>{product["PoID"] + " " + product[2]}</Dropdown.Item>
-                            })}
-                    </Dropdown.Menu>
-                </Dropdown>
+                <StatusModal statusModalShow={statusModalShow} setModalStatus={setModalStatus}
+                    url1={url1}
+                    url2={url2}
+                    url3={url3}
+                    url4={url4}
+                    url5={url5}
+                    url6={url6}
+                    url7={url7}
+                    url8={url8}
+                    url9={url9}
+                    url10={url10}
+                    modalStatus={modalStatus}
+                    counter={counter}
+                    progressWidth={progressWidth}
+                    setCounter={setCounter}
+                    setStatusModalShow={setStatusModalShow}
+                />
+
+                <DropDown masterTableData={masterTableData} setData={setData} data={data} />
                 {
-                    data.length > 0 ? (<Table striped bordered hover className='mt-5'>
+                    data && <Table className="mt-2" striped bordered hover>
                         <thead>
                             <tr>
-                                <th>SOID</th>
+                                {/* <th>Sr No.</th> */}
+                                <th>Product Order ID</th>
                                 <th>Product Name</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{data["PoID"]}</td>
-                                <td>{data[2]}</td>
-                                <td style={{
-                                    cursor: "pointer",
-                                    textDecoration: "underline"
-                                }}
-                                    onClick={() => {
-                                        showModal();
-                                        setCounterFunc(data["status"]);
+                                {/* <td>{index + 1}</td> */}
+                                <td>
+                                    {
+                                        <p
+
+                                        >
+                                            {data[1]}
+                                        </p>
                                     }
-                                    }>{data["status"]}</td>
+                                </td>
+                                <td>{data[2]}</td>
+                                <td
+                                    style={{
+                                        textDecoration: "underline",
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={async () => {
+                                        const res = await getHashData(data[0])
+                                        // console.log(order[0])
+                                        console.log(res)
+                                        console.log(res["Order Received"]);
+                                        setUrl1(res["Order Received"])
+                                        setUrl2(res["Looking for Vendor Acceptance"])
+                                        setUrl3(res["Vendor Accepted"])
+                                        setUrl4(res["Fullfilled"])
+                                        setUrl5(res["Ready for Production"])
+                                        setUrl6(res["Ready for Batching"])
+                                        setUrl7(res["Ready for Customer Delivery"])
+                                        setUrl8(res["Ready for Invoice"])
+                                        setUrl9(res["Paid"])
+                                        setUrl10(res["Completed"])
+                                        setModalStatus(data[6]);
+                                        setStatusModalShow(true);
+                                        setCounterFunc(data[6]);
+                                    }}
+                                >
+                                    {data[6]}
+                                </td>
                             </tr>
                         </tbody>
-                    </Table>) : <></>
+                    </Table>
                 }
-                <Modal
-                    className="mt-5"
-                    show={statusModalShow}
-                    onHide={() => {
-                        setStatusModalShow(false);
-                        setCounter(0);
-                    }}
-                    style={{ height: "100%", width: "100%" }}
-                >
-                    <Modal.Title style={{ padding: "30px" }}>
-                        Status
-                    </Modal.Title>
-                    <Modal.Body style={{ backgroundColor: "#cfcfcf", padding: "2.5rem" }}>
-                        <div className="progress-bar1">
-                            <div
-                                className="progress1"
-                                id="progress"
-                                style={{ width: progressWidth }}
-                            ></div>
-                            <div
-                                className={
-                                    counter >= 0
-                                        ? "progress-step progress-step-active"
-                                        : "progress-step"
-                                }
-                            ></div>
-                            <div
-                                className={
-                                    counter >= 1
-                                        ? "progress-step progress-step-active"
-                                        : "progress-step"
-                                }
-                            ></div>
-                            <div
-                                className={
-                                    counter >= 2
-                                        ? "progress-step progress-step-active"
-                                        : "progress-step"
-                                }
-                            ></div>
-                            <div
-                                className={
-                                    counter >= 3
-                                        ? "progress-step progress-step-active"
-                                        : "progress-step"
-                                }
-                            ></div>
-                            <div
-                                className={
-                                    counter >= 4
-                                        ? "progress-step progress-step-active"
-                                        : "progress-step"
-                                }
-                            ></div>
-                            <div
-                                className={
-                                    counter >= 5
-                                        ? "progress-step progress-step-active"
-                                        : "progress-step"
-                                }
-                            ></div>
-                            <div
-                                className={
-                                    counter >= 6
-                                        ? "progress-step progress-step-active"
-                                        : "progress-step"
-                                }
-                            ></div>
-                            <div
-                                className={
-                                    counter >= 7
-                                        ? "progress-step progress-step-active"
-                                        : "progress-step"
-                                }
-                            ></div>
-                            <div
-                                className={
-                                    counter >= 8
-                                        ? "progress-step progress-step-active"
-                                        : "progress-step"
-                                }
-                            ></div>
-                            <div
-                                className={
-                                    counter >= 9
-                                        ? "progress-step progress-step-active"
-                                        : "progress-step"
-                                }
-                            ></div>
-                        </div>
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <p
-                                style={{
-                                    transform: "translate(-15px, 10px)",
-                                    fontSize: "1em",
-                                    textAlign: "center",
-                                }}
-                            >
-                                Order <br /> Received
-                            </p>
-                            <p
-                                style={{
-                                    transform: "translate(-16px, -97px)",
-                                    fontSize: "1em",
-                                    textAlign: "center",
-                                }}
-                            >
-                                Looking <br /> for Vendor <br /> Acceptance
-                            </p>
-
-                            <p
-                                style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-22px, 10px)",
-                                    textAlign: "center",
-                                }}
-                            >
-                                Vendor <br /> Accepted
-                            </p>
-                            <p
-                                style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-15px, -80px)",
-                                    textAlign: "center",
-                                }}
-                            >
-                                Fullfilled
-                            </p>
-                            <p
-                                style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-10px, 10px)",
-                                    textAlign: "center",
-                                }}
-                            >
-                                Ready for <br /> Production
-                            </p>
-                            <p
-                                style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-10px, -80px)",
-                                    textAlign: "center",
-                                }}
-                            >
-                                Ready for <br /> Batching
-                            </p>
-                            <p
-                                style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-9px, 10px)",
-                                    textAlign: "center",
-                                }}
-                            >
-                                Ready for <br /> Customer <br /> Delivery
-                            </p>
-                            <p
-                                style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-11px, -80px)",
-                                    textAlign: "center",
-                                }}
-                            >
-                                Ready for <br /> Invoice
-                            </p>
-                            <p
-                                style={{
-                                    fontSize: "1em",
-                                    transform: "translate(7px, 10px)",
-                                    textAlign: "center",
-                                }}
-                            >
-                                Paid
-                            </p>
-                            <p
-                                style={{
-                                    fontSize: "1em",
-                                    transform: "translate(24px, -80px)",
-                                    textAlign: "center",
-                                }}
-                            >
-                                Completed
-                            </p>
-                        </div>
-                        <h3
-                            className="text-center mt-5"
-                            style={{ color: "#1A237E" }}
-                        >
-                            {
-                                data['status']
-                            }
-                        </h3>
-                    </Modal.Body>
-                </Modal>
             </Navbar>
         </div>
     )

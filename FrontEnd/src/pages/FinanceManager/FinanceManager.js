@@ -20,17 +20,97 @@ import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
 import * as loadingImage from "../../assets/loading.json";
 import Lottie from "react-lottie";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import {
   formatBigNumber,
   getCollectionData,
   getCollectionDataWithId,
   saveData,
 } from "../../utils/fbutils";
-import { updateCollectionData } from "../../utils/fbutils";
+import { updateCollectionData, savePdf } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
 const navItem = [];
 export const FinanceManager = () => {
+  const [invoicePdf, setInvoicePdf] = useState("");
+  const [finalTrackingNumber, setFinalTrackingNumber] = useState("");
+  const [updateInvoiceModal, setUpdateInvoiceModal] = useState(false);
+
+  const [customerFinalDeliveryDate, setCustomerFinalDeliveryDate] =
+    useState("");
+  const handleUpdateInvoiceModalClose = () => {
+    // const fileInput = document.getElementById("invoicePdf");
+    // fileInput.value = "";
+    setInvoicePdf("");
+    const fileInput = document.getElementById("invoicePdf");
+    console.log("while closing", fileInput);
+    // reset if any file is present
+    if (fileInput) {
+      fileInput.value = "";
+    }
+    setUpdateInvoiceModal(false);
+  };
+  const viewInvoice = async (item) => {
+    // const downloadUrl = await getFileDownloadURL("invoicePdf/exp 7 IOT.pdf")
+    // console.log(downloadUrl);
+    console.log("viewInvoice", item);
+    // // open link in new tab
+    window.open(`${item}`, "_blank");
+  };
+
+  const handleChangeMethod = (e) => {
+    if (e.target.id === "trackingNumber") {
+      setFinalTrackingNumber(e.target.value);
+    } else if (e.target.id === "customerFinalDeliveryDate") {
+      const finalReceiveDate = e.target.value;
+      const finalReceiveDateWithoutDashes = finalReceiveDate.replace(/-/g, "");
+      setCustomerFinalDeliveryDate(finalReceiveDateWithoutDashes);
+    } else if (e.target.id === "invoicePdf") {
+      // handle only pdf
+      // show warning if not pdf
+      // reset if not pdf
+      // accept only pdf
+      if (e.target.files[0].type === "application/pdf") {
+        console.log(e.target.files[0]);
+        setInvoicePdf(e.target.files[0]);
+      } else {
+        toast.error("Please upload only pdf");
+        const fileInput = document.getElementById("invoicePdf");
+        fileInput.value = "";
+        // alert("Please upload only pdf");
+        setInvoicePdf("");
+      }
+    }
+    // console.log(e.target.value);
+    // console.log(e.target.id);
+  };
+  const handleInvoiceUpdate = async () => {
+    console.log("handleInvoiceUpdate");
+    console.log(currentSoId);
+    console.log(invoicePdf);
+    // check if invoice pdf is present
+    if (!invoicePdf) {
+      toast.error("Please upload invoice pdf");
+      return;
+    }
+    // check if invoice is pdf
+    if (invoicePdf.type !== "application/pdf") {
+      toast.error("Please upload only pdf");
+      setInvoicePdf("");
+      return;
+    }
+    const invoicePdfUrl = await savePdf(invoicePdf, "invoicePdf");
+    console.log(invoicePdfUrl);
+    await updateBlockDataOrderStatus(
+      currentSoId,
+      ["Invoice Path"],
+      [invoicePdfUrl]
+    );
+    // const fileInput = document.getElementById("invoicePdf");
+    // fileInput.value = "";
+    setInvoicePdf("");
+    handleUpdateInvoiceModalClose();
+    handleClose();
+  };
   // blockChainMasterData start
   const [masterTableData, setMasterTableData] = useState([]);
   //  blockChainMasterData end
@@ -178,6 +258,7 @@ export const FinanceManager = () => {
                               <th>qty</th>
                               <th>orderValue</th>
                               <th>status</th>
+                              <th>status</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -200,36 +281,66 @@ export const FinanceManager = () => {
                                 <td>{formatBigNumber(order[3])}</td>
                                 <td>{formatBigNumber(order[4])}</td>
                                 <td>{order[6]}</td>
+                                <td className="d-flex flex-column justify-content-start align-items-start">{order[10] !== "" && <button
+                                  style={{
+                                    backgroundColor: "transparent",
+                                    border: "none",
+                                    color: "black",
+                                    textDecoration: "underline",
+                                  }}
+                                  onClick={() => {
+                                    viewInvoice(order[10]);
+                                  }}
+                                >
+                                  View Invoice
+                                </button>}
+                                  <button
+                                    style={{
+                                      backgroundColor: "transparent",
+                                      border: "none",
+                                      color: "black",
+                                      textDecoration: "underline",
+                                    }}
+                                    onClick={() => handleShow(order)}
+                                  >
+                                    Update Invoice
+                                  </button>
+                                </td>
                               </tr>
                             ))}
                           </tbody>
                         </Table>
-                        <Modal className="mt-5" show={show} onHide={handleClose}>
+                        <Modal
+                          className="mt-5"
+                          show={show}
+                          onHide={handleClose}
+                        >
                           <Modal.Header closeButton>
-                            <Modal.Title>
-                              Update Invoice Details
-                            </Modal.Title>
+                            <Modal.Title>Update Invoice</Modal.Title>
                           </Modal.Header>
                           <Modal.Body>
                             <Form>
-                              <Form.Group
-                                className="mb-3"
-                                controlId="invoicePath"
-                              >
-                                <Form.Label>Invoice Path</Form.Label>
+                              <Form.Group className="mb-3" controlId="invoicePdf">
+                                <Form.Label>Upload Invoice Pdf</Form.Label>
                                 <Form.Control
-                                  type="text"
+                                  type="file"
                                   placeholder=""
-                                  onChange={handleChange}
+                                  onChange={handleChangeMethod}
                                 />
                               </Form.Group>
                             </Form>
                           </Modal.Body>
                           <Modal.Footer>
-                            <Button variant="secondary" onClick={handleClose}>
+                            <Button
+                              variant="secondary"
+                              onClick={handleClose}
+                            >
                               Close
                             </Button>
-                            <Button variant="primary" onClick={handleSave}>
+                            <Button
+                              variant="primary"
+                              onClick={handleInvoiceUpdate}
+                            >
                               Save Changes
                             </Button>
                           </Modal.Footer>

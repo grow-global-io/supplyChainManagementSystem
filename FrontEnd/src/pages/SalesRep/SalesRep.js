@@ -31,7 +31,9 @@ import { formatBigNumber } from "../../utils/fbutils";
 import toast, { Toaster } from "react-hot-toast";
 import * as loadingImage from "../../assets/loading.json";
 import Lottie from "react-lottie";
-import {BsPlusSquare } from 'react-icons/bs'
+import { BsPlusSquare } from 'react-icons/bs'
+import DropDown from "../../components/DropDown";
+import StatusModal from "../../components/StatusModal";
 
 const loadingLoader = {
   loop: true,
@@ -47,18 +49,6 @@ const navItem = [];
 
 export const SalesRep = () => {
   const common_url = "https://mumbai.polygonscan.com/tx/"
-
-  const [masterProductDataArray, setmasterProductDataArray] = useState([]);
-  const [masterMaterialDataArray, setmasterMaterialDataArray] = useState([]);
-  const [vendorDataArray, setVendorDataArray] = useState([]);
-  // blockChainMasterData start
-  const [masterTableData, setMasterTableData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [loaderSize, setLoaderSize] = useState(220);
-  const [modalStatus, setModalStatus] = useState("");
-  const [statusModalShow, setStatusModalShow] = useState(false);
-  const [progressWidth, setProgressWidth] = React.useState("0%");
-
   // Address States
   const [url1, setUrl1] = useState()
   const [url2, setUrl2] = useState()
@@ -71,6 +61,18 @@ export const SalesRep = () => {
   const [url9, setUrl9] = useState()
   const [url10, setUrl10] = useState()
 
+  const [masterProductDataArray, setmasterProductDataArray] = useState([]);
+  const [masterMaterialDataArray, setmasterMaterialDataArray] = useState([]);
+  const [vendorDataArray, setVendorDataArray] = useState([]);
+  // blockChainMasterData start
+  const [masterTableData, setMasterTableData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loaderSize, setLoaderSize] = useState(220);
+  const [modalStatus, setModalStatus] = useState("");
+  const [statusModalShow, setStatusModalShow] = useState(false);
+  const [progressWidth, setProgressWidth] = React.useState("0%");
+
+
   //  blockChainMasterData end
   const [role, setRole] = useState("");
   const [save, setSave] = useState(false);
@@ -81,7 +83,7 @@ export const SalesRep = () => {
   const [materialModal, setMaterialModal] = useState(false);
   const handleMaterialModalClose = () => setMaterialModal(false);
   const handleMaterialModalShow = () => setMaterialModal(true);
-
+  const [data, setData] = useState();
   const [vendorModal, setVendorModal] = useState(false);
   const handleVendorModalClose = () => setVendorModal(false);
   const handleVendorModalShow = () => setVendorModal(true);
@@ -298,7 +300,7 @@ export const SalesRep = () => {
     orderProductName: "",
     orderProductQuantity: 0,
     orderProductTotalPrice: 100,
-    orderProductStatus: "",
+    orderProductStatus: getStatus(1)[0].name,
   });
   const [totalPrice, setTotalPrice] = useState(0);
   const updateTotalPrice = () => {
@@ -360,7 +362,7 @@ export const SalesRep = () => {
       console.log(e);
     }
   };
-  
+
 
   const orderDataSubmit = async (e) => {
     e.preventDefault();
@@ -475,15 +477,8 @@ export const SalesRep = () => {
     }
   };
   const handleFinalDataSubmit = async () => {
-    console.log("handleFinalDataSubmit");
-    // console.log(finalData);
-    // const invoicePdfUrl = await savePdf(invoicePdf, "invoicePdf");
-    console.log(finalTrackingNumber);
-    console.log(customerFinalDeliveryDate);
-    console.log(currentSoId);
     // customer final delivery date is present
     if (customerFinalDeliveryDate) {
-      console.log("customerFinalDeliveryDate is present");
       await updateBlockDataOrderStatus(
         currentSoId,
         ["Customer Final Delivery Date", "Status", "Tracking No"],
@@ -492,7 +487,6 @@ export const SalesRep = () => {
     }
     // customer final delivery date is not present
     else {
-      console.log("customerFinalDeliveryDate is not present");
       await updateBlockDataOrderStatus(
         currentSoId,
         ["Status", "Tracking No"],
@@ -607,9 +601,11 @@ export const SalesRep = () => {
                 <Card>
                   <Card.Body>
                     <Col>
-                      <Button onClick={createOrder} variant="primary">
+                      <div className="d-flex justify-content-end">
+                        <Button onClick={createOrder} variant="primary" >
                           <BsPlusSquare />&nbsp;&nbsp;Create Order
-                      </Button>{" "}
+                        </Button>{" "}
+                      </div>
                       <Modal
                         className="mt-5"
                         show={createOrderModal}
@@ -667,43 +663,6 @@ export const SalesRep = () => {
                               name="orderProductTotalPrice"
                               value={orderData.orderProductTotalPrice}
                             />
-                          </Form.Group>
-                          <Form.Group
-                            className="mb-3"
-                            controlId="orderProductStatus"
-                          >
-                            <Form.Label>Status</Form.Label>
-                            <Form.Select
-                              onChange={handleChange}
-                              name="orderProductStatus"
-                              value={orderData.orderProductStatus}
-                            >
-                              <option>Select order status</option>
-                              <option value={getStatus(1)[0].name}>
-                                {getStatus(1)[0].name}
-                              </option>
-                              <option value={getStatus(2)[0].name}>
-                                {getStatus(2)[0].name}
-                              </option>
-                              <option value={getStatus(3)[0].name}>
-                                {getStatus(3)[0].name}
-                              </option>
-                              <option value={getStatus(4)[0].name}>
-                                {getStatus(4)[0].name}
-                              </option>
-                              <option value={getStatus(5)[0].name}>
-                                {getStatus(5)[0].name}
-                              </option>
-                              <option value={getStatus(6)[0].name}>
-                                {getStatus(6)[0].name}
-                              </option>
-                              <option value={getStatus(7)[0].name}>
-                                {getStatus(7)[0].name}
-                              </option>
-                              <option value={getStatus(8)[0].name}>
-                                {getStatus(8)[0].name}
-                              </option>
-                            </Form.Select>
                           </Form.Group>
                         </Modal.Body>
                         <Modal.Footer>
@@ -802,381 +761,46 @@ export const SalesRep = () => {
                           </Button>
                         </Modal.Footer>
                       </Modal>
-                      <Modal
-                        className="mt-5"
-                        show={statusModalShow}
-                        onHide={() => {
-                          setModalStatus("");
-                          setStatusModalShow(false);
-                          setCounter(0);
-                        }}
-                        style={{ height: "100%", width: "100%" }}
-                      >
-                        <Modal.Title style={{ padding: "30px" }}>
-                          Status
-                        </Modal.Title>
-                        <Modal.Body style={{ backgroundColor: "#cfcfcf", padding: "2.5rem" }}>
-                          <div className="progress-bar1">
-                            <div
-                              className="progress1"
-                              id="progress"
-                              style={{ width: progressWidth }}
-                            ></div>
-                            <div
-                              className={
-                                counter >= 0
-                                  ? "progress-step progress-step-active"
-                                  : "progress-step"
-                              }
-                            ></div>
-                            <div
-                              className={
-                                counter >= 1
-                                  ? "progress-step progress-step-active"
-                                  : "progress-step"
-                              }
-                            ></div>
-                            <div
-                              className={
-                                counter >= 2
-                                  ? "progress-step progress-step-active"
-                                  : "progress-step"
-                              }
-                            ></div>
-                            <div
-                              className={
-                                counter >= 3
-                                  ? "progress-step progress-step-active"
-                                  : "progress-step"
-                              }
-                            ></div>
-                            <div
-                              className={
-                                counter >= 4
-                                  ? "progress-step progress-step-active"
-                                  : "progress-step"
-                              }
-                            ></div>
-                            <div
-                              className={
-                                counter >= 5
-                                  ? "progress-step progress-step-active"
-                                  : "progress-step"
-                              }
-                            ></div>
-                            <div
-                              className={
-                                counter >= 6
-                                  ? "progress-step progress-step-active"
-                                  : "progress-step"
-                              }
-                            ></div>
-                            <div
-                              className={
-                                counter >= 7
-                                  ? "progress-step progress-step-active"
-                                  : "progress-step"
-                              }
-                            ></div>
-                            <div
-                              className={
-                                counter >= 8
-                                  ? "progress-step progress-step-active"
-                                  : "progress-step"
-                              }
-                            ></div>
-                            <div
-                              className={
-                                counter >= 9
-                                  ? "progress-step progress-step-active"
-                                  : "progress-step"
-                              }
-                            ></div>
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            {
-                              url1 ?
-                                <a
-                                  style={{
-                                    transform: "translate(-15px, 10px)",
-                                    fontSize: "1em",
-                                    textAlign: "center",
-                                  }}
-                                  href={common_url + url1}
-                                  target="_blank"
-                                >
-                                  Order <br /> Received
-                                </a> :
-                                <p
-                                  style={{
-                                    transform: "translate(-15px, 10px)",
-                                    fontSize: "1em",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Order <br /> Received
-                                </p>
-                            }
+                      <StatusModal statusModalShow={statusModalShow} setModalStatus={setModalStatus}
+                        url1={url1}
+                        url2={url2}
+                        url3={url3}
+                        url4={url4}
+                        url5={url5}
+                        url6={url6}
+                        url7={url7}
+                        url8={url8}
+                        url9={url9}
+                        url10={url10}
+                        modalStatus={modalStatus}
+                        counter={counter}
+                        progressWidth={progressWidth}
+                        setCounter={setCounter}
+                        setStatusModalShow={setStatusModalShow}
+                      />
 
-                            {
-                              url2 ?
-
-                                <a
-                                  style={{
-                                    transform: "translate(-16px, -97px)",
-                                    fontSize: "1em",
-                                    textAlign: "center",
-                                  }}
-                                  href={common_url + url2}
-                                  target="_blank"
-                                >
-                                  Looking <br /> for Vendor <br /> Acceptance
-                                </a> :
-                                <p
-                                  style={{
-                                    transform: "translate(-16px, -97px)",
-                                    fontSize: "1em",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Looking <br /> for Vendor <br /> Acceptance
-                                </p>
-                            }
-
-                            {
-                              url3 ?
-                                <a
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-22px, 10px)",
-                                    textAlign: "center",
-                                  }}
-                                  href={common_url + url3}
-                                  target="_blank"
-                                >
-                                  Vendor <br /> Accepted
-                                </a> :
-                                <p
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-22px, 10px)",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Vendor <br /> Accepted
-                                </p>
-                            }
-
-                            {
-                              url4 ?
-
-                                <a
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-15px, -80px)",
-                                    textAlign: "center",
-                                  }}
-                                  href={common_url + url4}
-                                  target="_blank"
-                                >
-                                  Fullfilled
-                                </a> :
-                                <p
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-15px, -80px)",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Fullfilled
-                                </p>
-                            }
-
-                            {
-                              url5 ?
-
-                                <a
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-10px, 10px)",
-                                    textAlign: "center",
-                                  }}
-                                  href={common_url + url5}
-                                  target="_blank"
-                                >
-                                  Ready for <br /> Production
-                                </a> :
-                                <p
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-10px, 10px)",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Ready for <br /> Production
-                                </p>
-                            }
-
-                            {
-                              url6 ?
-
-                                <a
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-10px, -80px)",
-                                    textAlign: "center",
-                                  }}
-                                  href={common_url + url6}
-                                  target="_blank"
-                                >
-                                  Ready for <br /> Batching
-                                </a> :
-                                <p
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-10px, -80px)",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Ready for <br /> Batching
-                                </p>
-                            }
-
-                            {
-                              url7 ?
-                                <a
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-9px, 10px)",
-                                    textAlign: "center",
-                                  }}
-                                  href={common_url + url7}
-                                  target="_blank"
-                                >
-                                  Ready for <br /> Customer <br /> Delivery
-                                </a> :
-                                <p
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-9px, 10px)",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Ready for <br /> Customer <br /> Delivery
-                                </p>
-                            }
-
-                            {
-                              url8 ?
-                                <a
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-11px, -80px)",
-                                    textAlign: "center",
-                                  }}
-                                  href={common_url + url8}
-                                  target="_blank"
-                                >
-                                  Ready for <br /> Invoice
-                                </a> :
-                                <p
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(-11px, -80px)",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Ready for <br /> Invoice
-                                </p>
-                            }
-
-                            {
-                              url9 ?
-                                <a
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(7px, 10px)",
-                                    textAlign: "center",
-                                  }}
-                                  href={common_url + url9}
-                                  target="_blank"
-                                >
-                                  Paid
-                                </a> :
-                                <p
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(7px, 10px)",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Paid
-                                </p>
-                            }
-
-                            {
-                              url10 ?
-                                <a
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(24px, -80px)",
-                                    textAlign: "center",
-                                  }}
-                                  href={common_url + url10}
-                                  target="_blank"
-                                >
-                                  Completed
-                                </a> :
-                                <p
-                                  style={{
-                                    fontSize: "1em",
-                                    transform: "translate(24px, -80px)",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  Completed
-                                </p>
-                            }
-
-
-                          </div>
-                          <h3
-                            className="text-center mt-5"
-                            style={{ color: "#1A237E" }}
-                          >
-                            {modalStatus}
-                          </h3>
-                        </Modal.Body>
-                      </Modal>
+                      <DropDown masterTableData={masterTableData} setData={setData} data={data} />
                       {
-                        // display master product data
-                      }
-                      <Table className="mt-2" striped bordered hover>
-                        <thead>
-                          <tr>
-                            <th>Sr No.</th>
-                            <th>SoID</th>
-                            <th>prodName</th>
-                            <th>qty</th>
-                            <th>orderValue</th>
-                            <th>status</th>
-                            <th>customerFinalDeliveryDate</th>
-                            <th>barCode</th>
-                            <th>batchNo</th>
-                            <th>masterLabel</th>
-                            <th>View Invoice</th>
-                            <th>trackingNo</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredMasterTableData.map((order, index) => (
+                        data && <Table className="mt-2" striped bordered hover>
+                          <thead>
                             <tr>
-                              <td>{index + 1}</td>
+                              {/* <th>Sr No.</th> */}
+                              <th>So ID</th>
+                              <th>Product Name</th>
+                              <th>Quantity</th>
+                              <th>Order Value</th>
+                              <th>Status</th>
+                              <th>Customer Final Delivery Date</th>
+                              <th>Bar Code</th>
+                              <th>Batch No</th>
+                              <th>Master Label</th>
+                              <th>View Invoice</th>
+                              <th>Tracking Number</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              {/* <td>{index + 1}</td> */}
                               <td>
                                 {
                                   <button
@@ -1187,23 +811,23 @@ export const SalesRep = () => {
                                       textDecoration: "underline",
                                     }}
                                     onClick={() => {
-                                      handleTrackingDataModalShow(order);
+                                      handleTrackingDataModalShow(data);
                                     }}
                                   >
-                                    {order[0]}
+                                    {data[0]}
                                   </button>
                                 }
                               </td>
-                              <td>{order[2]}</td>
-                              <td>{formatBigNumber(order[3])}</td>
-                              <td>{formatBigNumber(order[4])}</td>
+                              <td>{data[2]}</td>
+                              <td>{formatBigNumber(data[3])}</td>
+                              <td>{formatBigNumber(data[4])}</td>
                               <td
                                 style={{
                                   textDecoration: "underline",
                                   cursor: "pointer",
                                 }}
                                 onClick={async () => {
-                                  const res = await getHashData(order[0])
+                                  const res = await getHashData(data[0])
                                   // console.log(order[0])
                                   console.log(res)
                                   console.log(res["Order Received"]);
@@ -1217,27 +841,27 @@ export const SalesRep = () => {
                                   setUrl8(res["Ready for Invoice"])
                                   setUrl9(res["Paid"])
                                   setUrl10(res["Completed"])
-                                  setModalStatus(order[6]);
+                                  setModalStatus(data[6]);
                                   setStatusModalShow(true);
-                                  setCounterFunc(order[6]);
+                                  setCounterFunc(data[6]);
                                 }}
                               >
-                                {order[6]}
+                                {data[6]}
                               </td>
                               <td>
                                 {formatDate(
                                   formatBigNumber(
-                                    order.customerFinalDeliveryDate
+                                    data.customerFinalDeliveryDate
                                   )
                                 )}
                               </td>
-                              <td>{order[7]}</td>
-                              <td>{order[8]}</td>
-                              <td>{order[9]}</td>
+                              <td>{data[7]}</td>
+                              <td>{data[8]}</td>
+                              <td>{data[9]}</td>
                               <td>
                                 {
                                   // display link only if invoice is generated
-                                  order[10] !== "" ? (
+                                  data[10] !== "" ? (
                                     // <a href={order[10]} target="_blank">
                                     //   View Invoice
                                     // </a>
@@ -1249,7 +873,7 @@ export const SalesRep = () => {
                                         textDecoration: "underline",
                                       }}
                                       onClick={() => {
-                                        viewInvoice(order[10]);
+                                        viewInvoice(data[10]);
                                       }}
                                     >
                                       View Invoice
@@ -1258,7 +882,7 @@ export const SalesRep = () => {
                                     ""
                                   )
                                 }
-                                <button
+                                {/* <button
                                   style={{
                                     backgroundColor: "transparent",
                                     border: "none",
@@ -1266,17 +890,17 @@ export const SalesRep = () => {
                                     textDecoration: "underline",
                                   }}
                                   onClick={() => {
-                                    handleUpdateInvoiceModalShow(order);
+                                    handleUpdateInvoiceModalShow(data);
                                   }}
                                 >
                                   update Invoice
-                                </button>
+                                </button> */}
                               </td>
-                              <td>{order[11]}</td>
+                              <td>{data[11]}</td>
                             </tr>
-                          ))}
-                        </tbody>
-                      </Table>
+                          </tbody>
+                        </Table>
+                      }
                     </Col>
                   </Card.Body>
                 </Card>
