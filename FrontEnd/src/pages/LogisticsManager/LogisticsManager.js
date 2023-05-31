@@ -26,7 +26,7 @@ import {
   formatBigNumber,
   getCollectionData,
   getCollectionDataWithId,
-  saveData,
+  saveData, updateHashData, createContractObject
 } from "../../utils/fbutils";
 import { updateCollectionData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
@@ -58,14 +58,7 @@ export const LogisticsManager = () => {
   const [role, setRole] = useState("");
   const [save, setSave] = useState(false);
   const fetchBlockchainData = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
+    const suppContract = await createContractObject();
     setMasterTableData(await suppContract.getAllOrderDetails());
   }
   const fetchCollectionData = async () => {
@@ -86,16 +79,7 @@ export const LogisticsManager = () => {
 
   const verifyRole = async () => {
     console.log("verifyRole");
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
+    const suppContract = await createContractObject();
     console.log("suppContract", suppContract);
     const tx = await suppContract.getRole();
     setMasterTableData(await suppContract.getAllOrderDetails());
@@ -164,27 +148,22 @@ export const LogisticsManager = () => {
       console.log("soId", soId);
       console.log("col", col);
       console.log("val", val);
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-      const network = await provider.getNetwork();
-      const signer = provider.getSigner();
+      const suppContract = await createContractObject();
 
-      const suppContract = new ethers.Contract(
-        getConfigByChain(network.chainId)[0].suppChainAddress,
-        SuppChain.abi,
-        signer
-      );
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
-      console.log("tx", tx);
-      const receipt = await provider
-        .waitForTransaction(tx.hash, 1, 150000)
-        .then(() => {
-          // toast.success(`Role assigned successfully !!`);
-          // getOrderDetails();
-          setFilteredpurchaseOrderLineItemDataArray([]);
-          fetchBlockchainData();
-        });
+      const res = await updateHashData(soId, val[0], tx.hash)
+      setFilteredpurchaseOrderLineItemDataArray([]);
+      fetchBlockchainData();
+      // const receipt = await provider
+      //   .waitForTransaction(tx.hash, 1, 150000)
+      //   .then(async() => {
+      //     // toast.success(`Role assigned successfully !!`);
+      //     // getOrderDetails();
+      //     const res = await updateHashData(soId, val[0], tx.hash)
+      //     setFilteredpurchaseOrderLineItemDataArray([]);
+      //     fetchBlockchainData();
+      //   });
       const tab = document.getElementById(
         "uncontrolled-tab-example-tab-ViewPurchaseOrderLineItems"
       );
@@ -219,7 +198,7 @@ export const LogisticsManager = () => {
     console.log("finalReceiveDateWithoutDashes", finalReceiveDateWithoutDashes);
     handleFinalReceiveDateModalClose();
     // setLoading(true);
-    await updateBlockDataOrderStatus(POData[0], ["Customer Final Delivery Date", "Status"], [finalReceiveDateWithoutDashes, "Ready for Invoice"]);
+    await updateBlockDataOrderStatus(POData[0], ["Status", "Customer Final Delivery Date"], ["Ready for Invoice",finalReceiveDateWithoutDashes]);
 
     // setSave(!save);
   };

@@ -24,7 +24,7 @@ import {
   savePdf,
   getFileDownloadURL,
   createHashData,
-  getHashData,
+  getHashData, updateHashData, createContractObject
 } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
 import { formatBigNumber } from "../../utils/fbutils";
@@ -48,7 +48,7 @@ const navItem = [];
 
 
 export const SalesRep = () => {
-  const common_url = "https://mumbai.polygonscan.com/tx/"
+  const common_url = "https://explorer.apothem.network/tx/"
   // Address States
   const [url1, setUrl1] = useState()
   const [url2, setUrl2] = useState()
@@ -132,14 +132,8 @@ export const SalesRep = () => {
     // setFilteredMasterTableData(masterTableData.filter(each => each.status === "Paid" || each.status === "Completed" || each.status === "Order Received"));
   }, [masterTableData]);
   const fetchBlockchainData = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
+    const suppContract = await createContractObject();
+    const tx = await suppContract.getRole();
     setMasterTableData(await suppContract.getAllOrderDetails());
   };
   const fetchCollectionData = async () => {
@@ -173,17 +167,7 @@ export const SalesRep = () => {
 
   const getOrderDetails = async () => {
     console.log("verifyRole");
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
-    console.log("suppContract", suppContract);
+    const suppContract = await createContractObject();
     const role = await suppContract.getRole();
 
     if (role !== "Sales Representative") {
@@ -328,35 +312,44 @@ export const SalesRep = () => {
   const handleOrderDataBlockChainSubmit = async (orderData) => {
     try {
       setLoading(true);
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-      const network = await provider.getNetwork();
-      const signer = provider.getSigner();
-
-      const suppContract = new ethers.Contract(
-        getConfigByChain(network.chainId)[0].suppChainAddress,
-        SuppChain.abi,
-        signer
-      );
+      const suppContract = await createContractObject();
 
       const orderQty = parseInt(orderData.orderProductQuantity);
       const orderPrice = parseInt(orderData.orderProductTotalPrice);
+      const _soId = await suppContract.getcurrentSOId();
       const tx = await suppContract.createOrder(
         orderData.orderProductName,
         orderQty,
         orderPrice,
         orderData.orderProductStatus
       );
-      suppContract.on("GetSoID", async (_soId) => {
-        await createHashData(orderData.orderProductStatus, _soId, tx.hash)
-        toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
-        setLoading(false);
-      });
-      const receipt = await provider
-        .waitForTransaction(tx.hash, 1, 150000)
-        .then(() => {
-          getOrderDetails();
-        });
+      // suppContract.on("GetSoID", async (_soId) => {
+      //   console.log("so", _soId)
+      //   await createHashData(orderData.orderProductStatus, _soId, tx.hash)
+      //   console.log("so1", _soId)
+      //   toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
+      //   setLoading(false);
+      // });
+      // console.log("txHash", tx.hash)
+
+      await createHashData(orderData.orderProductStatus, _soId, tx.hash)
+
+      toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
+      setLoading(false);
+      getOrderDetails();
+      // const receipt = await provider
+      //   .waitForTransaction(tx.hash, 1, 150000)
+      //   .then(async() => {
+      //     // console.log("txHash",tx.hash)
+      //     // const suppContract = await createContractObject();
+      //     // const _soId = await suppContract.getLastCreatedSOId();
+      //     // console.log("_soId", _soId)
+      //     // await createHashData(orderData.orderProductStatus, _soId, tx.hash)
+      //     // console.log("so1", _soId)
+      //     // toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
+      //     setLoading(false);
+      //     getOrderDetails();
+      //   });
     } catch (e) {
       console.log(e);
     }
@@ -448,26 +441,23 @@ export const SalesRep = () => {
       console.log("soId", soId);
       console.log("col", col);
       console.log("val", val);
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-      const network = await provider.getNetwork();
-      const signer = provider.getSigner();
+      const suppContract = await createContractObject();
 
-      const suppContract = new ethers.Contract(
-        getConfigByChain(network.chainId)[0].suppChainAddress,
-        SuppChain.abi,
-        signer
-      );
       console.log(soId);
+      
       const tx = await suppContract.update(soId, col, val);
       console.log("tx", tx);
-      const receipt = await provider
-        .waitForTransaction(tx.hash, 1, 150000)
-        .then(() => {
-          // toast.success(`Role assigned successfully !!`);
-          getOrderDetails();
-          setLoading(false);
-        });
+      const res = await updateHashData(soId, val[0], tx.hash)
+      getOrderDetails();
+      setLoading(false);
+      // const receipt = await provider
+      //   .waitForTransaction(tx.hash, 1, 150000)
+      //   .then(async() => {
+      //     // toast.success(`Role assigned successfully !!`);
+      //     const res = await updateHashData(soId, val[0], tx.hash)
+      //     getOrderDetails();
+      //     setLoading(false);
+      //   });
       // toast('Role Assignment in progress !!', { icon: '👏' })
     } catch (e) {
       // toast.error('An error occured. Check console !!')
@@ -480,8 +470,8 @@ export const SalesRep = () => {
     if (customerFinalDeliveryDate) {
       await updateBlockDataOrderStatus(
         currentSoId,
-        ["Customer Final Delivery Date", "Status", "Tracking No"],
-        [customerFinalDeliveryDate, "Completed", finalTrackingNumber]
+        ["Status", "Customer Final Delivery Date", "Tracking No"],
+        ["Completed", customerFinalDeliveryDate, finalTrackingNumber]
       );
     }
     // customer final delivery date is not present
@@ -557,17 +547,7 @@ export const SalesRep = () => {
   };
   const verifyRole = async () => {
     console.log("verifyRole");
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
-    console.log("suppContract", suppContract);
+    const suppContract = await createContractObject();
     const tx = await suppContract.getRole();
     console.log("tx", tx);
     setRole(tx);
@@ -576,232 +556,293 @@ export const SalesRep = () => {
   useEffect(() => {
     verifyRole();
   }, []);
-  if (role === "Sales Representative") {
-    return (
-      <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
-        <Toaster position="top-center" reverseOrder="false" />
-        {loading === true ? (
-          <>
-            <Lottie
-              options={loadingLoader}
-              height={loaderSize}
-              width={loaderSize}
-            />
-          </>
-        ) : (
-          <div>
-            <h1
-              style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}
-            >
-              Welcome Sales Representative
-            </h1>
-            <Container>
-              <Row>
-                <Card>
-                  <Card.Body>
-                    <Col>
-                      <div className="d-flex justify-content-end">
-                        <Button onClick={createOrder} variant="primary" >
-                          <BsPlusSquare />&nbsp;&nbsp;Create Order
-                        </Button>{" "}
-                      </div>
-                      <Modal
-                        className="mt-5"
-                        show={createOrderModal}
-                        onHide={handleCreateOrderModalClose}
-                      >
-                        <Modal.Header closeButton>
-                          <Modal.Title>Add Order Details</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                          <Form.Group
-                            className="mb-3"
-                            controlId="orderProductName"
+  return (
+    <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
+      <Toaster position="top-center" reverseOrder="false" />
+      {loading === true ? (
+        <>
+          <Lottie
+            options={loadingLoader}
+            height={loaderSize}
+            width={loaderSize}
+          />
+        </>
+      ) : (
+        <div>
+          <h1
+            style={{ color: "blue", fontSize: "32px", fontWeight: "normal" }}
+          >
+            Welcome Sales Representative
+          </h1>
+          <Container>
+            <Row>
+              <Card>
+                <Card.Body>
+                  <Col>
+                    <div className="d-flex justify-content-end">
+                      <Button onClick={createOrder} variant="primary" >
+                        <BsPlusSquare />&nbsp;&nbsp;Create Order
+                      </Button>{" "}
+                    </div>
+                    <Modal
+                      className="mt-5"
+                      show={createOrderModal}
+                      onHide={handleCreateOrderModalClose}
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title>Add Order Details</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Form.Group
+                          className="mb-3"
+                          controlId="orderProductName"
+                        >
+                          <Form.Label>Product Name</Form.Label>
+                          <Form.Select
+                            value={orderData.orderProductName}
+                            onChange={handleChange}
+                            aria-label="Default select example"
+                            name="orderProductName"
                           >
-                            <Form.Label>Product Name</Form.Label>
-                            <Form.Select
-                              value={orderData.orderProductName}
-                              onChange={handleChange}
-                              aria-label="Default select example"
-                              name="orderProductName"
-                            >
-                              <option>Select Product</option>
-                              {masterProductDataArray.map((product) => {
-                                return (
-                                  <option value={product.productName}>
-                                    {product.productName}
-                                  </option>
-                                );
-                              })}
-                            </Form.Select>
-                          </Form.Group>
+                            <option>Select Product</option>
+                            {masterProductDataArray.map((product) => {
+                              return (
+                                <option value={product.productName}>
+                                  {product.productName}
+                                </option>
+                              );
+                            })}
+                          </Form.Select>
+                        </Form.Group>
 
+                        <Form.Group
+                          className="mb-3"
+                          controlId="orderProductQuantity"
+                        >
+                          <Form.Label>Quantity</Form.Label>
+                          <Form.Control
+                            onChange={handleChange}
+                            value={orderData.orderProductQuantity}
+                            type="number"
+                            placeholder=""
+                            name="orderProductQuantity"
+                            disabled={orderData.orderProductName === ""}
+                          />
+                        </Form.Group>
+                        <Form.Group
+                          className="mb-3"
+                          controlId="orderProductPrice"
+                        >
+                          <Form.Label>Total Price</Form.Label>
+                          <Form.Control
+                            type="number"
+                            disabled
+                            placeholder=""
+                            name="orderProductTotalPrice"
+                            value={orderData.orderProductTotalPrice}
+                          />
+                        </Form.Group>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          variant="secondary"
+                          onClick={handleCreateOrderModalClose}
+                        >
+                          Close
+                        </Button>
+                        <Button variant="primary" onClick={orderDataSubmit}>
+                          Save Changes
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                    <Modal
+                      className="mt-5"
+                      show={trackingDataModal}
+                      onHide={handleTrackingDataModalClose}
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title>Update Tracking Number</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Form>
                           <Form.Group
                             className="mb-3"
-                            controlId="orderProductQuantity"
+                            controlId="trackingNumber"
                           >
-                            <Form.Label>Quantity</Form.Label>
+                            <Form.Label>Tracking Number</Form.Label>
                             <Form.Control
-                              onChange={handleChange}
-                              value={orderData.orderProductQuantity}
-                              type="number"
+                              type="text"
                               placeholder=""
-                              name="orderProductQuantity"
-                              disabled={orderData.orderProductName === ""}
+                              onChange={handleChangeMethod}
                             />
                           </Form.Group>
                           <Form.Group
                             className="mb-3"
-                            controlId="orderProductPrice"
+                            controlId="customerFinalDeliveryDate"
                           >
-                            <Form.Label>Total Price</Form.Label>
+                            <Form.Label>Customer Delivery Date</Form.Label>
                             <Form.Control
-                              type="number"
-                              disabled
+                              type="date"
                               placeholder=""
-                              name="orderProductTotalPrice"
-                              value={orderData.orderProductTotalPrice}
+                              onChange={handleChangeMethod}
                             />
                           </Form.Group>
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button
-                            variant="secondary"
-                            onClick={handleCreateOrderModalClose}
-                          >
-                            Close
-                          </Button>
-                          <Button variant="primary" onClick={orderDataSubmit}>
-                            Save Changes
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
-                      <Modal
-                        className="mt-5"
-                        show={trackingDataModal}
-                        onHide={handleTrackingDataModalClose}
-                      >
-                        <Modal.Header closeButton>
-                          <Modal.Title>Update Tracking Number</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                          <Form>
-                            <Form.Group
-                              className="mb-3"
-                              controlId="trackingNumber"
-                            >
-                              <Form.Label>Tracking Number</Form.Label>
-                              <Form.Control
-                                type="text"
-                                placeholder=""
-                                onChange={handleChangeMethod}
-                              />
-                            </Form.Group>
-                            <Form.Group
-                              className="mb-3"
-                              controlId="customerFinalDeliveryDate"
-                            >
-                              <Form.Label>Customer Delivery Date</Form.Label>
-                              <Form.Control
-                                type="date"
-                                placeholder=""
-                                onChange={handleChangeMethod}
-                              />
-                            </Form.Group>
-                          </Form>
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button
-                            variant="secondary"
-                            onClick={handleTrackingDataModalClose}
-                          >
-                            Close
-                          </Button>
-                          <Button
-                            variant="primary"
-                            onClick={handleFinalDataSubmit}
-                          >
-                            Save Changes
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
-                      <Modal
-                        className="mt-5"
-                        show={updateInvoiceModal}
-                        onHide={handleUpdateInvoiceModalClose}
-                      >
-                        <Modal.Header closeButton>
-                          <Modal.Title>Update Invoice</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                          <Form>
-                            <Form.Group className="mb-3" controlId="invoicePdf">
-                              <Form.Label>Upload Invoice Pdf</Form.Label>
-                              <Form.Control
-                                type="file"
-                                placeholder=""
-                                onChange={handleChangeMethod}
-                              />
-                            </Form.Group>
-                          </Form>
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button
-                            variant="secondary"
-                            onClick={handleUpdateInvoiceModalClose}
-                          >
-                            Close
-                          </Button>
-                          <Button
-                            variant="primary"
-                            onClick={handleInvoiceUpdate}
-                          >
-                            Save Changes
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
-                      <StatusModal statusModalShow={statusModalShow} setModalStatus={setModalStatus}
-                        url1={url1}
-                        url2={url2}
-                        url3={url3}
-                        url4={url4}
-                        url5={url5}
-                        url6={url6}
-                        url7={url7}
-                        url8={url8}
-                        url9={url9}
-                        url10={url10}
-                        modalStatus={modalStatus}
-                        counter={counter}
-                        progressWidth={progressWidth}
-                        setCounter={setCounter}
-                        setStatusModalShow={setStatusModalShow}
-                      />
+                        </Form>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          variant="secondary"
+                          onClick={handleTrackingDataModalClose}
+                        >
+                          Close
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={handleFinalDataSubmit}
+                        >
+                          Save Changes
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                    <Modal
+                      className="mt-5"
+                      show={updateInvoiceModal}
+                      onHide={handleUpdateInvoiceModalClose}
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title>Update Invoice</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Form>
+                          <Form.Group className="mb-3" controlId="invoicePdf">
+                            <Form.Label>Upload Invoice Pdf</Form.Label>
+                            <Form.Control
+                              type="file"
+                              placeholder=""
+                              onChange={handleChangeMethod}
+                            />
+                          </Form.Group>
+                        </Form>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          variant="secondary"
+                          onClick={handleUpdateInvoiceModalClose}
+                        >
+                          Close
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={handleInvoiceUpdate}
+                        >
+                          Save Changes
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                    <StatusModal statusModalShow={statusModalShow} setModalStatus={setModalStatus}
+                      url1={url1}
+                      url2={url2}
+                      url3={url3}
+                      url4={url4}
+                      url5={url5}
+                      url6={url6}
+                      url7={url7}
+                      url8={url8}
+                      url9={url9}
+                      url10={url10}
+                      modalStatus={modalStatus}
+                      counter={counter}
+                      progressWidth={progressWidth}
+                      setCounter={setCounter}
+                      setStatusModalShow={setStatusModalShow}
+                    />
 
-                      <DropDown masterTableData={masterTableData} setData={setData} data={data} />
-                      {
-                        data && <Table className="mt-2" striped bordered hover>
-                          <thead>
-                            <tr>
-                              {/* <th>Sr No.</th> */}
-                              <th>So ID</th>
-                              <th>Product Name</th>
-                              <th>Quantity</th>
-                              <th>Order Value</th>
-                              <th>Status</th>
-                              <th>Customer Final Delivery Date</th>
-                              <th>Bar Code</th>
-                              <th>Batch No</th>
-                              <th>Master Label</th>
-                              <th>View Invoice</th>
-                              <th>Tracking Number</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              {/* <td>{index + 1}</td> */}
-                              <td>
-                                {
+                    <DropDown masterTableData={masterTableData} setData={setData} data={data} />
+                    {
+                      data && <Table className="mt-2" striped bordered hover>
+                        <thead>
+                          <tr>
+                            {/* <th>Sr No.</th> */}
+                            <th>So ID</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Order Value</th>
+                            <th>Status</th>
+                            <th>Customer Final Delivery Date</th>
+                            <th>Bar Code</th>
+                            <th>Batch No</th>
+                            <th>Master Label</th>
+                            <th>View Invoice</th>
+                            <th>Tracking Number</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            {/* <td>{index + 1}</td> */}
+                            <td>
+                              {
+                                <button
+                                  style={{
+                                    backgroundColor: "transparent",
+                                    border: "none",
+                                    color: "black",
+                                    textDecoration: "underline",
+                                  }}
+                                  onClick={() => {
+                                    handleTrackingDataModalShow(data);
+                                  }}
+                                >
+                                  {data[0]}
+                                </button>
+                              }
+                            </td>
+                            <td>{data[2]}</td>
+                            <td>{formatBigNumber(data[3])}</td>
+                            <td>{formatBigNumber(data[4])}</td>
+                            <td
+                              style={{
+                                textDecoration: "underline",
+                                cursor: "pointer",
+                              }}
+                              onClick={async () => {
+                                const res = await getHashData(data[0])
+                                // console.log(order[0])
+                                console.log(res)
+                                console.log(res["Order Received"]);
+                                setUrl1(res["Order Received"])
+                                setUrl2(res["Looking for Vendor Acceptance"])
+                                setUrl3(res["Vendor Accepted"])
+                                setUrl4(res["Fullfilled"])
+                                setUrl5(res["Ready for Production"])
+                                setUrl6(res["Ready for Batching"])
+                                setUrl7(res["Ready for Customer Delivery"])
+                                setUrl8(res["Ready for Invoice"])
+                                setUrl9(res["Paid"])
+                                setUrl10(res["Completed"])
+                                setModalStatus(data[6]);
+                                setStatusModalShow(true);
+                                setCounterFunc(data[6]);
+                              }}
+                            >
+                              {data[6]}
+                            </td>
+                            <td>
+                              {formatDate(
+                                formatBigNumber(
+                                  data.customerFinalDeliveryDate
+                                )
+                              )}
+                            </td>
+                            <td>{data[7]}</td>
+                            <td>{data[8]}</td>
+                            <td>{data[9]}</td>
+                            <td>
+                              {
+                                // display link only if invoice is generated
+                                data[10] !== "" ? (
+                                  // <a href={order[10]} target="_blank">
+                                  //   View Invoice
+                                  // </a>
                                   <button
                                     style={{
                                       backgroundColor: "transparent",
@@ -810,78 +851,16 @@ export const SalesRep = () => {
                                       textDecoration: "underline",
                                     }}
                                     onClick={() => {
-                                      handleTrackingDataModalShow(data);
+                                      viewInvoice(data[10]);
                                     }}
                                   >
-                                    {data[0]}
+                                    View Invoice
                                   </button>
-                                }
-                              </td>
-                              <td>{data[2]}</td>
-                              <td>{formatBigNumber(data[3])}</td>
-                              <td>{formatBigNumber(data[4])}</td>
-                              <td
-                                style={{
-                                  textDecoration: "underline",
-                                  cursor: "pointer",
-                                }}
-                                onClick={async () => {
-                                  const res = await getHashData(data[0])
-                                  // console.log(order[0])
-                                  console.log(res)
-                                  console.log(res["Order Received"]);
-                                  setUrl1(res["Order Received"])
-                                  setUrl2(res["Looking for Vendor Acceptance"])
-                                  setUrl3(res["Vendor Accepted"])
-                                  setUrl4(res["Fullfilled"])
-                                  setUrl5(res["Ready for Production"])
-                                  setUrl6(res["Ready for Batching"])
-                                  setUrl7(res["Ready for Customer Delivery"])
-                                  setUrl8(res["Ready for Invoice"])
-                                  setUrl9(res["Paid"])
-                                  setUrl10(res["Completed"])
-                                  setModalStatus(data[6]);
-                                  setStatusModalShow(true);
-                                  setCounterFunc(data[6]);
-                                }}
-                              >
-                                {data[6]}
-                              </td>
-                              <td>
-                                {formatDate(
-                                  formatBigNumber(
-                                    data.customerFinalDeliveryDate
-                                  )
-                                )}
-                              </td>
-                              <td>{data[7]}</td>
-                              <td>{data[8]}</td>
-                              <td>{data[9]}</td>
-                              <td>
-                                {
-                                  // display link only if invoice is generated
-                                  data[10] !== "" ? (
-                                    // <a href={order[10]} target="_blank">
-                                    //   View Invoice
-                                    // </a>
-                                    <button
-                                      style={{
-                                        backgroundColor: "transparent",
-                                        border: "none",
-                                        color: "black",
-                                        textDecoration: "underline",
-                                      }}
-                                      onClick={() => {
-                                        viewInvoice(data[10]);
-                                      }}
-                                    >
-                                      View Invoice
-                                    </button>
-                                  ) : (
-                                    ""
-                                  )
-                                }
-                                {/* <button
+                                ) : (
+                                  ""
+                                )
+                              }
+                              {/* <button
                                   style={{
                                     backgroundColor: "transparent",
                                     border: "none",
@@ -894,44 +873,19 @@ export const SalesRep = () => {
                                 >
                                   update Invoice
                                 </button> */}
-                              </td>
-                              <td>{data[11]}</td>
-                            </tr>
-                          </tbody>
-                        </Table>
-                      }
-                    </Col>
-                  </Card.Body>
-                </Card>
-              </Row>
-            </Container>
-          </div>
-        )}
-      </Navbar>
-    );
-  } else {
-    return (
-      <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
-        <div>
-          <Container>
-            <Row>
-              <Card>
-                <Card.Body>
-                  <h1
-                    style={{
-                      color: "blue",
-                      fontSize: "32px",
-                      fontWeight: "normal",
-                    }}
-                  >
-                    You don't have permission
-                  </h1>
+                            </td>
+                            <td>{data[11]}</td>
+                          </tr>
+                        </tbody>
+                      </Table>
+                    }
+                  </Col>
                 </Card.Body>
               </Card>
             </Row>
           </Container>
         </div>
-      </Navbar>
-    );
-  }
+      )}
+    </Navbar>
+  );
 };

@@ -107,6 +107,10 @@ contract SupplyChain is Ownable, Gated {
         emit GetSoID (_soId);
     }
 
+    function getcurrentSOId() external view returns(string memory){
+        return string.concat("SO",Strings.toString(so_ID));
+    }
+
     
     /*********Able to return order details by taking both SO or PO ********/
     function getOrderDetails(string memory _soOrPo) external view returns (Order memory) {

@@ -22,7 +22,7 @@ import {
   formatBigNumber,
   getCollectionData,
   getCollectionDataWithId,
-  saveData,
+  saveData, updateHashData, createContractObject
 } from "../../utils/fbutils";
 import * as loadingImage from "../../assets/loading.json";
 import Lottie from "react-lottie";
@@ -57,14 +57,7 @@ export const BatchManager = () => {
 
   }, [masterTableData]);
   const fetchBlockchainData = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
+    const suppContract = await createContractObject();
     setMasterTableData(await suppContract.getAllOrderDetails());
   }
   const loadingLoader = {
@@ -79,16 +72,7 @@ export const BatchManager = () => {
   const [loaderSize, setLoaderSize] = useState(220);
   const verifyRole = async () => {
     console.log("verifyRole");
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
+    const suppContract = await createContractObject();
     console.log("suppContract", suppContract);
     const tx = await suppContract.getRole();
     setMasterTableData(await suppContract.getAllOrderDetails());
@@ -97,28 +81,21 @@ export const BatchManager = () => {
 
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      setLoading(true)
-      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-      const network = await provider.getNetwork();
-      const signer = provider.getSigner();
-
-      const suppContract = new ethers.Contract(
-        getConfigByChain(network.chainId)[0].suppChainAddress,
-        SuppChain.abi,
-        signer
-      );
+      const suppContract = await createContractObject();
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
-      console.log("tx", tx);
-      const receipt = await provider
-        .waitForTransaction(tx.hash, 1, 150000)
-        .then(() => {
-          // toast.success(`Role assigned successfully !!`);
-          // getOrderDetails();
-          fetchBlockchainData();
-          setLoading(false);
-        });
+      const res = await updateHashData(soId, val[0], tx.hash)
+      fetchBlockchainData();
+      setLoading(false);
+      // const receipt = await provider
+      //   .waitForTransaction(tx.hash, 1, 150000)
+      //   .then(async() => {
+      //     // toast.success(`Role assigned successfully !!`);
+      //     // getOrderDetails();
+      //     const res = await updateHashData(soId, val[0], tx.hash)
+      //     fetchBlockchainData();
+      //     setLoading(false);
+      //   });
 
       // toast('Role Assignment in progress !!', { icon: '👏' })
     } catch (e) {
@@ -159,7 +136,7 @@ export const BatchManager = () => {
     console.log("barCode", barCode);
     console.log("batchNumber", batchNumber);
     console.log("masterLabel", masterLabel);
-    await updateBlockDataOrderStatus(currentSoId, ["BarCode", "BatchNo", "Master Label", "Status"], [barCode, batchNumber, masterLabel, "Ready for Customer Delivery"]);
+    await updateBlockDataOrderStatus(currentSoId, ["Status", "BarCode", "BatchNo", "Master Label"], ["Ready for Customer Delivery",barCode, batchNumber, masterLabel]);
   }
   if (true) {
     return (

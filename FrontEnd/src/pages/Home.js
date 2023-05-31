@@ -169,7 +169,7 @@ export default function Home() {
 
                     <br />
 
-                    <h1 className={classes.pageHeading}>Visit As</h1>
+                    
                     {admin === address ? (
                       <>
                       <Link

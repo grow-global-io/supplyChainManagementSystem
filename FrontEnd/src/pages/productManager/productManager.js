@@ -17,7 +17,7 @@ import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.jso
 import { useState } from "react";
 import { ethers } from "ethers";
 import { getConfigByChain } from "../../assets/config";
-import { getCollectionData, saveData } from "../../utils/fbutils";
+import { getCollectionData, saveData, createContractObject } from "../../utils/fbutils";
 const navItem = [];
 export const ProductManager = () => {
   const [masterProductDataArray, setmasterProductDataArray] = useState([]);
@@ -63,18 +63,11 @@ export const ProductManager = () => {
     verifyRole();
     fetchCollectionData();
   }, [save]);
+  
   const verifyRole = async () => {
     console.log("verifyRole");
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
+    const suppContract = await createContractObject();
 
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
     console.log("suppContract", suppContract);
     const tx = await suppContract.getRole();
     console.log("tx", tx);

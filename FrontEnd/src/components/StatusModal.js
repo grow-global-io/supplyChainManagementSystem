@@ -21,7 +21,7 @@ const StatusModal = (props) => {
         progressWidth,
         setCounter,
     } = props;
-    const common_url = "https://mumbai.polygonscan.com/tx/"
+    const common_url = "https://explorer.apothem.network/tx/"
 
     
     return (

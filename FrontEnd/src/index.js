@@ -16,7 +16,7 @@ import {
 import '@rainbow-me/rainbowkit/styles.css'
 import * as serviceWorker from './serviceWorker';
 import { useAccount } from 'wagmi'
-import {Wallet} from 'ethers'
+import { Wallet } from 'ethers'
 import { GatewayProvider, IdentityButton, ButtonMode } from "@civic/ethereum-gateway-react";
 
 
@@ -67,7 +67,10 @@ const XdcTestNet = {
 }
 
 const { chains, provider } = configureChains(
-    [chain.polygonMumbai, chain.polygon, xdcMainnet, XdcTestNet],
+    [//chain.polygonMumbai, 
+        // chain.polygon, 
+        //xdcMainnet,
+        XdcTestNet],
     [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 )
 
@@ -97,6 +100,7 @@ const connectors = connectorsForWallets([
             wallet.omni({ chains }),
             wallet.imToken({ chains }),
             wallet.ledger({ chains }),
+
         ],
     },
 ])
@@ -142,7 +146,7 @@ root.render(
                 showRecentTransactions={true}
             >
                 <App />
-               
+
             </RainbowKitProvider>
         </WagmiConfig>
     </React.StrictMode>

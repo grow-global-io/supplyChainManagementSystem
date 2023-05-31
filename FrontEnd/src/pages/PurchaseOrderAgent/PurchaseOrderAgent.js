@@ -27,7 +27,7 @@ import {
   getCollectionData,
   getCollectionDataWithId,
   saveData,
-  updateHashData,
+  updateHashData, createContractObject
 } from "../../utils/fbutils";
 import { updateCollectionData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
@@ -57,14 +57,7 @@ export default function PurchaseOrderAgent() {
     );
   };
   const fetchBlockchainData = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
+    const suppContract = await createContractObject();
     setMasterTableData(await suppContract.getAllOrderDetails());
   }
   useEffect(() => {
@@ -82,16 +75,7 @@ export default function PurchaseOrderAgent() {
   }, [masterTableData]);
 
   const verifyRole = async () => {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
+    const suppContract = await createContractObject();
     const tx = await suppContract.getRole();
     setMasterTableData(await suppContract.getAllOrderDetails());
     setRole(tx);
@@ -160,29 +144,23 @@ export default function PurchaseOrderAgent() {
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
       setLoading(true)
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-      const network = await provider.getNetwork();
-      const signer = provider.getSigner();
-
-      const suppContract = new ethers.Contract(
-        getConfigByChain(network.chainId)[0].suppChainAddress,
-        SuppChain.abi,
-        signer
-      );
+      const suppContract = await createContractObject();
+      
       const tx = await suppContract.update(soId, col, val);
-      // setLoading(false)
-      // verifyRole();
+      
+      const res = await updateHashData(soId, val[0], tx.hash)
+      fetchBlockchainData();
+      setLoading(false);
 
-      const receipt = await provider
-        .waitForTransaction(tx.hash, 1, 150000)
-        .then(async () => {
-          // toast.success(`Role assigned successfully !!`);
-          // getOrderDetails();
-          const res = await updateHashData(soId, "Vendor Accepted", tx.hash)
-          fetchBlockchainData();
-          setLoading(false);
-        });
+      // const receipt = await provider
+      //   .waitForTransaction(tx.hash, 1, 150000)
+      //   .then(async () => {
+      //     // toast.success(`Role assigned successfully !!`);
+      //     // getOrderDetails();
+      //     // const res = await updateHashData(soId, val[0], tx.hash)
+      //     // fetchBlockchainData();
+      //     // setLoading(false);
+      //   });
 
       // toast('Role Assignment in progress !!', { icon: '👏' })
     } catch (e) {

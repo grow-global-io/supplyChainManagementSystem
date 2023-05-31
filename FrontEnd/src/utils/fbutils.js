@@ -22,6 +22,8 @@ export const createHashData = async (orderProductStatus, soId, hash) => {
 
   data[orderProductStatus] = hash
   try {
+    console.log("data before save",data)
+    console.log("soId", soId)
     const docRef = doc(db, "tx.hash", soId);
     await setDoc(docRef, data);
   }

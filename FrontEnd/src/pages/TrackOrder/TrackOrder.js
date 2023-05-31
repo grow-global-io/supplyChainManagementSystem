@@ -90,7 +90,7 @@ const TrackOrder = () => {
         }
 
 
-    }, [])
+    })
     const navItem = [];
     console.log(masterTableData)
     return (
@@ -146,8 +146,8 @@ const TrackOrder = () => {
                                     }}
                                     onClick={async () => {
                                         const res = await getHashData(data[0])
-                                        // console.log(order[0])
-                                        console.log(res)
+                                        console.log("resInput",data[0])
+                                        console.log("res",res)
                                         console.log(res["Order Received"]);
                                         setUrl1(res["Order Received"])
                                         setUrl2(res["Looking for Vendor Acceptance"])

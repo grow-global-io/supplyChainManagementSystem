@@ -61,6 +61,7 @@ function App() {
     window.Buffer = Buffer;
   }, [connector]);
 
+
   useEffect(() => {
     setTimeout(() => {
       setLoading(true);

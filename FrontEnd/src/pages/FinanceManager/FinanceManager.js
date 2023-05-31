@@ -25,7 +25,7 @@ import {
   formatBigNumber,
   getCollectionData,
   getCollectionDataWithId,
-  saveData,
+  saveData, updateHashData, createContractObject
 } from "../../utils/fbutils";
 import { updateCollectionData, savePdf } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
@@ -102,8 +102,8 @@ export const FinanceManager = () => {
     console.log(invoicePdfUrl);
     await updateBlockDataOrderStatus(
       currentSoId,
-      ["Invoice Path"],
-      [invoicePdfUrl]
+      ["Status","Invoice Path"],
+      ["Paid",invoicePdfUrl]
     );
     // const fileInput = document.getElementById("invoicePdf");
     // fileInput.value = "";
@@ -127,14 +127,7 @@ export const FinanceManager = () => {
 
   }, [masterTableData]);
   const fetchBlockchainData = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
+    const suppContract = await createContractObject();
     setMasterTableData(await suppContract.getAllOrderDetails());
   }
   const loadingLoader = {
@@ -157,16 +150,8 @@ export const FinanceManager = () => {
   }, [masterTableData]);
   const verifyRole = async () => {
     console.log("verifyRole");
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-    const network = await provider.getNetwork();
-    const signer = provider.getSigner();
+    const suppContract = await createContractObject();
 
-    const suppContract = new ethers.Contract(
-      getConfigByChain(network.chainId)[0].suppChainAddress,
-      SuppChain.abi,
-      signer
-    );
     console.log("suppContract", suppContract);
     const tx = await suppContract.getRole();
     setMasterTableData(await suppContract.getAllOrderDetails());
@@ -176,28 +161,22 @@ export const FinanceManager = () => {
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
       setLoading(true)
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-      const network = await provider.getNetwork();
-      const signer = provider.getSigner();
-
-      const suppContract = new ethers.Contract(
-        getConfigByChain(network.chainId)[0].suppChainAddress,
-        SuppChain.abi,
-        signer
-      );
+      const suppContract = await createContractObject();
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
-      console.log("tx", tx);
+      const res = await updateHashData(soId, val[0], tx.hash)
+      fetchBlockchainData();
+      setLoading(false);
       // toast('Role Assignment in progress !!', { icon: '👏' })
-      const receipt = await provider
-        .waitForTransaction(tx.hash, 1, 150000)
-        .then(() => {
-          // toast.success(`Role assigned successfully !!`);
-          // getOrderDetails();
-          fetchBlockchainData();
-          setLoading(false);
-        });
+      // const receipt = await provider
+      //   .waitForTransaction(tx.hash, 1, 150000)
+      //   .then(async() => {
+      //     // toast.success(`Role assigned successfully !!`);
+      //     // getOrderDetails();
+      //     const res = await updateHashData(soId, val[0], tx.hash)
+      //     fetchBlockchainData();
+      //     setLoading(false);
+      //   });
     } catch (e) {
       // toast.error('An error occured. Check console !!')
       console.log(e);
@@ -219,13 +198,7 @@ export const FinanceManager = () => {
   const handleChange = (e) => {
     setInvoicePath(e.target.value);
   }
-  const handleSave = async () => {
-    handleClose();
-    console.log(currentSoId)
-    console.log("handleSave");
-    console.log("invoicePath", invoicePath);
-    await updateBlockDataOrderStatus(currentSoId, ["Invoice Path", "Status"], [invoicePath, "Paid"]);
-  }
+  
   if (true) {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>

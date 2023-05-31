@@ -23,7 +23,7 @@ export const networkConfig = {
     ],
     "51": [
         {
-            suppChainAddress: "0x8a1c6D06b412eE35BF2edB8a5884df48a1a763c3", //non proxy deployment
+            suppChainAddress: "0x25Bea65a0d084707E2aBf90163364343cf8da00E", //non proxy deployment
             token_icon: "https://cryptologos.cc/logos/polygon-matic-logo.svg?v=022",
             alt: "Apothem",
             networkName: "XDC TestNet",
