@@ -55,8 +55,7 @@ function RoleAdmin(props) {
       
       toast('Role Assignment in progress !!', { icon: '👏' })
       
-      toast.success(`Role assigned successfully !!`)
-      setLoading(false)
+      
 
       const receipt = await provider
         .waitForTransaction(tx.hash, 1, 150000)
