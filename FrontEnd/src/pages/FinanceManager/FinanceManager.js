@@ -83,6 +83,15 @@ export const FinanceManager = () => {
     // console.log(e.target.value);
     // console.log(e.target.id);
   };
+
+  const handlePaidStatusChange = async(item)=>{
+    console.log("paid")
+    await updateBlockDataOrderStatus(
+      item[0],
+      ["Status"],
+      ["Paid"]
+    );
+  }
   const handleInvoiceUpdate = async () => {
     console.log("handleInvoiceUpdate");
     console.log(currentSoId);
@@ -102,8 +111,8 @@ export const FinanceManager = () => {
     console.log(invoicePdfUrl);
     await updateBlockDataOrderStatus(
       currentSoId,
-      ["Status","Invoice Path"],
-      ["Paid",invoicePdfUrl]
+      ["Status", "Invoice Path"],
+      ["Ready for Invoice", invoicePdfUrl]
     );
     // const fileInput = document.getElementById("invoicePdf");
     // fileInput.value = "";
@@ -161,22 +170,24 @@ export const FinanceManager = () => {
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
       setLoading(true)
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
       const suppContract = await createContractObject();
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
-      const res = await updateHashData(soId, val[0], tx.hash)
-      fetchBlockchainData();
-      setLoading(false);
+
       // toast('Role Assignment in progress !!', { icon: '👏' })
-      // const receipt = await provider
-      //   .waitForTransaction(tx.hash, 1, 150000)
-      //   .then(async() => {
-      //     // toast.success(`Role assigned successfully !!`);
-      //     // getOrderDetails();
-      //     const res = await updateHashData(soId, val[0], tx.hash)
-      //     fetchBlockchainData();
-      //     setLoading(false);
-      //   });
+      const receipt = await provider
+        .waitForTransaction(tx.hash, 1, 150000)
+        .then(async () => {
+          // toast.success(`Role assigned successfully !!`);
+          // getOrderDetails();
+          console.log(`soid is: ${soId} for colValue: ${val[0]} and hash is ${tx.hash}`)
+
+          const res = await updateHashData(soId, val[0], tx.hash)
+          fetchBlockchainData();
+          setLoading(false);
+        });
     } catch (e) {
       // toast.error('An error occured. Check console !!')
       console.log(e);
@@ -198,7 +209,7 @@ export const FinanceManager = () => {
   const handleChange = (e) => {
     setInvoicePath(e.target.value);
   }
-  
+
   if (true) {
     return (
       <Navbar pageTitle={"Delivery Hub"} navItems={navItem}>
@@ -231,6 +242,7 @@ export const FinanceManager = () => {
                               <th>Quantity</th>
                               <th>Order Value</th>
                               <th>Status</th>
+                              <th>Invoice</th>
                               <th>Actions</th>
                             </tr>
                           </thead>
@@ -239,35 +251,27 @@ export const FinanceManager = () => {
                               <tr>
                                 <td>{index + 1}</td>
                                 <td>
-                                  <Button
-                                    style={{
-                                      backgroundColor: "transparent",
-                                      border: "none", color: "black", textDecoration: "underline"
-                                    }}
-                                    onClick={() => handleShow(order)}
-                                    variant="primary"
-                                  >
-                                    {order[1]}
-                                  </Button>{" "}
+                                  {order[1]}
+                                  
                                 </td>
                                 <td>{order[2]}</td>
                                 <td>{formatBigNumber(order[3])}</td>
                                 <td>{formatBigNumber(order[4])}</td>
                                 <td>{order[6]}</td>
-                                <td className="d-flex flex-column justify-content-start align-items-start">{order[10] !== "" && <button
-                                  style={{
-                                    backgroundColor: "transparent",
-                                    border: "none",
-                                    color: "black",
-                                    textDecoration: "underline",
-                                  }}
-                                  onClick={() => {
-                                    viewInvoice(order[10]);
-                                  }}
-                                >
-                                  View Invoice
-                                </button>}
-                                  <button
+                                <td className="d-flex flex-column justify-content-start align-items-start">
+                                  {order[10] !== "" ? (<button
+                                    style={{
+                                      backgroundColor: "transparent",
+                                      border: "none",
+                                      color: "black",
+                                      textDecoration: "underline",
+                                    }}
+                                    onClick={() => {
+                                      viewInvoice(order[10]);
+                                    }}
+                                  >
+                                    View Invoice
+                                  </button>) : (<button
                                     style={{
                                       backgroundColor: "transparent",
                                       border: "none",
@@ -277,7 +281,17 @@ export const FinanceManager = () => {
                                     onClick={() => handleShow(order)}
                                   >
                                     Update Invoice
-                                  </button>
+                                  </button>)}
+
+                                </td>
+                                <td>
+                                  {order[10] !== "" &&
+                                  <Button variant="primary"
+                                  
+                                  onClick={()=>handlePaidStatusChange(order)}
+                                >
+                                  Mark as paid
+                                </Button>}
                                 </td>
                               </tr>
                             ))}

@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
-import "@identity.com/gateway-protocol-eth/contracts/Gated.sol";
+// import "@identity.com/gateway-protocol-eth/contracts/Gated.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 
-contract SupplyChain is Ownable, Gated {
+contract SupplyChain is Ownable {
     
     
     uint256 private so_ID;
@@ -33,7 +33,7 @@ contract SupplyChain is Ownable, Gated {
     event GetSoID(string _soId);
 
 
-    constructor(uint256  gatekeeperNetwork) Gated(0xF65b6396dF6B7e2D8a6270E3AB6c7BB08BAEF22E, gatekeeperNetwork) {
+    constructor() {
         so_ID = 16532;
         start_so_ID = 16532;
     }

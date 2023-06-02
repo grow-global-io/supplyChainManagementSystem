@@ -148,22 +148,23 @@ export const LogisticsManager = () => {
       console.log("soId", soId);
       console.log("col", col);
       console.log("val", val);
+
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
       const suppContract = await createContractObject();
 
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
-      const res = await updateHashData(soId, val[0], tx.hash)
-      setFilteredpurchaseOrderLineItemDataArray([]);
-      fetchBlockchainData();
-      // const receipt = await provider
-      //   .waitForTransaction(tx.hash, 1, 150000)
-      //   .then(async() => {
-      //     // toast.success(`Role assigned successfully !!`);
-      //     // getOrderDetails();
-      //     const res = await updateHashData(soId, val[0], tx.hash)
-      //     setFilteredpurchaseOrderLineItemDataArray([]);
-      //     fetchBlockchainData();
-      //   });
+      
+      const receipt = await provider
+        .waitForTransaction(tx.hash, 1, 150000)
+        .then(async() => {
+          // toast.success(`Role assigned successfully !!`);
+          // getOrderDetails();
+          const res = await updateHashData(soId, val[0], tx.hash)
+          setFilteredpurchaseOrderLineItemDataArray([]);
+          fetchBlockchainData();
+        });
       const tab = document.getElementById(
         "uncontrolled-tab-example-tab-ViewPurchaseOrderLineItems"
       );

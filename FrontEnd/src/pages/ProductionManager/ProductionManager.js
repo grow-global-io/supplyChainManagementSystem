@@ -142,21 +142,21 @@ export const ProductionManager = () => {
     // setLoading(true)
     try {
       setLoading(true);
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
       const suppContract = await createContractObject();
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);
-      const res = await updateHashData(soId, val[0], tx.hash)
-      fetchBlockchainData();
-      setLoading(false);
-      // const receipt = await provider
-      //   .waitForTransaction(tx.hash, 1, 150000)
-      //   .then(async () => {
-      //     // toast.success(`Role assigned successfully !!`);
-      //     // getOrderDetails();
-      //     const res = await updateHashData(soId, val[0], tx.hash)
-      //     fetchBlockchainData();
-      //     setLoading(false);
-      //   });
+      
+      const receipt = await provider
+        .waitForTransaction(tx.hash, 1, 150000)
+        .then(async () => {
+          // toast.success(`Role assigned successfully !!`);
+          // getOrderDetails();
+          const res = await updateHashData(soId, val[0], tx.hash)
+          fetchBlockchainData();
+          setLoading(false);
+        });
 
     } catch (e) {
       // toast.error('An error occured. Check console !!')

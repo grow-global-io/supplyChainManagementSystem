@@ -47,6 +47,16 @@ module.exports = {
   etherscan: {
     apiKey: '5PB2QWEDWRA9JBUWGBDHHZFM2X5YECC5Q2',
   },
+  customChains: [
+    {
+      network: "apothem",
+      chainId: 51,
+      urls: {
+        apiURL: "https://xdc.blocksscan.io/api",
+        browserURL: "https://explorer.apothem.network/"
+      }
+    }
+  ],
   solidity: '0.8.12',
   paths: {
     artifacts: './FrontEnd/src/artifacts',

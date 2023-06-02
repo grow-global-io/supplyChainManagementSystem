@@ -312,6 +312,8 @@ export const SalesRep = () => {
   const handleOrderDataBlockChainSubmit = async (orderData) => {
     try {
       setLoading(true);
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
       const suppContract = await createContractObject();
 
       const orderQty = parseInt(orderData.orderProductQuantity);
@@ -323,33 +325,25 @@ export const SalesRep = () => {
         orderPrice,
         orderData.orderProductStatus
       );
-      // suppContract.on("GetSoID", async (_soId) => {
-      //   console.log("so", _soId)
-      //   await createHashData(orderData.orderProductStatus, _soId, tx.hash)
-      //   console.log("so1", _soId)
-      //   toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
-      //   setLoading(false);
-      // });
+
       // console.log("txHash", tx.hash)
 
-      await createHashData(orderData.orderProductStatus, _soId, tx.hash)
+      // await createHashData(orderData.orderProductStatus, _soId, tx.hash)
 
-      toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
-      setLoading(false);
-      getOrderDetails();
-      // const receipt = await provider
-      //   .waitForTransaction(tx.hash, 1, 150000)
-      //   .then(async() => {
-      //     // console.log("txHash",tx.hash)
-      //     // const suppContract = await createContractObject();
-      //     // const _soId = await suppContract.getLastCreatedSOId();
-      //     // console.log("_soId", _soId)
-      //     // await createHashData(orderData.orderProductStatus, _soId, tx.hash)
-      //     // console.log("so1", _soId)
-      //     // toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
-      //     setLoading(false);
-      //     getOrderDetails();
-      //   });
+      // toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
+      // setLoading(false);
+      // getOrderDetails();
+      const receipt = await provider
+        .waitForTransaction(tx.hash, 1, 150000)
+        .then(async () => {
+          
+          console.log(`orderProductStatus is: ${orderData.orderProductStatus} for soID: ${_soId} and hash is ${tx.hash}`)
+          await createHashData(orderData.orderProductStatus, _soId, tx.hash)
+          // console.log("so1", _soId)
+          toast.success(`So ID generated was ${JSON.stringify(_soId)}`);
+          setLoading(false);
+          getOrderDetails();
+        });
     } catch (e) {
       console.log(e);
     }
@@ -441,23 +435,24 @@ export const SalesRep = () => {
       console.log("soId", soId);
       console.log("col", col);
       console.log("val", val);
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
       const suppContract = await createContractObject();
 
       console.log(soId);
-      
+
       const tx = await suppContract.update(soId, col, val);
       console.log("tx", tx);
-      const res = await updateHashData(soId, val[0], tx.hash)
-      getOrderDetails();
-      setLoading(false);
-      // const receipt = await provider
-      //   .waitForTransaction(tx.hash, 1, 150000)
-      //   .then(async() => {
-      //     // toast.success(`Role assigned successfully !!`);
-      //     const res = await updateHashData(soId, val[0], tx.hash)
-      //     getOrderDetails();
-      //     setLoading(false);
-      //   });
+      
+      const receipt = await provider
+        .waitForTransaction(tx.hash, 1, 150000)
+        .then(async() => {
+          // toast.success(`Role assigned successfully !!`);
+          console.log("update Ran")
+          const res = await updateHashData(soId, val[0], tx.hash)
+          getOrderDetails();
+          setLoading(false);
+        });
       // toast('Role Assignment in progress !!', { icon: '👏' })
     } catch (e) {
       // toast.error('An error occured. Check console !!')
