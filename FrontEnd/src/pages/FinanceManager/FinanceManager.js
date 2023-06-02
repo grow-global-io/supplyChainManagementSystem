@@ -111,8 +111,8 @@ export const FinanceManager = () => {
     console.log(invoicePdfUrl);
     await updateBlockDataOrderStatus(
       currentSoId,
-      ["Status", "Invoice Path"],
-      ["Ready for Invoice", invoicePdfUrl]
+      ["Invoice Path"],
+      [invoicePdfUrl]
     );
     // const fileInput = document.getElementById("invoicePdf");
     // fileInput.value = "";
