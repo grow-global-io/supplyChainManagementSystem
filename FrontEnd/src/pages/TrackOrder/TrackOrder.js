@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Navbar from "../../components/Navbar";
 import Dropdown from 'react-bootstrap/Dropdown';
-import { getCollectionData, getHashData } from '../../utils/fbutils';
+import { getCollectionData, getHashData, createContractObject } from '../../utils/fbutils';
 import { ethers } from 'ethers';
 import { getConfigByChain } from '../../assets/config';
 import SuppChain from "../../artifacts/contracts/SupplyChain.sol/SupplyChain.json";
@@ -69,14 +69,8 @@ const TrackOrder = () => {
         }
     };
     const fetchBlockchainData = async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
-        const network = await provider.getNetwork();
-        const signer = provider.getSigner();
-        const suppContract = new ethers.Contract(
-            getConfigByChain(network.chainId)[0].suppChainAddress,
-            SuppChain.abi,
-            signer
-        );
+
+        const suppContract = await createContractObject();
         setMasterTableData(await suppContract.getAllOrderDetails());
     }
     const showModal = () => {

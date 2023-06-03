@@ -144,8 +144,8 @@ export default function PurchaseOrderAgent() {
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
       setLoading(true)
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+      await window.arcana.provider.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.arcana.provider); //create provider
       const suppContract = await createContractObject();
       
       const tx = await suppContract.update(soId, col, val);

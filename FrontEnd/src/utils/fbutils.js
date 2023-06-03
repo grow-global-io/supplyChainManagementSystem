@@ -1,7 +1,6 @@
 import { doc, getDoc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../config/fbconfig";
-import * as ark from '../../node_modules/@arcana/auth/dist/standalone/auth.umd'
 import { v4 as uuidv4 } from "uuid";
 import { getConfigByChain } from '../assets/config'
 import { ethers } from 'ethers'

@@ -149,8 +149,8 @@ export const LogisticsManager = () => {
       console.log("col", col);
       console.log("val", val);
 
-      await window.ethereum.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+      await window.arcana.provider.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.providers.Web3Provider(window.arcana.provider); //create provider
       const suppContract = await createContractObject();
 
       console.log(soId);
