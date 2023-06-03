@@ -1,6 +1,7 @@
 import { doc, getDoc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../config/fbconfig";
+import * as ark from '../../node_modules/@arcana/auth/dist/standalone/auth.umd'
 import { v4 as uuidv4 } from "uuid";
 import { getConfigByChain } from '../assets/config'
 import { ethers } from 'ethers'
@@ -22,7 +23,7 @@ export const createHashData = async (orderProductStatus, soId, hash) => {
 
   data[orderProductStatus] = hash
   try {
-    console.log("data before save",data)
+    console.log("data before save", data)
     console.log("soId", soId)
     const docRef = doc(db, "tx.hash", soId);
     await setDoc(docRef, data);
@@ -147,13 +148,13 @@ export const formatBigNumber = (bigNumber) => {
 }
 
 export const createContractObject = async () => {
-  await window.ethereum.request({ method: "eth_requestAccounts" });
-  const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+  await window.arcana.provider.request({ method: "eth_requestAccounts" });
+  const provider = new ethers.providers.Web3Provider(window.arcana.provider); //create provider
   const network = await provider.getNetwork();
   const signer = provider.getSigner();
 
   const suppContract = new ethers.Contract(
-    getConfigByChain(network.chainId)[0].suppChainAddress,
+    getConfigByChain(network.chainId)[0].suppChainAddress, //deployed contract address
     SuppChain.abi,
     signer
   );

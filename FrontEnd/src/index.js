@@ -4,16 +4,19 @@ import './index.css';
 import App from './App';
 import * as CONSTANTS from './constants'
 import "bootstrap/dist/css/bootstrap.min.css";
-import { WagmiConfig, configureChains, chain, createClient } from 'wagmi'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
+import { Chain } from 'wagmi/chains';
 import { getConfigByChain } from "../src/assets/config";
 import {
     RainbowKitProvider,
-    connectorsForWallets,
-    wallet,
     darkTheme
 } from '@rainbow-me/rainbowkit'
 import '@rainbow-me/rainbowkit/styles.css'
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { publicProvider } from "wagmi/providers/public";
+import { connectors } from "./utils/wallet";
+import { polygon, mainnet } from "wagmi/chains";
+
 import * as serviceWorker from './serviceWorker';
 import { useAccount } from 'wagmi'
 import { Wallet } from 'ethers'
@@ -43,7 +46,7 @@ const xdcMainnet = {
     testnet: CONSTANTS.XdcMainnet.TESTNET,
 }
 
-const XdcTestNet = {
+const XdcTestNet  = {
     id: CONSTANTS.XdcTestNet.ID,
     name: CONSTANTS.XdcTestNet.NAME,
     network: CONSTANTS.XdcTestNet.NETWORK,
@@ -74,6 +77,7 @@ const { chains, provider } = configureChains(
     [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 )
 
+
 // const {connectors} = getDefaultWallets({
 //   appName: "My App",
 //   chains
@@ -86,24 +90,11 @@ const Content = () => {
     </>
 }
 
-const connectors = connectorsForWallets([
-    {
-        groupName: 'Recommended',
-        wallets: [
-            wallet.rainbow({ chains }),
-            wallet.walletConnect({ chains }),
-            wallet.metaMask({ chains }),
-            wallet.trust({ chains }),
-            wallet.argent({ chains }),
-            wallet.coinbase({ appName: 'My App', chains }),
-            wallet.brave({ chains }),
-            wallet.omni({ chains }),
-            wallet.imToken({ chains }),
-            wallet.ledger({ chains }),
-
-        ],
-    },
-])
+const wagmiClient = createClient({
+    autoConnect: true,
+    connectors: connectors(chains),
+    provider,
+});
 
 const useWallet = (Wallet) => {
     const { connector } = useAccount();
@@ -127,11 +118,7 @@ const Gateway = () => {
     </GatewayProvider>
 }
 
-const wagmiClient = createClient({
-    autoConnect: true,
-    connectors,
-    provider,
-})
+
 
 //const { chain } = useNetwork()
 
