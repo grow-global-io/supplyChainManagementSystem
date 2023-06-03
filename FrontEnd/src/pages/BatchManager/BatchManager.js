@@ -22,7 +22,7 @@ import {
   formatBigNumber,
   getCollectionData,
   getCollectionDataWithId,
-  saveData, updateHashData, createContractObject
+  saveData, updateHashData, createContractObject, getProvider
 } from "../../utils/fbutils";
 import * as loadingImage from "../../assets/loading.json";
 import Lottie from "react-lottie";
@@ -81,8 +81,8 @@ export const BatchManager = () => {
 
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
-      await window.arcana.provider.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.arcana.provider); //create provider
+      
+      const provider = await getProvider()
       const suppContract = await createContractObject();
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);

@@ -146,16 +146,44 @@ export const formatBigNumber = (bigNumber) => {
   return (Number(bigNumber) / Math.pow(10, 18)) * 10 ** 18
 }
 
-export const createContractObject = async () => {
-  await window.arcana.provider.request({ method: "eth_requestAccounts" });
-  const provider = new ethers.providers.Web3Provider(window.arcana.provider); //create provider
-  const network = await provider.getNetwork();
-  const signer = provider.getSigner();
+export const getProvider = async () => {
+  try {
+    await window.arcana.provider.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.providers.Web3Provider(window.arcana.provider); //create provider
+    return provider
+  } catch (e) {
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+    return provider
+  }
+}
 
-  const suppContract = new ethers.Contract(
-    getConfigByChain(network.chainId)[0].suppChainAddress, //deployed contract address
-    SuppChain.abi,
-    signer
-  );
-  return suppContract
+export const createContractObject = async () => {
+  try {
+    await window.arcana.provider.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.providers.Web3Provider(window.arcana.provider); //create provider
+    const network = await provider.getNetwork();
+    const signer = provider.getSigner();
+
+    const suppContract = new ethers.Contract(
+      getConfigByChain(network.chainId)[0].suppChainAddress, //deployed contract address
+      SuppChain.abi,
+      signer
+    );
+    return suppContract
+  } catch (e) {
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.providers.Web3Provider(window.ethereum); //create provider
+    const network = await provider.getNetwork();
+    const signer = provider.getSigner();
+
+    const suppContract = new ethers.Contract(
+      getConfigByChain(network.chainId)[0].suppChainAddress, //deployed contract address
+      SuppChain.abi,
+      signer
+    );
+    return suppContract
+  }
+
+
 };

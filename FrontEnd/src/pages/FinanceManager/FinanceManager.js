@@ -25,7 +25,7 @@ import {
   formatBigNumber,
   getCollectionData,
   getCollectionDataWithId,
-  saveData, updateHashData, createContractObject
+  saveData, updateHashData, createContractObject, getProvider
 } from "../../utils/fbutils";
 import { updateCollectionData, savePdf } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
@@ -170,8 +170,8 @@ export const FinanceManager = () => {
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
       setLoading(true)
-      await window.arcana.provider.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.arcana.provider); //create provider
+      
+      const provider = await getProvider()
       const suppContract = await createContractObject();
       console.log(soId);
       const tx = await suppContract.update(soId, col, val);

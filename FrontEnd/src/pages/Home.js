@@ -33,13 +33,18 @@ export default function Home() {
   const [wallet, setWallet] = useState();
   const [role, setRole] = useState()
   const [pageURL, setPageURL] = useState()
-  const [admin,setAdmin] = useState()
+  const [admin, setAdmin] = useState()
 
   useEffect(() => {
     if (!connector) return;
     connector.getSigner().then(setWallet);
-    
+
   }, [connector]);
+
+  useEffect(() => {
+    console.log("gatewayStatus", gatewayStatus);
+    console.log("gatewayToken", gatewayToken)
+  })
 
   useEffect(() => {
     const data = getData();
@@ -147,7 +152,7 @@ export default function Home() {
                 {address ? (
                   <>
                     <h1 className={classes.pageHeading}>Welcome User</h1>
-                    
+
                     <Link
                       to="/trackOrder"
                       style={{ textDecoration: "none", color: "#fff" }}
@@ -169,11 +174,43 @@ export default function Home() {
 
                     <br />
 
-                    
+
                     {admin === address ? (
                       <>
+                        <Link
+                          to="/roleAdmin"
+                          style={{ textDecoration: "none", color: "#fff" }}
+                        >
+                          <Button
+                            className={classes.HomeBtn}
+                            size="large"
+                            variant="outlined"
+                            color="primary"
+                          >
+                            Assign Role
+                          </Button>
+                        </Link>
+                        {gatewayStatus === 9 &&
+                          (<Link
+                            to={pageURL}
+                            style={{ textDecoration: "none", color: "#fff" }}
+                          >
+                            <Button
+                              className={classes.HomeBtn}
+                              size="large"
+                              variant="outlined"
+                              color="primary"
+                            >
+                              My Dashboard
+                            </Button>
+                          </Link>
+                          )}
+
+                      </>
+                    ) : (
+                      gatewayStatus === 9 &&
                       <Link
-                        to="/roleAdmin"
+                        to={pageURL}
                         style={{ textDecoration: "none", color: "#fff" }}
                       >
                         <Button
@@ -182,40 +219,13 @@ export default function Home() {
                           variant="outlined"
                           color="primary"
                         >
-                          Assign Role
+                          My Dashboard
                         </Button>
                       </Link>
-                        <Link
-                          to={pageURL}
-                          style={{ textDecoration: "none", color: "#fff" }}
-                        >
-                          <Button
-                            className={classes.HomeBtn}
-                            size="large"
-                            variant="outlined"
-                            color="primary"
-                          >
-                            My Dashboard
-                          </Button>
-                        </Link>
-                      </>
-                    ):(
-                        <Link
-                          to={pageURL}
-                          style={{ textDecoration: "none", color: "#fff" }}
-                        >
-                          <Button
-                            className={classes.HomeBtn}
-                            size="large"
-                            variant="outlined"
-                            color="primary"
-                          >
-                            My Dashboard
-                          </Button>
-                        </Link>
                     )}
-                    
-                    
+
+
+
                   </>
                 ) : (
                   <>

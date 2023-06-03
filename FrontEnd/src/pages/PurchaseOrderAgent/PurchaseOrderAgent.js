@@ -27,7 +27,7 @@ import {
   getCollectionData,
   getCollectionDataWithId,
   saveData,
-  updateHashData, createContractObject
+  updateHashData, createContractObject, getProvider
 } from "../../utils/fbutils";
 import { updateCollectionData } from "../../utils/fbutils";
 import { getStatus } from "../../assets/statusConfig";
@@ -144,8 +144,8 @@ export default function PurchaseOrderAgent() {
   const updateBlockDataOrderStatus = async (soId, col, val) => {
     try {
       setLoading(true)
-      await window.arcana.provider.request({ method: "eth_requestAccounts" });
-      const provider = new ethers.providers.Web3Provider(window.arcana.provider); //create provider
+      
+      const provider = await getProvider()
       const suppContract = await createContractObject();
       
       const tx = await suppContract.update(soId, col, val);
